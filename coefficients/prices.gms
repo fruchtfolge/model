@@ -7,6 +7,6 @@ table p_outputPricesEuroTon(crop,type,month) "Crop prices per month"
   Gerste.""                170  170   170   170   170   170   170   170   170   170   170   170
   Ackerbohnen.""           220  220   220   220   220   220   220   220   220   220   220   220
   Zwischenfrucht.""          0    0     0     0     0     0     0     0     0     0     0     0
-  Zuckerrueben.""          200  200   200   200   200   200   200   200   200   200   200   200
-  MaisSilage.""            300  300   300   300   300   300   300   300   300   300   300   300
+  Zuckerrueben.""           20   20    20    20    20    20    20    20    20    20    20    20
+  MaisSilage.""             30   30    30    30    30    30    30    30    30    30    30    30
 ;
