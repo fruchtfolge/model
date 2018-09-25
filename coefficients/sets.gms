@@ -17,6 +17,8 @@ set type /
   Agria
 /;
 
+alias (type,type1)
+
 set crop_type(crop,type) /
   Kartoffeln.('Belana','Agria')
 /;

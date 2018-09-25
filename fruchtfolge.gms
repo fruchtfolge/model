@@ -18,6 +18,7 @@ $include 'coefficients/plotAttributes.gms'
 $include 'coefficients/fieldWorkingDays.gms'
 $include 'coefficients/machines.gms'
 
+* define all model variables
 variable v_obje;
 
 positive Variables
@@ -37,19 +38,30 @@ binary variables
 ;
 
 Equations
-    e_contributionMarginPlot(crop,type,plot)
-    e_directCosts(crop,type,plot)
-    e_machineCosts(crop,type,plot)
-    e_storage(crop,type,halfMonth)
-    e_salesQuantity(crop,type,halfMonth)
-    e_oneCropPlotMonth(plot,halfMonth)
-    e_oneCropGrowthPeriod(crop,type,plot,halfMonth)
-    e_oneCropPlot(crop,type,plot)
-    e_obje
+  e_contributionMarginPlot(crop,type,plot)
+  e_directCosts(crop,type,plot)
+  e_machineCosts(crop,type,plot)
+  e_storage(crop,type,halfMonth)
+  e_salesQuantity(crop,type,halfMonth)
+  e_oneCropPlotMonth(plot,halfMonth)
+  e_oneCropGrowthPeriod(crop,type,plot)
+  e_obje
 ;
 
-* load model
+* load model equations
+$include 'model/contributionMargin.gms'
+$include 'model/storageSales.gms'
 $include 'model/cropRotation.gms'
 
-model Fruchtfolge "Entire Fruchtfolge model" / all /;
+model Fruchtfolge "Entire Fruchtfolge model" /
+  e_contributionMarginPlot
+*  e_directCosts
+*  e_machineCosts
+  e_storage
+  e_salesQuantity
+  e_oneCropPlotMonth
+  e_oneCropGrowthPeriod
+  e_obje
+ /;
+
 solve Fruchtfolge using MIP maximizing v_obje;
