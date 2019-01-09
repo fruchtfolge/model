@@ -4,62 +4,20 @@
 * A spatial crop rotation model
 * serving as a base for the
 * Fruchtfolge web application
+* (c) Christoph Pahmeyer, 2019
 *-------------------------------
 
 * load individual farm settings
 $include 'include/include.gms'
 
-alias(curCrops,curCrops1)
-Parameter p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr);
+* create gross margins per plot
+$include 'coefficients/grossMargin.gms'
 
-p_grossMarginPlot(curPlots,years,curCrops,"yield")
-  = p_grossMarginData(curCrops,years,"yield") 
-* correct for yield capacity of plot
-  * 1.0
-* correct for crop rotational effect, if any
-$iftheni.cf defined plots_years_crops  
-  * sum(curCrops1 $ plots_years_crops(plots,years - 1,curCrops1), p_croppingFactor(curCrops1,curCrops)) $ sameas(grossMarginAttr,'yield')
-$endif.cf
-;
-
-p_grossMarginPlot(curPlots,years,curCrops,'variableCosts')
-  = [p_grossMarginData(curCrops,years,"variableCosts") 
-* add/substract transport costs
-  + ((p_plotData(curPlots,'distance') - 2) * p_grossMarginPlot(curPlots,years,curCrops,'yield') * 0.02)]
-  * p_plotData(curPlots,'size')
-;
-
-p_grossMarginPlot(curPlots,years,curCrops,'directCosts')
-  = p_grossMarginData(curCrops,years,"directCosts") 
-  * p_plotData(curPlots,'size')
-;
-
-p_grossMarginPlot(curPlots,years,curCrops,'price')
-  = p_grossMarginData(curCrops,years,"price")
-;
-
-p_grossMarginPlot(curPlots,years,curCrops,'revenue')
-  = p_grossMarginPlot(curPlots,years,curCrops,'price')
-  * p_grossMarginPlot(curPlots,years,curCrops,'yield')
-  * p_plotData(curPlots,'size')
-;
-    
-p_grossMarginPlot(curPlots,years,curCrops,'grossMargin')
-  = [(p_grossMarginData(curCrops,years,"price")
-  * p_grossMarginPlot(curPlots,years,curCrops,'yield')
-  * p_plotData(curPlots,'size'))
-  - p_grossMarginPlot(curPlots,years,curCrops,'directCosts')
-  - p_grossMarginPlot(curPlots,years,curCrops,'variableCosts')]
-* multiply by plot size  
-;
-
-display p_grossMarginPlot;
-$exit
 * define all model variables
 variable v_obje;
 
 binary variables
-  v_binCropPlot(curCrops,cropGroup,curPlots)
+  v_binCropPlot(curCrops,curPlots)
 ;
 
 Equations
@@ -67,10 +25,79 @@ Equations
 ;
 
 * load model equations
+$include 'model/cropRotation.gms'
 
+e_obje..
+  v_obje =E=
+    sum((curPlots,curCrops,curYear),
+    v_binCropPlot(curCrops,curPlots)
+    * p_grossMarginPlot(curPlots,curYear,curCrops,"grossMargin"))
 
 model Fruchtfolge "Entire Fruchtfolge model" /
   e_obje
  /;
 
 solve Fruchtfolge using MIP maximizing v_obje;
+
+$ontext
+File results / results.txt /;
+results.pc = 5;
+put results;
+put "model_status",  Fruchtfolge.modelstat /;
+put "solver_status", Fruchtfolge.solvestat /;
+put "objective", v_obje.l /;
+loop((curCrops,curPlots),
+  put$(v_binCropPlot.l(curCrops,curPlots) > 0) "recommendations", curPlots.tl, curCrops.tl /
+);
+loop((curPlots,curCrops,years,grossMarginAttr),
+  put "grossMargins", curPlots.tl,curCrops.tl, years.tl, grossMarginAttr.tl, p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr) /
+);
+putclose;
+$offtext
+
+File results / results.json /;
+*results.pc = 5;
+results.lw = 40;
+put results;
+put "{"
+put '"model_status":',  Fruchtfolge.modelstat, "," /;
+put '"solver_status":', Fruchtfolge.solvestat, "," /;
+put '"objective":', v_obje.l, "," /;
+put '"recommendation":', "{"/;
+loop((curPlots),
+  put '"', curPlots.tl, '": {' /
+  loop(curCrops,
+     put$(ord(curCrops) < card(curCrops)) '"', curCrops.tl, '":' , v_binCropPlot.l(curCrops,curPlots), "," /
+     put$(ord(curCrops) = card(curCrops)) '"', curCrops.tl, '":' , v_binCropPlot.l(curCrops,curPlots) /
+*    put$(v_binCropPlot.l(curCrops,curPlots) > 0) '"', curPlots.tl, '":', '"', curCrops.tl, '"' /
+
+  )
+  put$(ord(curPlots) < card(curPlots)) "}," /
+  put$(ord(curPlots) = card(curPlots)) "}" /
+);
+put "}," /;
+put '"grossMargins":', "{"/;
+loop(curPlots,
+  put '"', curPlots.tl, '": {' /
+  loop(years,
+    put '"', years.tl, '": {' /
+    loop(curCrops,
+      put '"', curCrops.tl, '": {' /
+      loop(grossMarginAttr,
+        put$(ord(grossMarginAttr) < card(grossMarginAttr)) '"', grossMarginAttr.tl, '":', p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr), ',' /
+        put$(ord(grossMarginAttr) = card(grossMarginAttr)) '"', grossMarginAttr.tl, '":', p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr) /
+      )
+      put$(ord(curCrops) < card(curCrops)) "}," /
+      put$(ord(curCrops) = card(curCrops)) "}" /
+    )
+    put$(ord(years) < card(years)) "}," /
+    put$(ord(years) = card(years)) "}" /
+  )
+  put$(ord(curPlots) < card(curPlots)) "}," /
+  put$(ord(curPlots) = card(curPlots)) "}" /
+);
+put "}" /;
+put "}" /;
+putclose;
+
+execute 'node js/script.js'

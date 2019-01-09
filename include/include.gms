@@ -1,12 +1,12 @@
 * -------------------------------
 * Fruchtfolge Model - Include file
 * Institute for Food an Resource Economics
-* University of Bonn 
+* University of Bonn
 * (c) Christoph Pahmeyer, 2019
 * -------------------------------
 
 * Static data
-set grossMarginAttr / price,yield,directCosts,variableCosts,fixCosts,grossMargin,revenue /;
+set grossMarginAttr / price,yield,directCosts,variableCosts,fixCosts,grossMargin,revenue,distanceCosts,croppingFactor,yieldCap /;
 set plotAttr / size,distance,quality /;
 set cropAttr / rotBreak,maxShare,minSoilQuality,efaFactor/;
 set symbol / lt,gt /;
@@ -22,7 +22,7 @@ set plots /
  '2019-01-08T15:19:29.867Z'
 /;
 
-set curPlots /
+set curPlots(plots) /
  '2019-01-08T15:19:29.867Z'
 /;
 
