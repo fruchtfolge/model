@@ -1,29 +1,8 @@
 const fs = require('fs')
 
-/*
-const txt = fs.readFileSync('results.txt','utf-8')
-var test  = txt.split(/\r?\n/g).map(str => {
-  return str.split(/,/g)
-})
-
-function createObject(arr) {
-  const obj = {}
-  arr.forEach(el => {
-    if (el.length === 2) {
-      obj[el[0]] = el[1]
-    } else if (el.length < 2) {
-      return
-    } else {
-      var object = {};
-      el.reduce(function(o, s) { if (!o[s]) return o[s] = {}; }, object);
-      console.log(object);
-    }
-  })
-  return obj
-}
-//console.log(createObject(test));
-*/
 var json = JSON.parse(fs.readFileSync('results.json','utf-8'))
+
+// trim unncessary whitespace from object properties and values
 function trimObj(obj) {
   if (!Array.isArray(obj) && typeof obj != 'object') return obj;
   return Object.keys(obj).reduce(function(acc, key) {
@@ -32,6 +11,16 @@ function trimObj(obj) {
   }, Array.isArray(obj)? []:{});
 }
 
-const trunc = trimObj(json)
+var trunc = trimObj(json)
+
+// reformat the recommendation object, so that recommendet crop is easier to find
+Object.keys(trunc.recommendation).forEach(plot => {
+  let selectCrop = ''
+  Object.keys(trunc.recommendation[plot]).forEach(crop => {
+    console.log(plot,crop);
+    if (trunc.recommendation[plot][crop] > 0) selectCrop = crop
+  })
+  trunc.recommendation[plot] = selectCrop
+})
 
 fs.writeFileSync('results.json', JSON.stringify(trunc), 'utf-8')
