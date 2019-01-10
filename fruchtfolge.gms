@@ -35,6 +35,9 @@ e_obje..
 
 model Fruchtfolge "Entire Fruchtfolge model" /
   e_obje
+  e_oneCropPlot
+  e_minimumShares
+  e_maximumShares
  /;
 
 solve Fruchtfolge using MIP maximizing v_obje;
