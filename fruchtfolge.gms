@@ -6,101 +6,46 @@
 * Fruchtfolge web application
 * (c) Christoph Pahmeyer, 2019
 *-------------------------------
+*
+*  --- initiate global parameters for Greening evaluation
+*
+scalar  p_totLand;
+scalar  p_totArabLand;
+scalar  p_totGreenLand;
+p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
+p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
+p_totGreenLand = p_totLand - p_totArabLand;
 
-* load individual farm settings
-$include 'include/include.gms'
+alias (cropGroup,cropGroup1);
+alias (curCrops,curCrops1);
 
-* create gross margins per plot
-$include 'coefficients/grossMargin.gms'
-
-* define all model variables
-variable v_obje;
-
-binary variables
-  v_binCropPlot(curCrops,curPlots)
-;
+*
+*  --- declare objective variable and equation
+*
+Variable v_obje;
+Binary Variable v_binCropPlot(crops,plots);
 
 Equations
   e_obje
 ;
 
-* load model equations
-$include 'model/cropRotation.gms'
+*
+*  --- include model
+*
+$include '%WORKDIR%model/cropRotation.gms'
+$include '%WORKDIR%model/greening.gms'
 
+*
+*  --- calculate overall gross margin for the planning year
+*
 e_obje..
   v_obje =E=
-    sum((curPlots,curCrops,curYear),
+    sum((curPlots,curCrops),
     v_binCropPlot(curCrops,curPlots)
-    * p_grossMarginPlot(curPlots,curYear,curCrops,"grossMargin"))
+    * p_grossMarginData(curPlots,curCrops));
 
-model Fruchtfolge "Entire Fruchtfolge model" /
-  e_obje
-  e_oneCropPlot
-  e_minimumShares
-  e_maximumShares
- /;
-
+option optCR=0;
+model Fruchtfolge / all /;
 solve Fruchtfolge using MIP maximizing v_obje;
 
-$ontext
-File results / results.txt /;
-results.pc = 5;
-put results;
-put "model_status",  Fruchtfolge.modelstat /;
-put "solver_status", Fruchtfolge.solvestat /;
-put "objective", v_obje.l /;
-loop((curCrops,curPlots),
-  put$(v_binCropPlot.l(curCrops,curPlots) > 0) "recommendations", curPlots.tl, curCrops.tl /
-);
-loop((curPlots,curCrops,years,grossMarginAttr),
-  put "grossMargins", curPlots.tl,curCrops.tl, years.tl, grossMarginAttr.tl, p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr) /
-);
-putclose;
-$offtext
-
-File results / results.json /;
-*results.pc = 5;
-results.lw = 40;
-put results;
-put "{"
-put '"model_status":',  Fruchtfolge.modelstat, "," /;
-put '"solver_status":', Fruchtfolge.solvestat, "," /;
-put '"objective":', v_obje.l, "," /;
-put '"recommendation":', "{"/;
-loop((curPlots),
-  put '"', curPlots.tl, '": {' /
-  loop(curCrops,
-     put$(ord(curCrops) < card(curCrops)) '"', curCrops.tl, '":' , v_binCropPlot.l(curCrops,curPlots), "," /
-     put$(ord(curCrops) = card(curCrops)) '"', curCrops.tl, '":' , v_binCropPlot.l(curCrops,curPlots) /
-*    put$(v_binCropPlot.l(curCrops,curPlots) > 0) '"', curPlots.tl, '":', '"', curCrops.tl, '"' /
-
-  )
-  put$(ord(curPlots) < card(curPlots)) "}," /
-  put$(ord(curPlots) = card(curPlots)) "}" /
-);
-put "}," /;
-put '"grossMargins":', "{"/;
-loop(curPlots,
-  put '"', curPlots.tl, '": {' /
-  loop(years,
-    put '"', years.tl, '": {' /
-    loop(curCrops,
-      put '"', curCrops.tl, '": {' /
-      loop(grossMarginAttr,
-        put$(ord(grossMarginAttr) < card(grossMarginAttr)) '"', grossMarginAttr.tl, '":', p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr), ',' /
-        put$(ord(grossMarginAttr) = card(grossMarginAttr)) '"', grossMarginAttr.tl, '":', p_grossMarginPlot(curPlots,years,curCrops,grossMarginAttr) /
-      )
-      put$(ord(curCrops) < card(curCrops)) "}," /
-      put$(ord(curCrops) = card(curCrops)) "}" /
-    )
-    put$(ord(years) < card(years)) "}," /
-    put$(ord(years) = card(years)) "}" /
-  )
-  put$(ord(curPlots) < card(curPlots)) "}," /
-  put$(ord(curPlots) = card(curPlots)) "}" /
-);
-put "}" /;
-put "}" /;
-putclose;
-
-execute 'node js/script.js'
+$include '%WORKDIR%exploiter/createJson.gms'
