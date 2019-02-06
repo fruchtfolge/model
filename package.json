@@ -1,0 +1,29 @@
+{
+  "name": "fruchtfolge-model",
+  "version": "1.0.0",
+  "description": "Base model for the Fruchtfolge application",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/test.js",
+    "build": "node js/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fruchtfolge/model.git"
+  },
+  "keywords": [
+    "Fruchtfolge",
+    "Agriculture",
+    "GAMS",
+    "Optimisation"
+  ],
+  "author": "Christoph Pahmeyer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fruchtfolge/model/issues"
+  },
+  "homepage": "https://github.com/fruchtfolge/model#readme"
+}

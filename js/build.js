@@ -35,6 +35,8 @@ runGams()
     const model = await readFile('fruchtfolge.dmp','utf8')
     const index = 'module.exports = ' + JSON.stringify(model)
     await writeFile('index.js', index)
+    await unlink('fruchtfolge.dmp')
+    await unlink('fruchtfolge.lst')
   })
   .catch(e => {
     console.log(e)
