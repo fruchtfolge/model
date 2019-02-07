@@ -20,6 +20,14 @@ alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
 *
+*  --- add empty crop for constraints
+*
+$onmulti 
+set crops / "" /;
+set curCrops(crops) / "" /;
+$offmulti
+
+*
 *  --- declare objective variable and equation
 *
 Variable v_obje;

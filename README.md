@@ -60,3 +60,4 @@ In order to build the model, execute
 ```
 npm run build
 ```
+Note that only `$include` statements in the form of `$include '%WORKDIR%path/to/file.gms'` are correctly concatenated into the final model. Other statements, as `$batinclude` etc. are currently not supported.
