@@ -20,14 +20,6 @@ alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
 *
-*  --- add empty crop for constraints
-*
-$onmulti 
-set crops / "" /;
-set curCrops(crops) / "" /;
-$offmulti
-
-*
 *  --- declare objective variable and equation
 *
 Variable v_obje;
@@ -42,6 +34,7 @@ Equations
 *
 $include '%WORKDIR%model/cropRotation.gms'
 $include '%WORKDIR%model/greening.gms'
+$include '%WORKDIR%model/labour.gms'
 
 *
 *  --- calculate overall gross margin for the planning year
