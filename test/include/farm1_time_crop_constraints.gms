@@ -1889,3 +1889,15 @@ parameter p_laborReq(crops,halfMonths) /
  '633'.OKT2 0.39
  '633'.NOV1 1.88
 /;
+
+set constraints /
+ 'Kartoffeln'
+/;
+
+parameter p_constraint(constraints,curCrops,curCrops) /
+ 'Kartoffeln'.'602'."" 30
+/;
+
+set constraints_lt(constraints,symbol) /
+ 'Kartoffeln'.lt YES
+/;

@@ -31,12 +31,32 @@ e_oneCropPlot(curPlots)..
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
 v_binCropPlot.up(curCrops,curPlots) $ (not p_grossMarginData(curPlots,curCrops)) = 0;
+
 *
 *  --- root crops can obly be grown on root crop capable plots
 *
 v_binCropPlot.up(curCrops,curPlots) 
   $ (crops_rootCrop(curCrops) 
   $ (not plots_rootCropCap(curPlots))) = 0;
+
+*
+*  --- when a cropping factor of 0 is given for a previous crop - crop combination
+*      the crop can't be grown
+*  
+v_binCropPlot.up(curCrops,curPlots)
+  $ sum((years,curYear,curCrops1) 
+          $ (sameas(years,curYear)
+          $ plots_years_crops(curPlots,years - 1,curCrops1)
+          $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
+
+*
+*  --- when a plot is permanent pasture, it has to be used in the same way as in the previous year
+*
+v_binCropPlot.lo(curCrops,curPlots)
+  $ (plots_permPast(curPlots)
+  $ sum((years,curYear) 
+     $ (sameas(years,curYear) $ plots_years_crops(curPlots,years - 1,curCrops)),1)) 
+  = 1;
   
 *
 *  --- Enter user specified constraints into the model, 
