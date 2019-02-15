@@ -59,6 +59,7 @@ async function testFarms() {
       await unlink('tmp/' + random + '.json')
       await unlink('tmp/' + random + '.lst')
     } catch (e) {
+      console.log(file)
       throw new Error(e)
     }
   })

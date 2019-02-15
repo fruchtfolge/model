@@ -692,6 +692,11 @@ set curCrops(crops) /
  '633'
 /;
 
+set permPastCrops(curCrops) /
+ ''
+ '459'
+/;
+
 set cropGroup /
  ''
  'Gattung: Vicia (Wicken)'
@@ -720,7 +725,7 @@ set crops_cropGroup(curCrops,cropGroup) /
 
 parameter p_cropData(curCrops,cropAttr) /
  '220'.rotBreak 5
- '220'.maxShare 20
+ '220'.maxShare 16.67
  '220'.minSoilQuality 20
  '220'.efaFactor 1
  '459'.rotBreak 0
@@ -728,7 +733,7 @@ parameter p_cropData(curCrops,cropAttr) /
  '459'.minSoilQuality 0
  '459'.efaFactor 0
  '602'.rotBreak 3
- '602'.maxShare 33.33333333333333
+ '602'.maxShare 25
  '602'.minSoilQuality 20
  '602'.efaFactor 0
  '422'.rotBreak 0
@@ -736,23 +741,23 @@ parameter p_cropData(curCrops,cropAttr) /
  '422'.minSoilQuality 20
  '422'.efaFactor 0
  '634'.rotBreak 4
- '634'.maxShare 25
+ '634'.maxShare 20
  '634'.minSoilQuality 20
  '634'.efaFactor 0
  '411'.rotBreak 2
- '411'.maxShare 50
+ '411'.maxShare 33.33
  '411'.minSoilQuality 20
  '411'.efaFactor 0
  '115'.rotBreak 2
- '115'.maxShare 50
+ '115'.maxShare 33.33
  '115'.minSoilQuality 20
  '115'.efaFactor 0
  '603'.rotBreak 4
- '603'.maxShare 25
+ '603'.maxShare 20
  '603'.minSoilQuality 20
  '603'.efaFactor 0
  '633'.rotBreak 3
- '633'.maxShare 33.33333333333333
+ '633'.maxShare 25
  '633'.minSoilQuality 20
  '633'.efaFactor 0
 /;

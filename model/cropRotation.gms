@@ -57,7 +57,13 @@ v_binCropPlot.lo(curCrops,curPlots)
   $ sum((years,curYear) 
      $ (sameas(years,curYear) $ plots_years_crops(curPlots,years - 1,curCrops)),1)) 
   = 1;
-  
+*
+*  --- allow permanent pasture crops only on permanent pastures
+*  
+v_binCropPlot.up(curCrops,curPlots)
+  $ ((not plots_permPast(curPlots))
+  $ (sum(permPastCrops $ sameas(curCrops,permPastCrops),1)))
+  = 0;
 *
 *  --- Enter user specified constraints into the model, 
 *
