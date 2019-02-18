@@ -9,7 +9,7 @@ Equations
 
 e_maxLabour(months)..
   sum((curPlots,curCrops,halfMonths) $ months_halfMonths(months,halfMonths),
-  v_binCropPlot(curCrops,curPlots)
+  v_binCropPlot(curCrops,curPlots) * p_plotData(curPlots,'size')
   * p_laborReq(curCrops,halfMonths))
   =L= p_availLabour(months)
 ;

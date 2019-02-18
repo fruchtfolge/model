@@ -1896,18 +1896,18 @@ parameter p_laborReq(crops,halfMonths) /
 /;
 
 parameter p_availLabour(months) /
- jan 400
- feb 400
- mrz 400
- apr 400
- mai 400
- jun 400
- jul 400
- aug 400
- sep 400
- okt 400
- nov 400
- dez 400
+ jan 800
+ feb 800
+ mrz 800
+ apr 800
+ mai 800
+ jun 800
+ jul 800
+ aug 800
+ sep 800
+ okt 800
+ nov 800
+ dez 800
 /;
 
 parameter p_availFieldWorkDays(months) /
