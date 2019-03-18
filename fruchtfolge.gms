@@ -6,6 +6,8 @@
 * Fruchtfolge web application
 * (c) Christoph Pahmeyer, 2019
 *-------------------------------
+*$include 'test/include/farm1.gms'
+*$setglobal WORKDIR '/Users/toffi1/UniCloud/Programmieren/Fruchtfolge_Modell/'
 *
 *  --- initiate global parameters for Greening evaluation
 *
@@ -23,7 +25,11 @@ alias (curCrops,curCrops1);
 *  --- declare objective variable and equation
 *
 Variable v_obje;
-Binary Variable v_binCropPlot(crops,plots);
+
+Binary Variables
+  v_binCropPlot(curCrops,curPlots)
+  v_binCatchCrop(curCrops,curPlots)
+;
 
 Equations
   e_obje
@@ -32,6 +38,7 @@ Equations
 *
 *  --- include model
 *
+$include '%WORKDIR%model/catchCrop.gms'
 $include '%WORKDIR%model/cropRotation.gms'
 $include '%WORKDIR%model/greening.gms'
 $include '%WORKDIR%model/labour.gms'
@@ -43,10 +50,15 @@ e_obje..
   v_obje =E=
     sum((curPlots,curCrops),
     v_binCropPlot(curCrops,curPlots)
-    * p_grossMarginData(curPlots,curCrops));
+    * p_grossMarginData(curPlots,curCrops)
+    - v_binCatchCrop(curCrops,curPlots)
+    * p_plotData(curPlots,'size')
+    * p_costCatchCrop(curPlots));
 
 option optCR=0;
 model Fruchtfolge / all /;
+Fruchtfolge.limrow = 10000;
+Fruchtfolge.limcol = 10000;
 solve Fruchtfolge using MIP maximizing v_obje;
 
 $include '%WORKDIR%exploiter/createJson.gms'
