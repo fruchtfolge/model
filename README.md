@@ -1,16 +1,15 @@
 # Fruchtfolge Model
 
-This repo contains the simulation model used in the [**Fruchtfolge**](https://github.com/fruchtfolge/Fruchtfolge) application. 
+This repo contains the simulation model used in the [**Fruchtfolge**](https://github.com/fruchtfolge/Fruchtfolge) application.
 
-The mixed-interger model optimises total farm profits, with respect to crop rotations on a highly detailed single plot resolution.
-
-Restrictions such as the
+The mixed-integer linear programming model returns a cropping (and catch crop) recommendation for each given plot.  
+Overall farm profits are maximised, considering restrictions such as:
 
 - Greening directive
 - rotational breaks
 - maximum allowed crop shares in the crop rotation
 - available labour endowments
-- soil quality 
+- soil quality
 - crop rotational effects
 - effects of field-to-farm distance on costs and labour requirements
 - other user defined constraints
@@ -29,12 +28,13 @@ The **Fruchtfolge** optimisation model comprises of two main parts:
  - Current plots (planning horizon)
  - Plot information, as soil quality, type, distance
  - Historical crops
- - Current crops (planning horizon) 
+ - Current crops (planning horizon)
  - Botanical crop groups, linked to the crops (for compliance with the greening directive)
- - maximum crop rotational shares as defined by the user
- - other constraints defined by the user
- 
- Plot and crop names are obfuscated in order to ensure confidentiality of the farmer. Examples of such an include file can be found in the `test/include` subdirectory.
+ - maximum crop shares (rotational shares
+ -
+ - other constraints defined by the user (e.g. labour constraints, maximum crop shares)
+
+ Plot and crop names are obfuscated in order to ensure privacy. Examples of such an include file can be found in the `test/include` subdirectory.
 
 2. The main optimisation model logic, which is stored in this repository. The main model logic is **farm agnostic**, which ensures that the model is capable of solving any possible combination of farm endowments.
 
