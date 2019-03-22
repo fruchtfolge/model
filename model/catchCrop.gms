@@ -54,7 +54,7 @@ display p_costCatchCrop;
 set catchCropMonths(halfMonths) /'AUG2','SEP1','SEP2','FEB2'/;
 Parameter p_timeReqCatchCrop(curPlots,halfMonths);
 
-p_timeReqCatchCrop(curPlots,halfMonths)
+p_timeReqCatchCrop(curPlots,catchCropMonths)
   = (0.04827586207 * p_plotData(curPlots,'distance')
   - 0.1 * p_plotData(curPlots,'size')
   + 4.191724138)
