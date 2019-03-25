@@ -45,7 +45,8 @@ v_binCropPlot.up(curCrops,curPlots)
 *  
 v_binCropPlot.up(curCrops,curPlots)
   $ sum((years,curYear,curCrops1) 
-          $ (sameas(years,curYear)
+          $ ((not sameas(curCrops1,'')) 
+          $ sameas(years,curYear)
           $ plots_years_crops(curPlots,years - 1,curCrops1)
           $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
 
