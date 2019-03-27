@@ -42,7 +42,7 @@ set constraints /
 /;
 
 parameter p_constraint(constraints,curCrops,curCrops) /
- 'Kartoffeln'.'602'."" 30
+ 'Kartoffeln'.'Kartoffeln'."" 30
 /;
 
 set constraints_lt(constraints,symbol) /
