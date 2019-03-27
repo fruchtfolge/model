@@ -6,6 +6,8 @@
 * Fruchtfolge web application
 * (c) Christoph Pahmeyer, 2019
 *-------------------------------
+$include 'test/include/farm1.gms'
+$setglobal WORKDIR './'
 *
 *  --- initiate global parameters for Greening evaluation
 *

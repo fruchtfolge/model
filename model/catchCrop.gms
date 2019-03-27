@@ -25,11 +25,11 @@ e_catchCropEqBinCrop(curCrops,curPlots)..
 *
 v_binCatchCrop.up(curCrops,curPlots) = 0;
 v_binCatchCrop.up(curCrops,curPlots)
-  $ sum((years,curYear,curCrops1)
+  $ sum((years,curYear)
     $ (sameas(years,curYear)
-    $ plots_years_crops(curPlots,years - 1,curCrops1)
+    $ sum(cropGroup $ (crops_cropGroup(curCrops,cropGroup) $ plots_years_cropGroup(curPlots,years - 1,cropGroup)),1)
     $ crops_summer(curCrops)
-    $ crops_catchCrop(curCrops1)
+    $ crops_catchCrop(curCrops)
     $ (not plots_permPast(curPlots))
     ),1) = 1;
 

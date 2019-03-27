@@ -45,10 +45,11 @@ v_binCropPlot.up(curCrops,curPlots)
 *  
 v_binCropPlot.up(curCrops,curPlots)
   $ sum((years,curYear,curCrops1) 
-          $ ((not sameas(curCrops1,'')) 
-          $ sameas(years,curYear)
-          $ plots_years_crops(curPlots,years - 1,curCrops1)
-          $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
+  $ ((not sameas(curCrops1,'')) 
+  $ sameas(years,curYear)
+  $ sum((cropGroup) $ (crops_cropGroup(curCrops,cropGroup) 
+    $ plots_years_cropGroup(curPlots,years - 1,cropGroup)), 1)
+  $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
 
 *
 *  --- when a plot is permanent pasture, it has to be used in the same way as in the previous year
@@ -56,7 +57,12 @@ v_binCropPlot.up(curCrops,curPlots)
 v_binCropPlot.lo(curCrops,curPlots)
   $ (plots_permPast(curPlots)
   $ sum((years,curYear) 
-     $ (sameas(years,curYear) $ plots_years_crops(curPlots,years - 1,curCrops)),1)) 
+     $ (sameas(years,curYear) 
+     $ sum((cropGroup) 
+      $ (crops_cropGroup(curCrops,cropGroup) 
+      $ plots_years_cropGroup(curPlots,years - 1,cropGroup)),
+      1)),
+    1)) 
   = 1;
 *
 *  --- allow permanent pasture crops only on permanent pastures
