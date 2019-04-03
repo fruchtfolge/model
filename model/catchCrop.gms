@@ -35,6 +35,11 @@ v_binCatchCrop.up(curCrops,curPlots)
 
 
 *
+* --- Disallow catch crops to be grown on permanent pastures
+*
+v_binCatchCrop.up(curCrops,curPlots) $ plots_permPast(curPlots) = 0;
+
+*
 * --- Calculate costs of growing a catch crop on a plot
 *     Source: Own regression made from KTBL - Leistungs- Kostenrechner data
 *             Based on crop "Zwischenfrucht Senf"
@@ -46,7 +51,6 @@ p_costCatchCrop(curPlots) =
   + 113
 ;
 
-display p_costCatchCrop;
 *
 *  --- Source: Own regression made from KTBL - Verfahrensrechner Pflanze data
 *              Based on crop "Zwischenfrucht Senf"
