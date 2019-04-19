@@ -1,6 +1,6 @@
 {
   "name": "fruchtfolge-model",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Base model for the Fruchtfolge application",
   "main": "index.js",
   "directories": {
