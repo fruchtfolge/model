@@ -1,6 +1,6 @@
 # Fruchtfolge Model
 
-This repo contains the simulation model used in the [**Fruchtfolge**](https://github.com/fruchtfolge/Fruchtfolge) application.
+This repo contains the simulation model used in the [**Fruchtfolge**](https://github.com/fruchtfolge/client) application.
 
 The mixed-integer linear programming model returns a cropping (and catch crop) recommendation for each given plot.  
 Overall farm profits are maximised, considering restrictions such as:
@@ -16,6 +16,10 @@ Overall farm profits are maximised, considering restrictions such as:
 
 are implemented in the model.
 
+Infeasibilities are avoided by slack variables accompanied with high penalties.
+In case of an infeasible constraint, users are presented with the closest feasible
+solution to their problem.
+
 The model is written in [GAMS](https://www.gams.com/) language. You need a valid GAMS license in order to run the model.
 
 **Fruchtfolge** is a decision support model aimed to be operated by practitioners. If you are a researcher interested in single farm modeling, please have a look at our dynamic mixed integer bio-economic model [**FarmDyn**](http://www.ilr.uni-bonn.de/em/rsrch/farmdyn/farmDynDoku/)
@@ -30,8 +34,7 @@ The **Fruchtfolge** optimisation model comprises of two main parts:
  - Historical crops
  - Current crops (planning horizon)
  - Botanical crop groups, linked to the crops (for compliance with the greening directive)
- - maximum crop shares (rotational shares
- -
+ - maximum crop shares (rotational shares)
  - other constraints defined by the user (e.g. labour constraints, maximum crop shares)
 
  Plot and crop names are obfuscated in order to ensure privacy. Examples of such an include file can be found in the `test/include` subdirectory.

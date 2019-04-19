@@ -16,19 +16,11 @@ async function asyncForEach(array, callback) {
   }
 }
 
-function makeid() {
-  let text = ""
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  for (let i = 0; i < 5; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length))
-  return text
-}
-
-async function runGams(file,random) {
+async function runGams(file,fileBase) {
   try {
     const filePath = __dirname  + path.sep + 'test.gms'
-    const resultPath = __dirname + path.sep + '..' + path.sep + 'tmp' + path.sep + random + '.json'
-    const listingPath = __dirname + path.sep + '..' + path.sep + 'tmp' + path.sep + random + '.lst'
+    const resultPath = __dirname + path.sep + '..' + path.sep + 'tmp' + path.sep + fileBase + '.json'
+    const listingPath = __dirname + path.sep + '..' + path.sep + 'tmp' + path.sep + fileBase + '.lst'
     
     let call
     if (os.platform() === 'win32') {
@@ -50,14 +42,13 @@ async function testFarms() {
   await asyncForEach(files, async (file) => {
     try {
       const fileBase = path.basename(file, '.gms')
-      const random = makeid()
-      await runGams(file, random)
+      await runGams(file, fileBase)
       // check results
       const expected = await readFile('test/results/' + fileBase + '.json')
-      const actual = await readFile('tmp/' + random + '.json')
+      const actual = await readFile('tmp/' + fileBase + '.json')
       assert.deepEqual(expected,actual)
-      await unlink('tmp/' + random + '.json')
-      await unlink('tmp/' + random + '.lst')
+      await unlink('tmp/' + fileBase + '.json')
+      await unlink('tmp/' + fileBase + '.lst')
     } catch (e) {
       console.log(file)
       throw new Error(e)

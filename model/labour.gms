@@ -14,7 +14,9 @@ e_maxLabour(months)..
   + v_binCatchCrop(curCrops,curPlots) * p_plotData(curPlots,'size')
   * p_timeReqCatchCrop(curPlots,halfMonths)
   )
-  =L= p_availLabour(months)
+  =L= 
+  p_availLabour(months)
+  + v_devLabour(months)
 ;
 
 *
