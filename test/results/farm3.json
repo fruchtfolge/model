@@ -1,0 +1,22 @@
+{"model_status":        1.00,
+"solver_status":        1.00,
+"objective":     8041.00,
+"warnings": [
+"Maximaler Fruchtfolgeanteil von Mais - Silomais konnte nicht eingehalten werden.",
+"Maximaler Fruchtfolgeanteil von Winterweizen - Brotweizen konnte nicht eingehalten werden.",
+],
+"recommendation":{
+"25dffac4-41ad-4d46-9a92-03cd8097597c":"Winterweizen - Brotweizen"
+,
+"f2dbbdf4-2a17-49df-973d-56936a63e7dd":"Wintergerste - Futtergerste"
+,
+"52d50b37-59d7-4a6c-a875-8cf5f197ad17":"Mais - Silomais"
+},
+"catchCrop":{
+"25dffac4-41ad-4d46-9a92-03cd8097597c":false
+,
+"f2dbbdf4-2a17-49df-973d-56936a63e7dd":false
+,
+"52d50b37-59d7-4a6c-a875-8cf5f197ad17":false
+}
+}

@@ -18,7 +18,7 @@ e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
   )
   =L= 
     (p_totArabLand * p_cropData(curCrops,"maxShare") / 100)
-*    + v_devShares(curCrops)
+    + v_devShares(curCrops)
 ;
 
 *
