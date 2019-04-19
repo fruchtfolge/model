@@ -16,7 +16,9 @@ e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
     v_binCropPlot(curCrops,curPlots)
     * p_plotData(curPlots,"size")
   )
-  =L= p_totArabLand * p_cropData(curCrops,"maxShare") / 100
+  =L= 
+    (p_totArabLand * p_cropData(curCrops,"maxShare") / 100)
+*    + v_devShares(curCrops)
 ;
 
 *
@@ -24,6 +26,7 @@ e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
 *
 e_oneCropPlot(curPlots)..
   sum(curCrops, v_binCropPlot(curCrops,curPlots))
+  + v_devOneCrop(curPlots)
   =E= 1
 ;
 
@@ -80,6 +83,7 @@ e_minimumShares(constraints,curCrops,curCrops1)
        $ (not (constraints_lt(constraints,'lt'))))..
   sum(curPlots, v_binCropPlot(curCrops,curPlots) * p_plotData(curPlots,'size') + 
     v_binCropPlot(curCrops1,curPlots) * p_plotData(curPlots,'size'))
+    + v_devUserShares(constraints,curCrops,curCrops1)
     =G= p_constraint(constraints,curCrops,curCrops1) 
 ;  
 
@@ -88,6 +92,8 @@ e_maximumShares(constraints,curCrops,curCrops1)
        $ (constraints_lt(constraints,'lt')))..
   sum(curPlots, v_binCropPlot(curCrops,curPlots) * p_plotData(curPlots,'size') + 
     v_binCropPlot(curCrops1,curPlots) * p_plotData(curPlots,'size'))
-    =L= p_constraint(constraints,curCrops,curCrops1) 
+    =L= 
+    p_constraint(constraints,curCrops,curCrops1)
+    + v_devUserShares(constraints,curCrops,curCrops1)
 ;  
 $endif.constraints

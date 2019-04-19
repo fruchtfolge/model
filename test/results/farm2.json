@@ -1,0 +1,45 @@
+{"model_status":        1.00,
+"solver_status":        1.00,
+"objective":    25941.00,
+"warnings": [
+"Konnte 5% ÖVF nicht einhalten. Prüfen, ob Sommerungen vorhanden sind, bzw. ob ZF Anbau erlaubt wurde.",
+],
+"recommendation":{
+"206f726b-4544-431f-a61b-1caa13ff9799":"Winterraps"
+,
+"a2353795-c68a-41d0-9bf2-0339203a8389":"Winterweizen"
+,
+"ed165a70-ed74-4ee5-996b-465013059a3a":"Winterraps"
+,
+"259ad084-fcf0-44c6-bf7a-2dcbe8716de8":"Mais - Silomais"
+,
+"0e49a71a-52fe-4a55-9148-17fb0a36f423":"Winterweizen"
+,
+"ca960201-a2cb-4bab-87af-6bec5cc105af":"Mais - Silomais"
+,
+"b46a81dd-6b8c-43e2-af4e-363313644fe0":"Mais - Silomais"
+,
+"4628f493-e7be-45bd-8ac1-874515d27b8b":"Winterweizen"
+,
+"c31583b7-f152-4426-97be-198010500822":"Winterraps"
+},
+"catchCrop":{
+"206f726b-4544-431f-a61b-1caa13ff9799":false
+,
+"a2353795-c68a-41d0-9bf2-0339203a8389":false
+,
+"ed165a70-ed74-4ee5-996b-465013059a3a":false
+,
+"259ad084-fcf0-44c6-bf7a-2dcbe8716de8":false
+,
+"0e49a71a-52fe-4a55-9148-17fb0a36f423":false
+,
+"ca960201-a2cb-4bab-87af-6bec5cc105af":false
+,
+"b46a81dd-6b8c-43e2-af4e-363313644fe0":false
+,
+"4628f493-e7be-45bd-8ac1-874515d27b8b":false
+,
+"c31583b7-f152-4426-97be-198010500822":false
+}
+}

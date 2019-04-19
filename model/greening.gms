@@ -13,7 +13,9 @@ e_efa $ (p_totArabLand >= 15)..
       + v_binCatchCrop(curCrops,curPlots)
       * p_plotData(curPlots,"size")
   )
-  =G= p_totArabLand * 0.05
+  + v_devEfa5
+  =G= 
+  p_totArabLand * 0.05
 ;
 
 
@@ -23,7 +25,10 @@ e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
       v_binCropPlot(curCrops,curPlots)
       * p_plotData(curPlots,"size")
   )
-  =L= p_totArabLand * 0.75
+  =L= 
+  p_totArabLand * 0.75
+  + v_devEfa75
+  
 ;
 
 * Only activate 95% diversifaction rule if arable land is greater than 30ha
@@ -39,5 +44,7 @@ e_95diversification(cropGroup,cropGroup1)
     v_binCropPlot(curCrops,curPlots)
     * p_plotData(curPlots,"size")
   )
-  =L= p_totArabLand * 0.95
+  =L= 
+  p_totArabLand * 0.95
+  + v_devEfa95
 ;
