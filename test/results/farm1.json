@@ -1,6 +1,6 @@
 {"model_status":        1.00,
 "solver_status":        1.00,
-"objective":   757205.65,
+"objective":   757805.76,
 "warnings": [
 ],
 "recommendation":{
@@ -24,11 +24,11 @@
 ,
 "8898218e-6fd5-4efc-829e-6b08aafa9ccd":"Kleegras"
 ,
-"8808643e-5e7e-45f2-8a91-58c0754928c2":"Grünland (Dauergrünland)"
+"8808643e-5e7e-45f2-8a91-58c0754928c2":"Winterweichweizen"
 ,
 "26875e25-e974-4391-904d-47662820d2c6":"Möhre (auch Futtermöhre)"
 ,
-"2e60b308-c11d-45c5-ac52-9f0dd458653d":"Möhre (auch Futtermöhre)"
+"2e60b308-c11d-45c5-ac52-9f0dd458653d":"Zwiebeln/Lauch"
 ,
 "32db3620-defe-43f6-841d-ebd29108219c":"Kleegras"
 ,
@@ -76,7 +76,7 @@
 ,
 "f9d5afb5-ceae-4e41-81ca-219f0dbf2f9d":"Kleegras"
 ,
-"9087c111-1c8e-4fab-a270-785555349b95":"Zwiebeln/Lauch"
+"9087c111-1c8e-4fab-a270-785555349b95":"Möhre (auch Futtermöhre)"
 ,
 "8554c0f0-6bb6-4e5e-972b-1032e3df9ca3":"Kartoffeln"
 ,
@@ -84,7 +84,7 @@
 ,
 "671ded41-9b32-457f-9186-11237522ca6c":"Kartoffeln"
 ,
-"b81612e9-e74f-4777-8c70-ca66cbd3f7d0":"Grünland (Dauergrünland)"
+"b81612e9-e74f-4777-8c70-ca66cbd3f7d0":"Silomais (als Hauptfutter)"
 ,
 "8dd20b61-bc2c-4896-af04-017e5b1bd2e3":"Kleegras"
 ,
@@ -124,7 +124,7 @@
 ,
 "2fbda4ad-c56e-4ff3-991c-62ceda37f1ef":"Kleegras"
 ,
-"c2d7ae07-2429-49d4-914a-7b52020c76d5":"Möhre (auch Futtermöhre)"
+"c2d7ae07-2429-49d4-914a-7b52020c76d5":"Zwiebeln/Lauch"
 ,
 "405f71c3-6a46-4135-8a69-db6cd2d2d02c":"Möhre (auch Futtermöhre)"
 ,
@@ -132,7 +132,7 @@
 ,
 "84ba1cb7-3189-4936-bdb3-b3e0823ca95a":"Kleegras"
 ,
-"f23d1831-1095-4926-96dd-07b6c21bd74a":"Grünland (Dauergrünland)"
+"f23d1831-1095-4926-96dd-07b6c21bd74a":"Winterweichweizen"
 ,
 "89b99db3-c177-4225-8f04-5899034fc6b1":"Kartoffeln"
 ,
@@ -168,9 +168,9 @@
 ,
 "3c682187-2323-417f-a3ca-f70683e000ca":"Grünland (Dauergrünland)"
 ,
-"411e798b-79bb-4e3c-bb7e-e6f0e7c8327c":"Grünland (Dauergrünland)"
+"411e798b-79bb-4e3c-bb7e-e6f0e7c8327c":"Winterweichweizen"
 ,
-"744e84c2-2e6a-4b7a-a736-719511d9a5dd":"Möhre (auch Futtermöhre)"
+"744e84c2-2e6a-4b7a-a736-719511d9a5dd":"Zwiebeln/Lauch"
 ,
 "77220ae0-a7cb-4884-80e8-952a5d7e4397":"Zuckerrüben"
 ,
@@ -249,7 +249,7 @@
 ,
 "f9d5afb5-ceae-4e41-81ca-219f0dbf2f9d":false
 ,
-"9087c111-1c8e-4fab-a270-785555349b95":true
+"9087c111-1c8e-4fab-a270-785555349b95":false
 ,
 "8554c0f0-6bb6-4e5e-972b-1032e3df9ca3":false
 ,
@@ -263,7 +263,7 @@
 ,
 "4bd8d58c-2eac-454c-8725-41882dda1170":false
 ,
-"8944d5c7-29cc-4899-854d-7bbb1a4ae60f":false
+"8944d5c7-29cc-4899-854d-7bbb1a4ae60f":true
 ,
 "6129000d-e007-4959-bdad-5e3fae67e598":false
 ,
@@ -277,13 +277,13 @@
 ,
 "f0316474-6f27-4164-aad7-a11f322a5080":false
 ,
-"39d80f8d-bc3c-4aa6-b8c0-5f287edd306e":false
+"39d80f8d-bc3c-4aa6-b8c0-5f287edd306e":true
 ,
 "3985d59d-715e-4b5c-8e31-7979689469bd":false
 ,
 "3f8dd658-f0fa-4e93-8736-8bef91660c63":false
 ,
-"ef27589d-0ca3-49dc-8023-fcbc0f170392":true
+"ef27589d-0ca3-49dc-8023-fcbc0f170392":false
 ,
 "62fb5a21-939a-439d-8348-e134b70bff23":false
 ,
@@ -293,7 +293,7 @@
 ,
 "140984ad-78d2-4e64-986f-f6f7c128e71a":false
 ,
-"c93a3043-0c9e-4f41-af55-84fd583a36fe":true
+"c93a3043-0c9e-4f41-af55-84fd583a36fe":false
 ,
 "2fbda4ad-c56e-4ff3-991c-62ceda37f1ef":false
 ,
