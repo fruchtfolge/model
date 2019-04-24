@@ -2,11 +2,15 @@
 "solver_status":        1.00,
 "objective":   136466.00,
 "warnings": [
-"Konnte maximale Arbeitszeit für Februar nicht einhalten.",
-"Konnte maximale Arbeitszeit für Juli nicht einhalten.",
-"Konnte maximale Arbeitszeit für August nicht einhalten.",
-"Konnte maximale Arbeitszeit für September nicht einhalten.",
-"Konnte maximale Arbeitszeit für Oktober nicht einhalten.",
+"Konnte maximale Arbeitszeit für Februar nicht einhalten."
+,
+"Konnte maximale Arbeitszeit für Juli nicht einhalten."
+,
+"Konnte maximale Arbeitszeit für August nicht einhalten."
+,
+"Konnte maximale Arbeitszeit für September nicht einhalten."
+,
+"Konnte maximale Arbeitszeit für Oktober nicht einhalten."
 ],
 "recommendation":{
 "142b282c-70f6-4a71-a0ef-b60f9017c166":"Kleegras"

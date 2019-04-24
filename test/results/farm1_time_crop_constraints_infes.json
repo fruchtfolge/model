@@ -2,9 +2,11 @@
 "solver_status":        1.00,
 "objective":   326790.00,
 "warnings": [
-"Konnte Restriktion für Kartoffeln nicht einhalten.",
-"Konnte maximale Arbeitszeit für Juli nicht einhalten.",
-"Konnte maximale Arbeitszeit für September nicht einhalten.",
+"Konnte Restriktion für Kartoffeln nicht einhalten."
+,
+"Konnte maximale Arbeitszeit für Juli nicht einhalten."
+,
+"Konnte maximale Arbeitszeit für September nicht einhalten."
 ],
 "recommendation":{
 "142b282c-70f6-4a71-a0ef-b60f9017c166":"Kleegras"
