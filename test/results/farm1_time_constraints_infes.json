@@ -1,11 +1,7 @@
 {"model_status":        1.00,
 "solver_status":        1.00,
-"objective":   136466.00,
+"objective":   177150.00,
 "warnings": [
-"Konnte maximale Arbeitszeit für Februar nicht einhalten."
-,
-"Konnte maximale Arbeitszeit für Juli nicht einhalten."
-,
 "Konnte maximale Arbeitszeit für August nicht einhalten."
 ,
 "Konnte maximale Arbeitszeit für September nicht einhalten."
@@ -17,13 +13,13 @@
 ,
 "fe48ffe9-f5a8-4f53-8d65-f0cb4c3960d0":"Silomais (als Hauptfutter)"
 ,
-"5c3f9d3b-1419-48c0-bf0f-3edc7665e8a7":"Grünland (Dauergrünland)"
+"5c3f9d3b-1419-48c0-bf0f-3edc7665e8a7":"Kleegras"
 ,
-"7e5757ff-0a1a-4299-993d-fab074ae7467":"Acker-/Puff-/Pferdebohne"
+"7e5757ff-0a1a-4299-993d-fab074ae7467":"Kleegras"
 ,
-"45bb013d-222f-4738-9354-46e23fac6b0c":"Grünland (Dauergrünland)"
+"45bb013d-222f-4738-9354-46e23fac6b0c":"Silomais (als Hauptfutter)"
 ,
-"b2de5686-b651-4035-b8f6-97ee80a0b110":"Grünland (Dauergrünland)"
+"b2de5686-b651-4035-b8f6-97ee80a0b110":"Kleegras"
 ,
 "cade4554-92d8-495b-948d-1e59c080099d":"Grünland (Dauergrünland)"
 ,
@@ -31,51 +27,51 @@
 ,
 "29d9c2bd-dc3c-4a8f-a02c-e0a16a967350":"Acker-/Puff-/Pferdebohne"
 ,
-"8898218e-6fd5-4efc-829e-6b08aafa9ccd":"Grünland (Dauergrünland)"
+"8898218e-6fd5-4efc-829e-6b08aafa9ccd":"Kleegras"
 ,
-"8808643e-5e7e-45f2-8a91-58c0754928c2":"Grünland (Dauergrünland)"
+"8808643e-5e7e-45f2-8a91-58c0754928c2":"Acker-/Puff-/Pferdebohne"
 ,
-"26875e25-e974-4391-904d-47662820d2c6":"Silomais (als Hauptfutter)"
+"26875e25-e974-4391-904d-47662820d2c6":"Kleegras"
 ,
 "2e60b308-c11d-45c5-ac52-9f0dd458653d":"Silomais (als Hauptfutter)"
 ,
-"32db3620-defe-43f6-841d-ebd29108219c":"Grünland (Dauergrünland)"
+"32db3620-defe-43f6-841d-ebd29108219c":"Kleegras"
 ,
-"fa4c5c8d-3182-4096-a5cc-2e3cedd861f7":"Grünland (Dauergrünland)"
+"fa4c5c8d-3182-4096-a5cc-2e3cedd861f7":"Kleegras"
 ,
-"e664c050-f02f-4165-824a-faba7d2a5cc1":"Acker-/Puff-/Pferdebohne"
+"e664c050-f02f-4165-824a-faba7d2a5cc1":"Kleegras"
 ,
-"1f29fe76-2dbe-460a-a82a-b9111b33168e":"Silomais (als Hauptfutter)"
+"1f29fe76-2dbe-460a-a82a-b9111b33168e":"Kleegras"
 ,
 "742c1a11-8768-4a13-a4a5-7da9b15e8bac":"Winterweichweizen"
 ,
-"80743e6f-5226-487d-a1a3-f240e99a1dba":"Winterweichweizen"
+"80743e6f-5226-487d-a1a3-f240e99a1dba":"Zuckerrüben"
 ,
-"0d1434c8-bcb5-4043-8cb8-49576574a64f":"Silomais (als Hauptfutter)"
+"0d1434c8-bcb5-4043-8cb8-49576574a64f":"Kleegras"
 ,
-"8e65ccdc-f07a-404a-abcf-6d0be1084c92":"Winterweichweizen"
+"8e65ccdc-f07a-404a-abcf-6d0be1084c92":"Zuckerrüben"
 ,
-"a05b8451-38f2-49c8-afe2-57dc321da584":"Winterweichweizen"
+"a05b8451-38f2-49c8-afe2-57dc321da584":"Acker-/Puff-/Pferdebohne"
 ,
-"b5e5b7db-449d-4704-95c8-60f6fd0b55b7":"Winterweichweizen"
+"b5e5b7db-449d-4704-95c8-60f6fd0b55b7":"Acker-/Puff-/Pferdebohne"
 ,
-"0573e79b-7d00-49f0-9d85-7c528974e57d":"Silomais (als Hauptfutter)"
+"0573e79b-7d00-49f0-9d85-7c528974e57d":"Kleegras"
 ,
-"3ad46ade-90c4-45b5-a505-4048252dfc85":"Grünland (Dauergrünland)"
+"3ad46ade-90c4-45b5-a505-4048252dfc85":"Kleegras"
 ,
 "8025333b-987e-43fb-af48-f8bfa17d9a92":"Silomais (als Hauptfutter)"
 ,
-"f2168c7e-bd98-44b1-a838-b1652dedbbdb":"Winterweichweizen"
+"f2168c7e-bd98-44b1-a838-b1652dedbbdb":"Acker-/Puff-/Pferdebohne"
 ,
 "3b0adc41-6120-4df5-a389-617de43c17f4":"Silomais (als Hauptfutter)"
 ,
-"0894094f-c35e-4463-a3c4-9e3553fee35a":"Silomais (als Hauptfutter)"
+"0894094f-c35e-4463-a3c4-9e3553fee35a":"Zuckerrüben"
 ,
-"12be3c2d-d7c2-4c9a-8303-d7bf561796dc":"Winterweichweizen"
+"12be3c2d-d7c2-4c9a-8303-d7bf561796dc":"Acker-/Puff-/Pferdebohne"
 ,
-"0ab5a6ce-84a5-4ee4-9ff8-5618653f17eb":"Winterweichweizen"
+"0ab5a6ce-84a5-4ee4-9ff8-5618653f17eb":"Acker-/Puff-/Pferdebohne"
 ,
-"69e07c9a-1bc6-4c43-86f5-2446f464f0fa":"Acker-/Puff-/Pferdebohne"
+"69e07c9a-1bc6-4c43-86f5-2446f464f0fa":"Winterweichweizen"
 ,
 "a263e85f-e017-4456-b4da-261eb83c1cd7":"Acker-/Puff-/Pferdebohne"
 ,
@@ -85,67 +81,67 @@
 ,
 "f9d5afb5-ceae-4e41-81ca-219f0dbf2f9d":"Silomais (als Hauptfutter)"
 ,
-"9087c111-1c8e-4fab-a270-785555349b95":"Acker-/Puff-/Pferdebohne"
+"9087c111-1c8e-4fab-a270-785555349b95":"Kleegras"
 ,
-"8554c0f0-6bb6-4e5e-972b-1032e3df9ca3":"Grünland (Dauergrünland)"
+"8554c0f0-6bb6-4e5e-972b-1032e3df9ca3":"Kleegras"
 ,
-"c39bd0d4-7794-45e8-9f9e-d946b7c417e7":"Grünland (Dauergrünland)"
+"c39bd0d4-7794-45e8-9f9e-d946b7c417e7":"Kleegras"
 ,
-"671ded41-9b32-457f-9186-11237522ca6c":"Grünland (Dauergrünland)"
+"671ded41-9b32-457f-9186-11237522ca6c":"Kleegras"
 ,
-"b81612e9-e74f-4777-8c70-ca66cbd3f7d0":"Grünland (Dauergrünland)"
+"b81612e9-e74f-4777-8c70-ca66cbd3f7d0":"Silomais (als Hauptfutter)"
 ,
-"8dd20b61-bc2c-4896-af04-017e5b1bd2e3":"Grünland (Dauergrünland)"
+"8dd20b61-bc2c-4896-af04-017e5b1bd2e3":"Kleegras"
 ,
-"4bd8d58c-2eac-454c-8725-41882dda1170":"Grünland (Dauergrünland)"
+"4bd8d58c-2eac-454c-8725-41882dda1170":"Kleegras"
 ,
-"8944d5c7-29cc-4899-854d-7bbb1a4ae60f":"Winterweichweizen"
+"8944d5c7-29cc-4899-854d-7bbb1a4ae60f":"Silomais (als Hauptfutter)"
 ,
-"6129000d-e007-4959-bdad-5e3fae67e598":"Acker-/Puff-/Pferdebohne"
+"6129000d-e007-4959-bdad-5e3fae67e598":"Kleegras"
 ,
-"9525a5c8-3015-447c-bf7d-83e36c0e24ac":"Winterweichweizen"
+"9525a5c8-3015-447c-bf7d-83e36c0e24ac":"Silomais (als Hauptfutter)"
 ,
 "9625cb99-54e8-4f1f-a2cf-d8f592cb7f0c":"Silomais (als Hauptfutter)"
 ,
-"0766d157-5a8b-4982-a4ea-da621bd6f4f4":"Grünland (Dauergrünland)"
+"0766d157-5a8b-4982-a4ea-da621bd6f4f4":"Kleegras"
 ,
-"f1c1554f-819a-49c8-a35d-8449f5768667":"Grünland (Dauergrünland)"
+"f1c1554f-819a-49c8-a35d-8449f5768667":"Kleegras"
 ,
-"f0316474-6f27-4164-aad7-a11f322a5080":"Grünland (Dauergrünland)"
+"f0316474-6f27-4164-aad7-a11f322a5080":"Kleegras"
 ,
 "39d80f8d-bc3c-4aa6-b8c0-5f287edd306e":"Silomais (als Hauptfutter)"
 ,
-"3985d59d-715e-4b5c-8e31-7979689469bd":"Winterweichweizen"
+"3985d59d-715e-4b5c-8e31-7979689469bd":"Silomais (als Hauptfutter)"
 ,
-"3f8dd658-f0fa-4e93-8736-8bef91660c63":"Grünland (Dauergrünland)"
+"3f8dd658-f0fa-4e93-8736-8bef91660c63":"Kleegras"
 ,
-"ef27589d-0ca3-49dc-8023-fcbc0f170392":"Grünland (Dauergrünland)"
+"ef27589d-0ca3-49dc-8023-fcbc0f170392":"Kleegras"
 ,
 "62fb5a21-939a-439d-8348-e134b70bff23":"Grünland (Dauergrünland)"
 ,
-"cd62f1c8-ce40-4d99-a514-b627027e1f2b":"Grünland (Dauergrünland)"
+"cd62f1c8-ce40-4d99-a514-b627027e1f2b":"Kleegras"
 ,
-"acb91b9a-1bb1-4604-be84-439a5116862e":"Grünland (Dauergrünland)"
+"acb91b9a-1bb1-4604-be84-439a5116862e":"Kleegras"
 ,
-"140984ad-78d2-4e64-986f-f6f7c128e71a":"Acker-/Puff-/Pferdebohne"
+"140984ad-78d2-4e64-986f-f6f7c128e71a":"Kleegras"
 ,
-"c93a3043-0c9e-4f41-af55-84fd583a36fe":"Grünland (Dauergrünland)"
+"c93a3043-0c9e-4f41-af55-84fd583a36fe":"Kleegras"
 ,
-"2fbda4ad-c56e-4ff3-991c-62ceda37f1ef":"Grünland (Dauergrünland)"
+"2fbda4ad-c56e-4ff3-991c-62ceda37f1ef":"Kleegras"
 ,
 "c2d7ae07-2429-49d4-914a-7b52020c76d5":"Silomais (als Hauptfutter)"
 ,
 "405f71c3-6a46-4135-8a69-db6cd2d2d02c":"Acker-/Puff-/Pferdebohne"
 ,
-"0f79adce-efaa-4b80-abff-dbc6f970b3c6":"Grünland (Dauergrünland)"
+"0f79adce-efaa-4b80-abff-dbc6f970b3c6":"Silomais (als Hauptfutter)"
 ,
-"84ba1cb7-3189-4936-bdb3-b3e0823ca95a":"Grünland (Dauergrünland)"
+"84ba1cb7-3189-4936-bdb3-b3e0823ca95a":"Kleegras"
 ,
-"f23d1831-1095-4926-96dd-07b6c21bd74a":"Grünland (Dauergrünland)"
+"f23d1831-1095-4926-96dd-07b6c21bd74a":"Acker-/Puff-/Pferdebohne"
 ,
-"89b99db3-c177-4225-8f04-5899034fc6b1":"Grünland (Dauergrünland)"
+"89b99db3-c177-4225-8f04-5899034fc6b1":"Kleegras"
 ,
-"4e579f14-c47a-4738-8c90-8d0357a31c65":"Acker-/Puff-/Pferdebohne"
+"4e579f14-c47a-4738-8c90-8d0357a31c65":"Silomais (als Hauptfutter)"
 ,
 "0441de5f-309a-4e36-9faf-62e4a297da63":"Silomais (als Hauptfutter)"
 ,
@@ -155,9 +151,9 @@
 ,
 "c974a15d-7964-47cc-8de8-9f21661a5c02":"Grünland (Dauergrünland)"
 ,
-"049e51ae-432a-4bc7-b791-4f80ecd93bc4":"Grünland (Dauergrünland)"
+"049e51ae-432a-4bc7-b791-4f80ecd93bc4":"Kleegras"
 ,
-"3f9a6ca1-7f0a-4efe-9278-21235b828b58":"Grünland (Dauergrünland)"
+"3f9a6ca1-7f0a-4efe-9278-21235b828b58":"Kleegras"
 ,
 "05829485-bcbf-41d0-aa80-0b2fb5a3e56c":"Grünland (Dauergrünland)"
 ,
@@ -171,15 +167,15 @@
 ,
 "37580f62-a22c-4385-9761-7c33923ce398":"Grünland (Dauergrünland)"
 ,
-"81ab646e-c98f-46e5-96bb-90b77e3d7b8c":"Grünland (Dauergrünland)"
+"81ab646e-c98f-46e5-96bb-90b77e3d7b8c":"Kleegras"
 ,
 "7c5d2d8c-746d-4f72-8b7f-3484008982a6":"Kleegras"
 ,
 "3c682187-2323-417f-a3ca-f70683e000ca":"Grünland (Dauergrünland)"
 ,
-"411e798b-79bb-4e3c-bb7e-e6f0e7c8327c":"Grünland (Dauergrünland)"
+"411e798b-79bb-4e3c-bb7e-e6f0e7c8327c":"Silomais (als Hauptfutter)"
 ,
-"744e84c2-2e6a-4b7a-a736-719511d9a5dd":"Silomais (als Hauptfutter)"
+"744e84c2-2e6a-4b7a-a736-719511d9a5dd":"Zuckerrüben"
 ,
 "77220ae0-a7cb-4884-80e8-952a5d7e4397":"Silomais (als Hauptfutter)"
 ,

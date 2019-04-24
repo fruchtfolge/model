@@ -1,8 +1,7 @@
 {"model_status":        1.00,
 "solver_status":        1.00,
-"objective":    25941.00,
+"objective":    25660.27,
 "warnings": [
-"Konnte 5% ÖVF nicht einhalten. Prüfen, ob Sommerungen vorhanden sind, bzw. ob ZF Anbau erlaubt wurde."
 ],
 "recommendation":{
 "206f726b-4544-431f-a61b-1caa13ff9799":"Winterraps"
@@ -34,7 +33,7 @@
 ,
 "0e49a71a-52fe-4a55-9148-17fb0a36f423":false
 ,
-"ca960201-a2cb-4bab-87af-6bec5cc105af":false
+"ca960201-a2cb-4bab-87af-6bec5cc105af":true
 ,
 "b46a81dd-6b8c-43e2-af4e-363313644fe0":false
 ,

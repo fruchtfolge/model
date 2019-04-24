@@ -18,21 +18,25 @@ e_catchCropEqBinCrop(curCrops,curPlots)..
   v_binCatchCrop(curCrops,curPlots) =L= v_binCropPlot(curCrops,curPlots)
 ;
 *
-* --- Only allow growing of catch crops if it is possible to grow the catch
-*     crop after the previously grown crop (e.g. not after sugar beets or maize)
-*     and if the succeeding crop is a summer harvested crop
-*     This way, Greening compatible catch crops should be ensured
+* --- Only allow growing of catch crops if the succeeding crop is a summer
+*     sown crop. This way, Greening compatible catch crops should
+*     be ensured
 *
 v_binCatchCrop.up(curCrops,curPlots) = 0;
-v_binCatchCrop.up(curCrops,curPlots)
-  $ sum((years,curYear)
-    $ (sameas(years,curYear)
-    $ sum(cropGroup $ (crops_cropGroup(curCrops,cropGroup) $ plots_years_cropGroup(curPlots,years - 1,cropGroup)),1)
-    $ crops_summer(curCrops)
-    $ crops_catchCrop(curCrops)
-    $ (not plots_permPast(curPlots))
-    ),1) = 1;
 
+v_binCatchCrop.up(curCrops,curPlots)
+  $ crops_summer(curCrops) = 1;
+
+* Also, forbid growing of catch crops if the previously grown crop
+* is harvested too late (e.g. not after sugar beets or maize)
+v_binCatchCrop.up(curCrops,curPlots)
+  $ sum((curCrops1,years,curYear)
+    $ (sameas(years,curYear)
+    $ sum(cropGroup
+      $ (crops_cropGroup(curCrops1,cropGroup)
+      $ plots_years_cropGroup(curPlots,years - 1,cropGroup)),1)
+    $ (not crops_catchCrop(curCrops1))
+    ),1) = 0;
 
 *
 * --- Disallow catch crops to be grown on permanent pastures
