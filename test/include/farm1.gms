@@ -712,6 +712,7 @@ set curCrops(crops) /
 
 set permPastCrops(curCrops) /
  ''
+ 'Grünland (Dauergrünland)'
 /;
 
 set cropGroup /

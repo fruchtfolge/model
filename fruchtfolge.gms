@@ -19,7 +19,7 @@ p_totGreenLand = p_totLand - p_totArabLand;
 alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
-scalar M / 10000 /;
+scalar M / 99999 /;
 *
 *  --- declare objective variable and equation
 *
@@ -81,7 +81,7 @@ e_obje..
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
 $iftheni.constraints defined constraints
-    - sum((constraints,curCrops,curCrops1), 
+    - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)
 $endif.constraints
 $iftheni.labour defined p_availLabour
@@ -110,7 +110,7 @@ model Fruchtfolge /
   e_obje
   e_totGM
   e_oneCatchCropPlot
-  e_catchCropEqBinCrop 
+  e_catchCropEqBinCrop
   e_maxShares
   e_oneCropPlot
 $iftheni.constraints defined constraints
