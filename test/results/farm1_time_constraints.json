@@ -1,18 +1,18 @@
 {"model_status":        1.00,
 "solver_status":        1.00,
-"objective":   345135.00,
+"objective":   333218.00,
 "warnings": [
 ],
 "recommendation":{
 "142b282c-70f6-4a71-a0ef-b60f9017c166":"Kleegras"
 ,
-"fe48ffe9-f5a8-4f53-8d65-f0cb4c3960d0":"Zuckerrüben"
+"fe48ffe9-f5a8-4f53-8d65-f0cb4c3960d0":"Kartoffeln"
 ,
 "5c3f9d3b-1419-48c0-bf0f-3edc7665e8a7":"Kleegras"
 ,
 "7e5757ff-0a1a-4299-993d-fab074ae7467":"Zwiebeln/Lauch"
 ,
-"45bb013d-222f-4738-9354-46e23fac6b0c":"Grünland (Dauergrünland)"
+"45bb013d-222f-4738-9354-46e23fac6b0c":"Acker-/Puff-/Pferdebohne"
 ,
 "b2de5686-b651-4035-b8f6-97ee80a0b110":"Kleegras"
 ,
@@ -20,11 +20,11 @@
 ,
 "549f1cc8-b312-4c7c-920f-3be6ebdb7e12":"Kartoffeln"
 ,
-"29d9c2bd-dc3c-4a8f-a02c-e0a16a967350":"Grünland (Dauergrünland)"
+"29d9c2bd-dc3c-4a8f-a02c-e0a16a967350":"Kleegras"
 ,
 "8898218e-6fd5-4efc-829e-6b08aafa9ccd":"Kleegras"
 ,
-"8808643e-5e7e-45f2-8a91-58c0754928c2":"Grünland (Dauergrünland)"
+"8808643e-5e7e-45f2-8a91-58c0754928c2":"Acker-/Puff-/Pferdebohne"
 ,
 "26875e25-e974-4391-904d-47662820d2c6":"Kleegras"
 ,
@@ -34,49 +34,49 @@
 ,
 "fa4c5c8d-3182-4096-a5cc-2e3cedd861f7":"Kleegras"
 ,
-"e664c050-f02f-4165-824a-faba7d2a5cc1":"Grünland (Dauergrünland)"
+"e664c050-f02f-4165-824a-faba7d2a5cc1":"Zwiebeln/Lauch"
 ,
 "1f29fe76-2dbe-460a-a82a-b9111b33168e":"Kleegras"
 ,
-"742c1a11-8768-4a13-a4a5-7da9b15e8bac":"Grünland (Dauergrünland)"
+"742c1a11-8768-4a13-a4a5-7da9b15e8bac":"Kleegras"
 ,
-"80743e6f-5226-487d-a1a3-f240e99a1dba":"Grünland (Dauergrünland)"
+"80743e6f-5226-487d-a1a3-f240e99a1dba":"Kleegras"
 ,
-"0d1434c8-bcb5-4043-8cb8-49576574a64f":"Grünland (Dauergrünland)"
+"0d1434c8-bcb5-4043-8cb8-49576574a64f":"Kleegras"
 ,
-"8e65ccdc-f07a-404a-abcf-6d0be1084c92":"Acker-/Puff-/Pferdebohne"
+"8e65ccdc-f07a-404a-abcf-6d0be1084c92":"Zuckerrüben"
 ,
-"a05b8451-38f2-49c8-afe2-57dc321da584":"Grünland (Dauergrünland)"
+"a05b8451-38f2-49c8-afe2-57dc321da584":"Kleegras"
 ,
-"b5e5b7db-449d-4704-95c8-60f6fd0b55b7":"Acker-/Puff-/Pferdebohne"
+"b5e5b7db-449d-4704-95c8-60f6fd0b55b7":"Kleegras"
 ,
 "0573e79b-7d00-49f0-9d85-7c528974e57d":"Kleegras"
 ,
-"3ad46ade-90c4-45b5-a505-4048252dfc85":"Grünland (Dauergrünland)"
+"3ad46ade-90c4-45b5-a505-4048252dfc85":"Kleegras"
 ,
 "8025333b-987e-43fb-af48-f8bfa17d9a92":"Kleegras"
 ,
-"f2168c7e-bd98-44b1-a838-b1652dedbbdb":"Grünland (Dauergrünland)"
+"f2168c7e-bd98-44b1-a838-b1652dedbbdb":"Kleegras"
 ,
 "3b0adc41-6120-4df5-a389-617de43c17f4":"Kleegras"
 ,
 "0894094f-c35e-4463-a3c4-9e3553fee35a":"Zuckerrüben"
 ,
-"12be3c2d-d7c2-4c9a-8303-d7bf561796dc":"Grünland (Dauergrünland)"
+"12be3c2d-d7c2-4c9a-8303-d7bf561796dc":"Kleegras"
 ,
 "0ab5a6ce-84a5-4ee4-9ff8-5618653f17eb":"Kleegras"
 ,
-"69e07c9a-1bc6-4c43-86f5-2446f464f0fa":"Grünland (Dauergrünland)"
+"69e07c9a-1bc6-4c43-86f5-2446f464f0fa":"Acker-/Puff-/Pferdebohne"
 ,
-"a263e85f-e017-4456-b4da-261eb83c1cd7":"Acker-/Puff-/Pferdebohne"
+"a263e85f-e017-4456-b4da-261eb83c1cd7":"Kleegras"
 ,
-"ff7a74be-f6dc-4f9f-856f-b28a18aed71d":"Acker-/Puff-/Pferdebohne"
+"ff7a74be-f6dc-4f9f-856f-b28a18aed71d":"Kleegras"
 ,
 "3a2e9d8d-e3f0-4b2a-862b-e1a727aa2c08":"Kleegras"
 ,
 "f9d5afb5-ceae-4e41-81ca-219f0dbf2f9d":"Kleegras"
 ,
-"9087c111-1c8e-4fab-a270-785555349b95":"Grünland (Dauergrünland)"
+"9087c111-1c8e-4fab-a270-785555349b95":"Kleegras"
 ,
 "8554c0f0-6bb6-4e5e-972b-1032e3df9ca3":"Kleegras"
 ,
@@ -84,17 +84,17 @@
 ,
 "671ded41-9b32-457f-9186-11237522ca6c":"Kleegras"
 ,
-"b81612e9-e74f-4777-8c70-ca66cbd3f7d0":"Grünland (Dauergrünland)"
+"b81612e9-e74f-4777-8c70-ca66cbd3f7d0":"Acker-/Puff-/Pferdebohne"
 ,
 "8dd20b61-bc2c-4896-af04-017e5b1bd2e3":"Kleegras"
 ,
 "4bd8d58c-2eac-454c-8725-41882dda1170":"Kleegras"
 ,
-"8944d5c7-29cc-4899-854d-7bbb1a4ae60f":"Kartoffeln"
+"8944d5c7-29cc-4899-854d-7bbb1a4ae60f":"Zuckerrüben"
 ,
-"6129000d-e007-4959-bdad-5e3fae67e598":"Grünland (Dauergrünland)"
+"6129000d-e007-4959-bdad-5e3fae67e598":"Kleegras"
 ,
-"9525a5c8-3015-447c-bf7d-83e36c0e24ac":"Grünland (Dauergrünland)"
+"9525a5c8-3015-447c-bf7d-83e36c0e24ac":"Kartoffeln"
 ,
 "9625cb99-54e8-4f1f-a2cf-d8f592cb7f0c":"Kartoffeln"
 ,
@@ -118,7 +118,7 @@
 ,
 "acb91b9a-1bb1-4604-be84-439a5116862e":"Kleegras"
 ,
-"140984ad-78d2-4e64-986f-f6f7c128e71a":"Grünland (Dauergrünland)"
+"140984ad-78d2-4e64-986f-f6f7c128e71a":"Kleegras"
 ,
 "c93a3043-0c9e-4f41-af55-84fd583a36fe":"Kleegras"
 ,
@@ -128,11 +128,11 @@
 ,
 "405f71c3-6a46-4135-8a69-db6cd2d2d02c":"Zwiebeln/Lauch"
 ,
-"0f79adce-efaa-4b80-abff-dbc6f970b3c6":"Grünland (Dauergrünland)"
+"0f79adce-efaa-4b80-abff-dbc6f970b3c6":"Kartoffeln"
 ,
 "84ba1cb7-3189-4936-bdb3-b3e0823ca95a":"Kleegras"
 ,
-"f23d1831-1095-4926-96dd-07b6c21bd74a":"Grünland (Dauergrünland)"
+"f23d1831-1095-4926-96dd-07b6c21bd74a":"Acker-/Puff-/Pferdebohne"
 ,
 "89b99db3-c177-4225-8f04-5899034fc6b1":"Kleegras"
 ,
@@ -154,25 +154,25 @@
 ,
 "f71cd45c-f6f5-43bb-a253-48006a95a081":"Grünland (Dauergrünland)"
 ,
-"47f134ed-831f-4f2a-91fb-2fbe4853fc46":"Zwiebeln/Lauch"
+"47f134ed-831f-4f2a-91fb-2fbe4853fc46":"Kleegras"
 ,
 "c88a9439-294f-425e-bb92-2e5113cb610f":"Kleegras"
 ,
-"c0577fd9-927a-4f38-9638-ecf000ec4199":"Grünland (Dauergrünland)"
+"c0577fd9-927a-4f38-9638-ecf000ec4199":"Zuckerrüben"
 ,
 "37580f62-a22c-4385-9761-7c33923ce398":"Grünland (Dauergrünland)"
 ,
-"81ab646e-c98f-46e5-96bb-90b77e3d7b8c":"Kleegras"
+"81ab646e-c98f-46e5-96bb-90b77e3d7b8c":"Kartoffeln"
 ,
 "7c5d2d8c-746d-4f72-8b7f-3484008982a6":"Kleegras"
 ,
 "3c682187-2323-417f-a3ca-f70683e000ca":"Grünland (Dauergrünland)"
 ,
-"411e798b-79bb-4e3c-bb7e-e6f0e7c8327c":"Grünland (Dauergrünland)"
+"411e798b-79bb-4e3c-bb7e-e6f0e7c8327c":"Winterweichweizen"
 ,
 "744e84c2-2e6a-4b7a-a736-719511d9a5dd":"Kleegras"
 ,
-"77220ae0-a7cb-4884-80e8-952a5d7e4397":"Grünland (Dauergrünland)"
+"77220ae0-a7cb-4884-80e8-952a5d7e4397":"Zuckerrüben"
 ,
 "bb9fe2f0-d1fb-45e0-b256-f8458a702271":"Grünland (Dauergrünland)"
 },
