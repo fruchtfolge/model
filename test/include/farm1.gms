@@ -892,6 +892,38 @@ parameter p_croppingFactor(curCrops,curCrops) /
  'Zwiebeln/Lauch'.'Zwiebeln/Lauch' 4
 /;
 
+set plots_years_crops(plots,years,crops) /
+  'cade4554-92d8-495b-948d-1e59c080099d'.2016.'Grünland (Dauergrünland)' 'YES'
+  'cade4554-92d8-495b-948d-1e59c080099d'.2017.'Grünland (Dauergrünland)' 'YES'
+  'cade4554-92d8-495b-948d-1e59c080099d'.2018.'Grünland (Dauergrünland)' 'YES'
+  '62fb5a21-939a-439d-8348-e134b70bff23'.2017.'Grünland (Dauergrünland)' 'YES'
+  '62fb5a21-939a-439d-8348-e134b70bff23'.2016.'Grünland (Dauergrünland)' 'YES'
+  '62fb5a21-939a-439d-8348-e134b70bff23'.2018.'Grünland (Dauergrünland)' 'YES'
+  '51ceb7e2-ea96-4769-8ddc-47183f2b0d37'.2016.'Grünland (Dauergrünland)' 'YES'
+  '51ceb7e2-ea96-4769-8ddc-47183f2b0d37'.2018.'Grünland (Dauergrünland)' 'YES'
+  '51ceb7e2-ea96-4769-8ddc-47183f2b0d37'.2017.'Grünland (Dauergrünland)' 'YES'
+  'bc0247b1-04b5-4790-9a76-b03f8829f6b0'.2018.'Grünland (Dauergrünland)' 'YES'
+  'bc0247b1-04b5-4790-9a76-b03f8829f6b0'.2016.'Grünland (Dauergrünland)' 'YES'
+  'bc0247b1-04b5-4790-9a76-b03f8829f6b0'.2017.'Grünland (Dauergrünland)' 'YES'
+  'c974a15d-7964-47cc-8de8-9f21661a5c02'.2017.'Grünland (Dauergrünland)' 'YES'
+  'c974a15d-7964-47cc-8de8-9f21661a5c02'.2016.'Grünland (Dauergrünland)' 'YES'
+  'c974a15d-7964-47cc-8de8-9f21661a5c02'.2018.'Grünland (Dauergrünland)' 'YES'
+  '05829485-bcbf-41d0-aa80-0b2fb5a3e56c'.2017.'Grünland (Dauergrünland)' 'YES'
+  '05829485-bcbf-41d0-aa80-0b2fb5a3e56c'.2018.'Grünland (Dauergrünland)' 'YES'
+  '05829485-bcbf-41d0-aa80-0b2fb5a3e56c'.2016.'Grünland (Dauergrünland)' 'YES'
+  'f71cd45c-f6f5-43bb-a253-48006a95a081'.2017.'Grünland (Dauergrünland)' 'YES'
+  'f71cd45c-f6f5-43bb-a253-48006a95a081'.2018.'Grünland (Dauergrünland)' 'YES'
+  '37580f62-a22c-4385-9761-7c33923ce398'.2018.'Grünland (Dauergrünland)' 'YES'
+  '37580f62-a22c-4385-9761-7c33923ce398'.2016.'Grünland (Dauergrünland)' 'YES'
+  '37580f62-a22c-4385-9761-7c33923ce398'.2017.'Grünland (Dauergrünland)' 'YES'
+  '3c682187-2323-417f-a3ca-f70683e000ca'.2017.'Grünland (Dauergrünland)' 'YES'
+  '3c682187-2323-417f-a3ca-f70683e000ca'.2018.'Grünland (Dauergrünland)' 'YES'
+  '3c682187-2323-417f-a3ca-f70683e000ca'.2016.'Grünland (Dauergrünland)' 'YES'
+  'bb9fe2f0-d1fb-45e0-b256-f8458a702271'.2018.'Grünland (Dauergrünland)' 'YES'
+  'bb9fe2f0-d1fb-45e0-b256-f8458a702271'.2016.'Grünland (Dauergrünland)' 'YES'
+  'bb9fe2f0-d1fb-45e0-b256-f8458a702271'.2017.'Grünland (Dauergrünland)' 'YES'
+/;
+
 set plots_years_cropGroup(plots,years,cropGroup) /
  '142b282c-70f6-4a71-a0ef-b60f9017c166'.2017.'Gattung: Beta (Rüben)' 'YES'
  '142b282c-70f6-4a71-a0ef-b60f9017c166'.2019.'' 'YES'

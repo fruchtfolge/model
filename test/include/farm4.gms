@@ -1,0 +1,5589 @@
+* -------------------------------
+* Fruchtfolge Model - Include file
+* Institute for Food an Resource Economics
+* University of Bonn
+* (c) Christoph Pahmeyer, 2019
+* -------------------------------
+
+* Static data
+set grossMarginAttr / price,yield,directCosts,variableCosts,fixCosts,grossMargin,revenue,distanceCosts,croppingFactor,yieldCap /;
+set plotAttr / size,distance,quality /;
+set cropAttr / rotBreak, maxShare, minSoilQuality, efaFactor, catchCropAfter, season/;
+set symbol / lt,gt /;
+
+set months /jan,feb,mrz,apr,mai,jun,jul,aug,sep,okt,nov,dez/;
+set halfMonths / jan1,jan2,feb1,feb2,MRZ1,MRZ2,apr1,apr2,mai1,mai2,jun1,jun2,jul1,jul2,aug1,aug2,sep1,sep2,okt1,okt2,nov1,nov2,dez1,dez2 /;
+set months_halfMonths(months,halfMonths) /
+ jan.jan1 YES
+ jan.jan2 YES
+ feb.feb1 YES
+ feb.feb2 YES
+ mrz.MRZ1 YES
+ mrz.MRZ2 YES
+ apr.apr1 YES
+ apr.apr2 YES
+ mai.mai1 YES
+ mai.mai2 YES
+ jun.jun1 YES
+ jun.jun2 YES
+ jul.jul1 YES
+ jul.jul2 YES
+ aug.aug1 YES
+ aug.aug2 YES
+ sep.sep1 YES
+ sep.sep2 YES
+ okt.okt1 YES
+ okt.okt2 YES
+ nov.nov1 YES
+ nov.nov2 YES
+ dez.dez1 YES
+ dez.dez2 YES
+/;
+
+set years / 2001*2030 /;
+$onempty
+set curYear(years) / 2019 /;
+set soilTypes /
+'Tonlehme (tl)'
+'Tonschluffe (tu)'
+'Lehmsande (ls)'
+'Lehmschluffe (lu)'
+/;
+
+set plots /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'
+ '9bf23158-c825-4172-b872-1451e97973cd'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'
+ '62c20800-7b23-492e-a848-897d1bf550aa'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'
+ '07319d55-0831-4b6b-9136-eaba02345265'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'
+ '832aeba4-3cc2-4956-847f-197c33c30920'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'
+ '418457b2-675d-499c-9798-470309cc2c88'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'
+ 'be099576-da78-433d-996a-9a8882c07da5'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'
+ '1c50e312-a250-415d-98f6-59c6104819a5'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'
+ '98b482d0-0b8a-453b-99be-6133b9159012'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'
+ '46c0848e-eaad-4472-bcad-b102763c651d'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'
+ '90bb769e-5c63-455f-a84b-3a2786919000'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'
+ '04f48caf-b707-4096-832b-f283f673dd0a'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'
+ '942d608b-0530-45d3-b561-e748775ca3df'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'
+ '406a49ee-fd33-4773-be14-599049d132fd'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'
+ '87569063-f344-4960-84ac-8a00995f7129'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'
+ 'adf79930-93a6-4307-a5d1-a51802927013'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'
+ '17675ef9-c1e0-4096-9685-6ad121429638'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'
+ '504ce189-c609-466e-82a7-6d2f555db011'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'
+ '61bf025a-a630-441b-9612-268670c03819'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'
+ '9433e518-c807-4c77-91c8-ef226f369599'
+ 'af34df35-516c-40cb-8612-40be618abc60'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'
+/;
+
+set curPlots(plots) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'
+ '9bf23158-c825-4172-b872-1451e97973cd'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'
+ '62c20800-7b23-492e-a848-897d1bf550aa'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'
+ '07319d55-0831-4b6b-9136-eaba02345265'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'
+ '832aeba4-3cc2-4956-847f-197c33c30920'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'
+ '418457b2-675d-499c-9798-470309cc2c88'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'
+ 'be099576-da78-433d-996a-9a8882c07da5'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'
+ '1c50e312-a250-415d-98f6-59c6104819a5'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'
+ '98b482d0-0b8a-453b-99be-6133b9159012'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'
+ '46c0848e-eaad-4472-bcad-b102763c651d'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'
+ '90bb769e-5c63-455f-a84b-3a2786919000'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'
+ '04f48caf-b707-4096-832b-f283f673dd0a'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'
+ '942d608b-0530-45d3-b561-e748775ca3df'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'
+ '406a49ee-fd33-4773-be14-599049d132fd'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'
+ '87569063-f344-4960-84ac-8a00995f7129'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'
+ 'adf79930-93a6-4307-a5d1-a51802927013'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'
+ '17675ef9-c1e0-4096-9685-6ad121429638'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'
+ '504ce189-c609-466e-82a7-6d2f555db011'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'
+ '61bf025a-a630-441b-9612-268670c03819'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'
+ '9433e518-c807-4c77-91c8-ef226f369599'
+ 'af34df35-516c-40cb-8612-40be618abc60'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'
+/;
+
+parameter p_plotData(curPlots,plotAttr) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.size 3.06
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.distance 88.79
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.quality 0
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.size 0.22
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.distance 89.1
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.quality 94.5
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.size 0.65
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.distance 88.69
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.quality 88.5
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.size 35.35
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.distance 88.84
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.quality 88.5
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.size 0.56
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.distance 89.01
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.quality 88.5
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.size 1.69
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.distance 88.52
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.quality 0
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.size 0.56
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.distance 88.58
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.quality 0
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.size 0.2
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.distance 88.57
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.quality 0
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.size 0.72
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.distance 88.61
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.quality 0
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.size 3.2
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.distance 84.85
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.quality 0
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.size 0.19
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.distance 84.85
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.quality 0
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.size 3.34
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.distance 85.24
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.quality 91.5
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.size 0.2
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.distance 85.28
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.quality 88.5
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.size 0.72
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.distance 84.21
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.quality 88.5
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.size 0.28
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.distance 84.29
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.quality 88.5
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.size 0.13
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.distance 84.48
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.quality 94.5
+ '9bf23158-c825-4172-b872-1451e97973cd'.size 8.1
+ '9bf23158-c825-4172-b872-1451e97973cd'.distance 84.48
+ '9bf23158-c825-4172-b872-1451e97973cd'.quality 94.5
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.size 6.02
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.distance 85.43
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.quality 88.5
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.size 0.06
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.distance 82.39
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.quality 0
+ '62c20800-7b23-492e-a848-897d1bf550aa'.size 1.19
+ '62c20800-7b23-492e-a848-897d1bf550aa'.distance 82.44
+ '62c20800-7b23-492e-a848-897d1bf550aa'.quality 0
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.size 0.07
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.distance 82.31
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.quality 0
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.size 1.53
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.distance 82.38
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.quality 0
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.size 2.7
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.distance 84.64
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.quality 94.5
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.size 0.06
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.distance 84.52
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.quality 94.5
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.size 4.03
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.distance 95.87
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.quality 59.400002
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.size 0.26
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.distance 88.81
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.quality 69
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.size 0.55
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.distance 89.14
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.quality 69
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.size 2.02
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.distance 84.4
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.quality 94.5
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.size 3.21
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.distance 91.62
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.quality 60.5
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.size 5.5
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.distance 84.26
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.quality 91.5
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.size 18.55
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.distance 57.02
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.quality 91.5
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.size 0.26
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.distance 56.99
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.quality 91.5
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.size 0.65
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.distance 57.27
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.quality 91.5
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.size 9.58
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.distance 87.73
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.quality 94.5
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.size 0.64
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.distance 83.17
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.quality 69
+ '07319d55-0831-4b6b-9136-eaba02345265'.size 0.15
+ '07319d55-0831-4b6b-9136-eaba02345265'.distance 76.14
+ '07319d55-0831-4b6b-9136-eaba02345265'.quality 94.5
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.size 19.91
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.distance 76.42
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.quality 69
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.size 1.22
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.distance 82.7
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.quality 91.5
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.size 0.49
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.distance 82.16
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.quality 0
+ '832aeba4-3cc2-4956-847f-197c33c30920'.size 2.42
+ '832aeba4-3cc2-4956-847f-197c33c30920'.distance 82.3
+ '832aeba4-3cc2-4956-847f-197c33c30920'.quality 88.5
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.size 0.21
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.distance 89.35
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.quality 0
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.size 2.83
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.distance 89.24
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.quality 0
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.size 3.62
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.distance 95.53
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.quality 59.400002
+ '418457b2-675d-499c-9798-470309cc2c88'.size 7.49
+ '418457b2-675d-499c-9798-470309cc2c88'.distance 95.46
+ '418457b2-675d-499c-9798-470309cc2c88'.quality 60.5
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.size 0.33
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.distance 95.62
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.quality 59.400002
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.size 7.31
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.distance 80.99
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.quality 94.5
+ 'be099576-da78-433d-996a-9a8882c07da5'.size 5.64
+ 'be099576-da78-433d-996a-9a8882c07da5'.distance 81.09
+ 'be099576-da78-433d-996a-9a8882c07da5'.quality 94.5
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.size 0.47
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.distance 81.27
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.quality 94.5
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.size 0.31
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.distance 58.1
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.quality 94.5
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.size 0.16
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.distance 57.52
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.quality 88.5
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.size 37.12
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.distance 57.82
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.quality 94.5
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.size 3.12
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.distance 84.56
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.quality 94.5
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.size 0.41
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.distance 88.6
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.quality 94.5
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.size 2.18
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.distance 88.43
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.quality 88.5
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.size 2.45
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.distance 86.89
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.quality 69
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.size 2.34
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.distance 84.64
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.quality 91.5
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.size 0.13
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.distance 84.76
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.quality 0
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.size 0.12
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.distance 84.6
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.quality 91.5
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.size 0.76
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.distance 84.53
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.quality 91.5
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.size 0.05
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.distance 74.35
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.quality 94.5
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.size 0.98
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.distance 74.42
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.quality 94.5
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.size 1.22
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.distance 86.34
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.quality 78
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.size 0.66
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.distance 88.52
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.quality 91.5
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.size 0.35
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.distance 89.04
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.quality 78
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.size 1.05
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.distance 88.43
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.quality 85.5
+ '1c50e312-a250-415d-98f6-59c6104819a5'.size 0.56
+ '1c50e312-a250-415d-98f6-59c6104819a5'.distance 87.62
+ '1c50e312-a250-415d-98f6-59c6104819a5'.quality 94.5
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.size 0.35
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.distance 86.84
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.quality 78
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.size 0.25
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.distance 87.96
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.quality 78
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.size 1.19
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.distance 81.78
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.quality 91.5
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.size 13.31
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.distance 80.64
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.quality 0
+ '98b482d0-0b8a-453b-99be-6133b9159012'.size 5.45
+ '98b482d0-0b8a-453b-99be-6133b9159012'.distance 80.95
+ '98b482d0-0b8a-453b-99be-6133b9159012'.quality 69
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.size 0.22
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.distance 80.96
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.quality 69
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.size 13.94
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.distance 87.61
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.quality 94.5
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.size 0.22
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.distance 87.73
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.quality 0
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.size 5.69
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.distance 84.39
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.quality 94.5
+ '46c0848e-eaad-4472-bcad-b102763c651d'.size 4.27
+ '46c0848e-eaad-4472-bcad-b102763c651d'.distance 84.09
+ '46c0848e-eaad-4472-bcad-b102763c651d'.quality 94.5
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.size 0.05
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.distance 84.42
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.quality 88.5
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.size 12.05
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.distance 84.56
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.quality 88.5
+ '90bb769e-5c63-455f-a84b-3a2786919000'.size 3.51
+ '90bb769e-5c63-455f-a84b-3a2786919000'.distance 83.52
+ '90bb769e-5c63-455f-a84b-3a2786919000'.quality 94.5
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.size 1.2
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.distance 78.64
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.quality 0
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.size 5.06
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.distance 84.14
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.quality 94.5
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.size 2.02
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.distance 85.61
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.quality 0
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.size 0.84
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.distance 85.2
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.quality 0
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.size 1.02
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.distance 83.85
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.quality 85.5
+ '04f48caf-b707-4096-832b-f283f673dd0a'.size 1.35
+ '04f48caf-b707-4096-832b-f283f673dd0a'.distance 90.05
+ '04f48caf-b707-4096-832b-f283f673dd0a'.quality 0
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.size 1.97
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.distance 85.49
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.quality 69
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.size 5.5
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.distance 57.55
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.quality 91.5
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.size 0.11
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.distance 57.68
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.quality 94.5
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.size 0.11
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.distance 57.33
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.quality 91.5
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.size 0.83
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.distance 87.29
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.quality 69
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.size 25.16
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.distance 87.19
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.quality 69
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.size 9.56
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.distance 87.6
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.quality 94.5
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.size 5.8
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.distance 87.5
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.quality 85.5
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.size 0.94
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.distance 90.14
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.quality 0
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.size 8.37
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.distance 85.39
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.quality 0
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.size 4.11
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.distance 95.22
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.quality 59.400002
+ '942d608b-0530-45d3-b561-e748775ca3df'.size 3
+ '942d608b-0530-45d3-b561-e748775ca3df'.distance 84.68
+ '942d608b-0530-45d3-b561-e748775ca3df'.quality 91.5
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.size 0.15
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.distance 84.67
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.quality 91.5
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.size 0.1
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.distance 85.62
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.quality 0
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.size 2.81
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.distance 85.71
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.quality 0
+ '406a49ee-fd33-4773-be14-599049d132fd'.size 0.16
+ '406a49ee-fd33-4773-be14-599049d132fd'.distance 85.78
+ '406a49ee-fd33-4773-be14-599049d132fd'.quality 0
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.size 6.77
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.distance 85.8
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.quality 0
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.size 0.11
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.distance 85.93
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.quality 66
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.size 14.31
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.distance 86.28
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.quality 66
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.size 0.29
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.distance 86.04
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.quality 66
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.size 0.1
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.distance 85.97
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.quality 66
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.size 14.38
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.distance 86.56
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.quality 94.5
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.size 9.53
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.distance 86.29
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.quality 66
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.size 14.63
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.distance 86.73
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.quality 94.5
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.size 9.16
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.distance 86.13
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.quality 66
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.size 0.13
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.distance 86.02
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.quality 66
+ '87569063-f344-4960-84ac-8a00995f7129'.size 2.38
+ '87569063-f344-4960-84ac-8a00995f7129'.distance 85.91
+ '87569063-f344-4960-84ac-8a00995f7129'.quality 66
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.size 8.87
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.distance 76.74
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.quality 69
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.size 2.11
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.distance 76.37
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.quality 0
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.size 1
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.distance 76.08
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.quality 94.5
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.size 0.37
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.distance 76.97
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.quality 69
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.size 7.96
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.distance 76.84
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.quality 69
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.size 0.45
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.distance 76.82
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.quality 69
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.size 6.73
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.distance 81.94
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.quality 91.5
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.size 0.54
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.distance 81.91
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.quality 91.5
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.size 15.96
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.distance 87.15
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.quality 69
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.size 1.06
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.distance 87.36
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.quality 69
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.size 0.33
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.distance 87.46
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.quality 69
+ 'adf79930-93a6-4307-a5d1-a51802927013'.size 6.69
+ 'adf79930-93a6-4307-a5d1-a51802927013'.distance 87.88
+ 'adf79930-93a6-4307-a5d1-a51802927013'.quality 69
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.size 1.84
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.distance 84.41
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.quality 88.5
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.size 5.25
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.distance 83.35
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.quality 94.5
+ '17675ef9-c1e0-4096-9685-6ad121429638'.size 2.46
+ '17675ef9-c1e0-4096-9685-6ad121429638'.distance 89.36
+ '17675ef9-c1e0-4096-9685-6ad121429638'.quality 94.5
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.size 15.17
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.distance 56.64
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.quality 94.5
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.size 10.78
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.distance 85.59
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.quality 91.5
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.size 4.28
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.distance 85.83
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.quality 91.5
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.size 8.72
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.distance 86.05
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.quality 91.5
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.size 0.34
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.distance 83.11
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.quality 94.5
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.size 3.88
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.distance 81.25
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.quality 91.5
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.size 0.86
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.distance 83.24
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.quality 85.5
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.size 2.96
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.distance 82.24
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.quality 0
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.size 3.46
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.distance 82.31
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.quality 0
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.size 1.48
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.distance 82.71
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.quality 91.5
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.size 3.48
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.distance 83.91
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.quality 91.5
+ '504ce189-c609-466e-82a7-6d2f555db011'.size 0.88
+ '504ce189-c609-466e-82a7-6d2f555db011'.distance 82.24
+ '504ce189-c609-466e-82a7-6d2f555db011'.quality 0
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.size 4.33
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.distance 95.69
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.quality 59.400002
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.size 0.2
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.distance 85.36
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.quality 0
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.size 0.08
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.distance 85.58
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.quality 0
+ '61bf025a-a630-441b-9612-268670c03819'.size 8.29
+ '61bf025a-a630-441b-9612-268670c03819'.distance 85.53
+ '61bf025a-a630-441b-9612-268670c03819'.quality 0
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.size 0.64
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.distance 85.88
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.quality 0
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.size 1.26
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.distance 84.78
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.quality 94.5
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.size 0.19
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.distance 84.8
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.quality 0
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.size 9.07
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.distance 84.62
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.quality 94.5
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.size 0.5
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.distance 88.48
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.quality 69
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.size 4.01
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.distance 87.95
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.quality 69
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.size 0.11
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.distance 86.14
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.quality 69
+ '9433e518-c807-4c77-91c8-ef226f369599'.size 13.06
+ '9433e518-c807-4c77-91c8-ef226f369599'.distance 86.29
+ '9433e518-c807-4c77-91c8-ef226f369599'.quality 69
+ 'af34df35-516c-40cb-8612-40be618abc60'.size 0.14
+ 'af34df35-516c-40cb-8612-40be618abc60'.distance 86.53
+ 'af34df35-516c-40cb-8612-40be618abc60'.quality 69
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.size 16.93
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.distance 56.94
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.quality 91.5
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.size 2.31
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.distance 89.4
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.quality 78
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.size 0.14
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.distance 82.63
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.quality 0
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.size 0.61
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.distance 87.27
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.quality 78
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.size 5.61
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.distance 85.16
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.quality 69
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.size 3.6
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.distance 82.68
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.quality 88.5
+/;
+
+set plots_soilTypes(curPlots,soilTypes) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Tonlehme (tl)'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Tonschluffe (tu)'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Tonschluffe (tu)'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Tonschluffe (tu)'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Tonschluffe (tu)'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Tonschluffe (tu)'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Tonschluffe (tu)'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Tonschluffe (tu)'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Tonschluffe (tu)'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Tonschluffe (tu)'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Tonlehme (tl)'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Tonschluffe (tu)'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Tonschluffe (tu)'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Tonschluffe (tu)'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Tonschluffe (tu)'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Tonschluffe (tu)'
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Tonschluffe (tu)'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Tonschluffe (tu)'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Tonschluffe (tu)'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Tonschluffe (tu)'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Tonschluffe (tu)'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Tonschluffe (tu)'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Tonschluffe (tu)'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Tonschluffe (tu)'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Lehmsande (ls)'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Tonlehme (tl)'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Tonlehme (tl)'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Tonschluffe (tu)'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Lehmsande (ls)'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Tonschluffe (tu)'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Tonschluffe (tu)'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Tonschluffe (tu)'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Tonschluffe (tu)'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Tonlehme (tl)'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Tonlehme (tl)'
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Tonschluffe (tu)'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Tonlehme (tl)'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Tonschluffe (tu)'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Tonschluffe (tu)'
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Tonschluffe (tu)'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Tonschluffe (tu)'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Tonschluffe (tu)'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Lehmsande (ls)'
+ '418457b2-675d-499c-9798-470309cc2c88'.'Lehmsande (ls)'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Lehmsande (ls)'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Tonschluffe (tu)'
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Tonschluffe (tu)'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Tonschluffe (tu)'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Tonschluffe (tu)'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Tonschluffe (tu)'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Tonschluffe (tu)'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Tonschluffe (tu)'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Tonschluffe (tu)'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Tonschluffe (tu)'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Tonlehme (tl)'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Tonschluffe (tu)'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Tonschluffe (tu)'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Tonschluffe (tu)'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Tonschluffe (tu)'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Tonschluffe (tu)'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Tonschluffe (tu)'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Lehmschluffe (lu)'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Tonschluffe (tu)'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Lehmschluffe (lu)'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Tonschluffe (tu)'
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Tonschluffe (tu)'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Lehmschluffe (lu)'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Lehmschluffe (lu)'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Tonschluffe (tu)'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Tonlehme (tl)'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Tonlehme (tl)'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Tonlehme (tl)'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Tonschluffe (tu)'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Tonschluffe (tu)'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Tonschluffe (tu)'
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Tonschluffe (tu)'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Tonschluffe (tu)'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Tonschluffe (tu)'
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Tonschluffe (tu)'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Tonschluffe (tu)'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Tonschluffe (tu)'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Tonlehme (tl)'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Tonlehme (tl)'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Tonschluffe (tu)'
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Lehmsande (ls)'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Tonlehme (tl)'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Tonschluffe (tu)'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Tonschluffe (tu)'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Tonschluffe (tu)'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Tonlehme (tl)'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Tonlehme (tl)'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Tonschluffe (tu)'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Tonschluffe (tu)'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Lehmsande (ls)'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Tonlehme (tl)'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Lehmsande (ls)'
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Tonschluffe (tu)'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Tonschluffe (tu)'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Tonlehme (tl)'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Tonlehme (tl)'
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Tonlehme (tl)'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Tonlehme (tl)'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Tonlehme (tl)'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Tonlehme (tl)'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Tonlehme (tl)'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Tonlehme (tl)'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Tonschluffe (tu)'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Tonschluffe (tu)'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Tonschluffe (tu)'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Tonlehme (tl)'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Tonlehme (tl)'
+ '87569063-f344-4960-84ac-8a00995f7129'.'Tonlehme (tl)'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Tonschluffe (tu)'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Tonschluffe (tu)'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Tonschluffe (tu)'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Tonlehme (tl)'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Tonlehme (tl)'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Tonschluffe (tu)'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Tonschluffe (tu)'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Tonschluffe (tu)'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Tonlehme (tl)'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Tonlehme (tl)'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Tonlehme (tl)'
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Tonlehme (tl)'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Tonschluffe (tu)'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Tonschluffe (tu)'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Tonschluffe (tu)'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Tonschluffe (tu)'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Tonschluffe (tu)'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Tonschluffe (tu)'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Tonschluffe (tu)'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Tonschluffe (tu)'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Tonschluffe (tu)'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Tonschluffe (tu)'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Tonschluffe (tu)'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Tonschluffe (tu)'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Tonschluffe (tu)'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Tonschluffe (tu)'
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Tonschluffe (tu)'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Lehmsande (ls)'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Tonlehme (tl)'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Tonlehme (tl)'
+ '61bf025a-a630-441b-9612-268670c03819'.'Tonlehme (tl)'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Tonlehme (tl)'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Tonschluffe (tu)'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Tonschluffe (tu)'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Tonschluffe (tu)'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Tonlehme (tl)'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Tonlehme (tl)'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Tonlehme (tl)'
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Tonlehme (tl)'
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Tonlehme (tl)'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Tonschluffe (tu)'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Lehmschluffe (lu)'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Tonschluffe (tu)'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Lehmschluffe (lu)'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Tonlehme (tl)'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Tonschluffe (tu)'
+/;
+
+set plots_rootCropCap(curPlots) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01' 'YES'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25' 'YES'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8' 'YES'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5' 'YES'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4' 'YES'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201' 'YES'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713' 'YES'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7' 'YES'
+ '897db77e-363d-42ac-8f7b-42a07ce32653' 'YES'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6' 'YES'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76' 'YES'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55' 'YES'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4' 'YES'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875' 'YES'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697' 'YES'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0' 'YES'
+ '4a259f72-2eae-425d-a273-58bb12c20d51' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2' 'YES'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e' 'YES'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225' 'YES'
+ '832aeba4-3cc2-4956-847f-197c33c30920' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada' 'YES'
+ '468021ec-410e-4e22-8a27-516cf5a806f5' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3' 'YES'
+ 'be099576-da78-433d-996a-9a8882c07da5' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af' 'YES'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7' 'YES'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1' 'YES'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e' 'YES'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385' 'YES'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae' 'YES'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842' 'YES'
+ '75aa23cd-bb23-4887-a463-5cf336760b89' 'YES'
+ '78e399f2-2c4c-431b-931f-33121e8a869f' 'YES'
+ '1c50e312-a250-415d-98f6-59c6104819a5' 'YES'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a' 'YES'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7' 'YES'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c' 'YES'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b' 'YES'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23' 'YES'
+ '46c0848e-eaad-4472-bcad-b102763c651d' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f' 'YES'
+ '90bb769e-5c63-455f-a84b-3a2786919000' 'YES'
+ '41727e12-afd7-4396-8796-d24b69caa4f1' 'YES'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647' 'YES'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1' 'YES'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e' 'YES'
+ '589332f9-1da7-42d9-a2df-ee341accebfa' 'YES'
+ '04f48caf-b707-4096-832b-f283f673dd0a' 'YES'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae' 'YES'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa' 'YES'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f' 'YES'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f' 'YES'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c' 'YES'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129' 'YES'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0' 'YES'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2' 'YES'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5' 'YES'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca' 'YES'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970' 'YES'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb' 'YES'
+ 'adf79930-93a6-4307-a5d1-a51802927013' 'YES'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc' 'YES'
+ '80d35033-3e80-4924-ba59-8ae110f002f2' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69' 'YES'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5' 'YES'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c' 'YES'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860' 'YES'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223' 'YES'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444' 'YES'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c' 'YES'
+ '504ce189-c609-466e-82a7-6d2f555db011' 'YES'
+ '756eae07-b2a6-495d-8499-cc070eb0709f' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819' 'YES'
+ '80f10183-f24a-40d6-891d-c8789bfb494f' 'YES'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906' 'YES'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae' 'YES'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656' 'YES'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3' 'YES'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05' 'YES'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f' 'YES'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1' 'YES'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3' 'YES'
+/;
+
+set plots_permPast(curPlots) /
+ 'dfd29eda-4254-4961-b746-8fc2810780d8' 'YES'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5' 'YES'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4' 'YES'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747' 'YES'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713' 'YES'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0' 'YES'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697' 'YES'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1' 'YES'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e' 'YES'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842' 'YES'
+ '78e399f2-2c4c-431b-931f-33121e8a869f' 'YES'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb' 'YES'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1' 'YES'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e' 'YES'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89' 'YES'
+ '504ce189-c609-466e-82a7-6d2f555db011' 'YES'
+ '80f10183-f24a-40d6-891d-c8789bfb494f' 'YES'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05' 'YES'
+/;
+
+set crops /
+ ''
+ 'AL aus Erzeugung genommen'
+ 'Acker-/Puff-/Pferdebohne'
+ 'Ackergras'
+ 'Blühfläche (MSL-Maßnahme)'
+ 'Blühstreifen (MSL-Maßnahme)'
+ 'Brachefläche Vertragsnaturs.'
+ 'Eissalat'
+ 'Grünland (Dauergrünland)'
+ 'Kartoffeln'
+ 'Möhre (auch Futtermöhre)'
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'
+ 'Silomais (als Hauptfutter)'
+ 'Sommerraps'
+ 'Speisekartoffeln'
+ 'Streuobst mit DGL-Nutzung'
+ 'Winter-Dinkel'
+ 'Wintergerste'
+ 'Wintergerste - Futtergerste'
+ 'Winterweichweizen'
+ 'Winterweizen - Brotweizen'
+ 'Zichorien/Wegwarten'
+ 'Zuckerrüben'
+/;
+
+set curCrops(crops) /
+ ''
+ 'AL aus Erzeugung genommen'
+ 'Acker-/Puff-/Pferdebohne'
+ 'Ackergras'
+ 'Blühfläche (MSL-Maßnahme)'
+ 'Blühstreifen (MSL-Maßnahme)'
+ 'Brachefläche Vertragsnaturs.'
+ 'Grünland (Dauergrünland)'
+ 'Kartoffeln'
+ 'Möhre (auch Futtermöhre)'
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'
+ 'Silomais (als Hauptfutter)'
+ 'Sommerraps'
+ 'Streuobst mit DGL-Nutzung'
+ 'Winter-Dinkel'
+ 'Wintergerste'
+ 'Winterweichweizen'
+ 'Zichorien/Wegwarten'
+ 'Zuckerrüben'
+/;
+
+set permPastCrops(curCrops) /
+ ''
+ 'Grünland (Dauergrünland)'
+ 'Streuobst mit DGL-Nutzung'
+/;
+
+set cropGroup /
+ ''
+ 'Brachliegendes Land'
+ 'Gattung: Vicia (Wicken)'
+ 'Gras oder andere Grünfutterpflanzen'
+ 'Dauergrünland'
+ 'Art: Solanum tuberosum (Kartoffel)'
+ 'Gattung: Daucus (Möhren)'
+ 'Gattung: Zea (Mais)'
+ 'Sommerraps'
+ 'Triticum spelta (Dinkel/Spelz) (Winter)'
+ 'Wintergerste'
+ 'Winterweizen'
+ 'Gattung: Cichorium (Zichorien/Wegwarten)'
+ 'Gattung: Beta (Rüben)'
+/;
+
+set crops_cropGroup(curCrops,cropGroup) /
+ ''.''
+ 'AL aus Erzeugung genommen'.'Brachliegendes Land'
+ 'Acker-/Puff-/Pferdebohne'.'Gattung: Vicia (Wicken)'
+ 'Ackergras'.'Gras oder andere Grünfutterpflanzen'
+ 'Blühfläche (MSL-Maßnahme)'.'Brachliegendes Land'
+ 'Blühstreifen (MSL-Maßnahme)'.'Brachliegendes Land'
+ 'Brachefläche Vertragsnaturs.'.'Brachliegendes Land'
+ 'Grünland (Dauergrünland)'.'Dauergrünland'
+ 'Kartoffeln'.'Art: Solanum tuberosum (Kartoffel)'
+ 'Möhre (auch Futtermöhre)'.'Gattung: Daucus (Möhren)'
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Brachliegendes Land'
+ 'Silomais (als Hauptfutter)'.'Gattung: Zea (Mais)'
+ 'Sommerraps'.'Sommerraps'
+ 'Streuobst mit DGL-Nutzung'.'Dauergrünland'
+ 'Winter-Dinkel'.'Triticum spelta (Dinkel/Spelz) (Winter)'
+ 'Wintergerste'.'Wintergerste'
+ 'Winterweichweizen'.'Winterweizen'
+ 'Zichorien/Wegwarten'.'Gattung: Cichorium (Zichorien/Wegwarten)'
+ 'Zuckerrüben'.'Gattung: Beta (Rüben)'
+/;
+
+parameter p_cropData(curCrops,cropAttr) /
+'AL aus Erzeugung genommen'.rotBreak 0
+'AL aus Erzeugung genommen'.maxShare 100
+'AL aus Erzeugung genommen'.minSoilQuality 0
+'AL aus Erzeugung genommen'.efaFactor 1
+'Acker-/Puff-/Pferdebohne'.rotBreak 5
+'Acker-/Puff-/Pferdebohne'.maxShare 16.67
+'Acker-/Puff-/Pferdebohne'.minSoilQuality 20
+'Acker-/Puff-/Pferdebohne'.efaFactor 1
+'Ackergras'.rotBreak 0
+'Ackergras'.maxShare 100
+'Ackergras'.minSoilQuality 20
+'Ackergras'.efaFactor 0
+'Blühfläche (MSL-Maßnahme)'.rotBreak 0
+'Blühfläche (MSL-Maßnahme)'.maxShare 100
+'Blühfläche (MSL-Maßnahme)'.minSoilQuality 0
+'Blühfläche (MSL-Maßnahme)'.efaFactor 1
+'Blühstreifen (MSL-Maßnahme)'.rotBreak 2
+'Blühstreifen (MSL-Maßnahme)'.maxShare 33.33
+'Blühstreifen (MSL-Maßnahme)'.minSoilQuality 20
+'Blühstreifen (MSL-Maßnahme)'.efaFactor 0
+'Brachefläche Vertragsnaturs.'.rotBreak 0
+'Brachefläche Vertragsnaturs.'.maxShare 100
+'Brachefläche Vertragsnaturs.'.minSoilQuality 0
+'Brachefläche Vertragsnaturs.'.efaFactor 1
+'Grünland (Dauergrünland)'.rotBreak 0
+'Grünland (Dauergrünland)'.maxShare 100
+'Grünland (Dauergrünland)'.minSoilQuality 0
+'Grünland (Dauergrünland)'.efaFactor 0
+'Kartoffeln'.rotBreak 3
+'Kartoffeln'.maxShare 25
+'Kartoffeln'.minSoilQuality 20
+'Kartoffeln'.efaFactor 0
+'Möhre (auch Futtermöhre)'.rotBreak 4
+'Möhre (auch Futtermöhre)'.maxShare 20
+'Möhre (auch Futtermöhre)'.minSoilQuality 20
+'Möhre (auch Futtermöhre)'.efaFactor 0
+'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.rotBreak 2
+'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.maxShare 33.33
+'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.minSoilQuality 20
+'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.efaFactor 0
+'Silomais (als Hauptfutter)'.rotBreak 2
+'Silomais (als Hauptfutter)'.maxShare 33.33
+'Silomais (als Hauptfutter)'.minSoilQuality 20
+'Silomais (als Hauptfutter)'.efaFactor 0
+'Sommerraps'.rotBreak 4
+'Sommerraps'.maxShare 20
+'Sommerraps'.minSoilQuality 20
+'Sommerraps'.efaFactor 0
+'Streuobst mit DGL-Nutzung'.rotBreak 0
+'Streuobst mit DGL-Nutzung'.maxShare 100
+'Streuobst mit DGL-Nutzung'.minSoilQuality 0
+'Streuobst mit DGL-Nutzung'.efaFactor 0
+'Winter-Dinkel'.rotBreak 2
+'Winter-Dinkel'.maxShare 33.33
+'Winter-Dinkel'.minSoilQuality 20
+'Winter-Dinkel'.efaFactor 0
+'Wintergerste'.rotBreak 2
+'Wintergerste'.maxShare 33.33
+'Wintergerste'.minSoilQuality 20
+'Wintergerste'.efaFactor 0
+'Winterweichweizen'.rotBreak 2
+'Winterweichweizen'.maxShare 33.33
+'Winterweichweizen'.minSoilQuality 20
+'Winterweichweizen'.efaFactor 0
+'Zichorien/Wegwarten'.rotBreak 2
+'Zichorien/Wegwarten'.maxShare 33.33
+'Zichorien/Wegwarten'.minSoilQuality 0
+'Zichorien/Wegwarten'.efaFactor 0
+'Zuckerrüben'.rotBreak 4
+'Zuckerrüben'.maxShare 20
+'Zuckerrüben'.minSoilQuality 20
+'Zuckerrüben'.efaFactor 0
+/;
+
+set crops_rootCrop(curCrops) /
+ 'Kartoffeln' YES
+ 'Zuckerrüben' YES
+/;
+
+set crops_catchCrop(curCrops) /
+ 'AL aus Erzeugung genommen' YES
+ 'Acker-/Puff-/Pferdebohne' YES
+ 'Ackergras' YES
+ 'Blühfläche (MSL-Maßnahme)' YES
+ 'Blühstreifen (MSL-Maßnahme)' YES
+ 'Brachefläche Vertragsnaturs.' YES
+ 'Grünland (Dauergrünland)' YES
+ 'Kartoffeln' YES
+ 'Möhre (auch Futtermöhre)' YES
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' YES
+ 'Sommerraps' YES
+ 'Streuobst mit DGL-Nutzung' YES
+ 'Winter-Dinkel' YES
+ 'Wintergerste' YES
+ 'Winterweichweizen' YES
+ 'Zichorien/Wegwarten' YES
+/;
+
+set crops_summer(curCrops) /
+ 'AL aus Erzeugung genommen' YES
+ 'Acker-/Puff-/Pferdebohne' YES
+ 'Ackergras' YES
+ 'Blühfläche (MSL-Maßnahme)' YES
+ 'Blühstreifen (MSL-Maßnahme)' YES
+ 'Brachefläche Vertragsnaturs.' YES
+ 'Grünland (Dauergrünland)' YES
+ 'Kartoffeln' YES
+ 'Möhre (auch Futtermöhre)' YES
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' YES
+ 'Silomais (als Hauptfutter)' YES
+ 'Sommerraps' YES
+ 'Streuobst mit DGL-Nutzung' YES
+ 'Winter-Dinkel' YES
+ 'Zichorien/Wegwarten' YES
+ 'Zuckerrüben' YES
+/;
+
+parameter p_croppingFactor(curCrops,curCrops) /
+ 'AL aus Erzeugung genommen'.'AL aus Erzeugung genommen' 10
+ 'AL aus Erzeugung genommen'.'Acker-/Puff-/Pferdebohne' 4
+ 'AL aus Erzeugung genommen'.'Ackergras' 2
+ 'AL aus Erzeugung genommen'.'Blühfläche (MSL-Maßnahme)' 10
+ 'AL aus Erzeugung genommen'.'Blühstreifen (MSL-Maßnahme)' 10
+ 'AL aus Erzeugung genommen'.'Brachefläche Vertragsnaturs.' 10
+ 'AL aus Erzeugung genommen'.'Grünland (Dauergrünland)' 6
+ 'AL aus Erzeugung genommen'.'Kartoffeln' 8
+ 'AL aus Erzeugung genommen'.'Möhre (auch Futtermöhre)' 6
+ 'AL aus Erzeugung genommen'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 10
+ 'AL aus Erzeugung genommen'.'Silomais (als Hauptfutter)' 8
+ 'AL aus Erzeugung genommen'.'Sommerraps' 6
+ 'AL aus Erzeugung genommen'.'Streuobst mit DGL-Nutzung' 6
+ 'AL aus Erzeugung genommen'.'Winter-Dinkel' 6
+ 'AL aus Erzeugung genommen'.'Wintergerste' 6
+ 'AL aus Erzeugung genommen'.'Winterweichweizen' 6
+ 'AL aus Erzeugung genommen'.'Zichorien/Wegwarten' 4
+ 'AL aus Erzeugung genommen'.'Zuckerrüben' 6
+ 'Acker-/Puff-/Pferdebohne'.'AL aus Erzeugung genommen' 4
+ 'Acker-/Puff-/Pferdebohne'.'Acker-/Puff-/Pferdebohne' 2
+ 'Acker-/Puff-/Pferdebohne'.'Ackergras' 2
+ 'Acker-/Puff-/Pferdebohne'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Acker-/Puff-/Pferdebohne'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Acker-/Puff-/Pferdebohne'.'Brachefläche Vertragsnaturs.' 4
+ 'Acker-/Puff-/Pferdebohne'.'Grünland (Dauergrünland)' 6
+ 'Acker-/Puff-/Pferdebohne'.'Kartoffeln' 10
+ 'Acker-/Puff-/Pferdebohne'.'Möhre (auch Futtermöhre)' 4
+ 'Acker-/Puff-/Pferdebohne'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Acker-/Puff-/Pferdebohne'.'Silomais (als Hauptfutter)' 10
+ 'Acker-/Puff-/Pferdebohne'.'Sommerraps' 6
+ 'Acker-/Puff-/Pferdebohne'.'Streuobst mit DGL-Nutzung' 6
+ 'Acker-/Puff-/Pferdebohne'.'Winter-Dinkel' 10
+ 'Acker-/Puff-/Pferdebohne'.'Wintergerste' 6
+ 'Acker-/Puff-/Pferdebohne'.'Winterweichweizen' 10
+ 'Acker-/Puff-/Pferdebohne'.'Zichorien/Wegwarten' 4
+ 'Acker-/Puff-/Pferdebohne'.'Zuckerrüben' 10
+ 'Ackergras'.'AL aus Erzeugung genommen' 4
+ 'Ackergras'.'Acker-/Puff-/Pferdebohne' 4
+ 'Ackergras'.'Ackergras' 10
+ 'Ackergras'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Ackergras'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Ackergras'.'Brachefläche Vertragsnaturs.' 4
+ 'Ackergras'.'Grünland (Dauergrünland)' 4
+ 'Ackergras'.'Kartoffeln' 4
+ 'Ackergras'.'Möhre (auch Futtermöhre)' 2
+ 'Ackergras'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Ackergras'.'Silomais (als Hauptfutter)' 6
+ 'Ackergras'.'Sommerraps' 4
+ 'Ackergras'.'Streuobst mit DGL-Nutzung' 4
+ 'Ackergras'.'Winter-Dinkel' 6
+ 'Ackergras'.'Wintergerste' 6
+ 'Ackergras'.'Winterweichweizen' 6
+ 'Ackergras'.'Zichorien/Wegwarten' 4
+ 'Ackergras'.'Zuckerrüben' 4
+ 'Blühfläche (MSL-Maßnahme)'.'AL aus Erzeugung genommen' 10
+ 'Blühfläche (MSL-Maßnahme)'.'Acker-/Puff-/Pferdebohne' 4
+ 'Blühfläche (MSL-Maßnahme)'.'Ackergras' 2
+ 'Blühfläche (MSL-Maßnahme)'.'Blühfläche (MSL-Maßnahme)' 10
+ 'Blühfläche (MSL-Maßnahme)'.'Blühstreifen (MSL-Maßnahme)' 10
+ 'Blühfläche (MSL-Maßnahme)'.'Brachefläche Vertragsnaturs.' 10
+ 'Blühfläche (MSL-Maßnahme)'.'Grünland (Dauergrünland)' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Kartoffeln' 8
+ 'Blühfläche (MSL-Maßnahme)'.'Möhre (auch Futtermöhre)' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 10
+ 'Blühfläche (MSL-Maßnahme)'.'Silomais (als Hauptfutter)' 8
+ 'Blühfläche (MSL-Maßnahme)'.'Sommerraps' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Streuobst mit DGL-Nutzung' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Winter-Dinkel' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Wintergerste' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Winterweichweizen' 6
+ 'Blühfläche (MSL-Maßnahme)'.'Zichorien/Wegwarten' 4
+ 'Blühfläche (MSL-Maßnahme)'.'Zuckerrüben' 6
+ 'Blühstreifen (MSL-Maßnahme)'.'AL aus Erzeugung genommen' 8
+ 'Blühstreifen (MSL-Maßnahme)'.'Acker-/Puff-/Pferdebohne' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Ackergras' 8
+ 'Blühstreifen (MSL-Maßnahme)'.'Blühfläche (MSL-Maßnahme)' 8
+ 'Blühstreifen (MSL-Maßnahme)'.'Blühstreifen (MSL-Maßnahme)' 8
+ 'Blühstreifen (MSL-Maßnahme)'.'Brachefläche Vertragsnaturs.' 8
+ 'Blühstreifen (MSL-Maßnahme)'.'Grünland (Dauergrünland)' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Kartoffeln' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Möhre (auch Futtermöhre)' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 8
+ 'Blühstreifen (MSL-Maßnahme)'.'Silomais (als Hauptfutter)' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Sommerraps' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Streuobst mit DGL-Nutzung' 10
+ 'Blühstreifen (MSL-Maßnahme)'.'Winter-Dinkel' 4
+ 'Blühstreifen (MSL-Maßnahme)'.'Wintergerste' 6
+ 'Blühstreifen (MSL-Maßnahme)'.'Winterweichweizen' 4
+ 'Blühstreifen (MSL-Maßnahme)'.'Zichorien/Wegwarten' 4
+ 'Blühstreifen (MSL-Maßnahme)'.'Zuckerrüben' 10
+ 'Brachefläche Vertragsnaturs.'.'AL aus Erzeugung genommen' 10
+ 'Brachefläche Vertragsnaturs.'.'Acker-/Puff-/Pferdebohne' 4
+ 'Brachefläche Vertragsnaturs.'.'Ackergras' 2
+ 'Brachefläche Vertragsnaturs.'.'Blühfläche (MSL-Maßnahme)' 10
+ 'Brachefläche Vertragsnaturs.'.'Blühstreifen (MSL-Maßnahme)' 10
+ 'Brachefläche Vertragsnaturs.'.'Brachefläche Vertragsnaturs.' 10
+ 'Brachefläche Vertragsnaturs.'.'Grünland (Dauergrünland)' 6
+ 'Brachefläche Vertragsnaturs.'.'Kartoffeln' 8
+ 'Brachefläche Vertragsnaturs.'.'Möhre (auch Futtermöhre)' 6
+ 'Brachefläche Vertragsnaturs.'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 10
+ 'Brachefläche Vertragsnaturs.'.'Silomais (als Hauptfutter)' 8
+ 'Brachefläche Vertragsnaturs.'.'Sommerraps' 6
+ 'Brachefläche Vertragsnaturs.'.'Streuobst mit DGL-Nutzung' 6
+ 'Brachefläche Vertragsnaturs.'.'Winter-Dinkel' 6
+ 'Brachefläche Vertragsnaturs.'.'Wintergerste' 6
+ 'Brachefläche Vertragsnaturs.'.'Winterweichweizen' 6
+ 'Brachefläche Vertragsnaturs.'.'Zichorien/Wegwarten' 4
+ 'Brachefläche Vertragsnaturs.'.'Zuckerrüben' 6
+ 'Grünland (Dauergrünland)'.'AL aus Erzeugung genommen' 4
+ 'Grünland (Dauergrünland)'.'Acker-/Puff-/Pferdebohne' 4
+ 'Grünland (Dauergrünland)'.'Ackergras' 4
+ 'Grünland (Dauergrünland)'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Grünland (Dauergrünland)'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Grünland (Dauergrünland)'.'Brachefläche Vertragsnaturs.' 4
+ 'Grünland (Dauergrünland)'.'Grünland (Dauergrünland)' 10
+ 'Grünland (Dauergrünland)'.'Kartoffeln' 4
+ 'Grünland (Dauergrünland)'.'Möhre (auch Futtermöhre)' 4
+ 'Grünland (Dauergrünland)'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Grünland (Dauergrünland)'.'Silomais (als Hauptfutter)' 4
+ 'Grünland (Dauergrünland)'.'Sommerraps' 4
+ 'Grünland (Dauergrünland)'.'Streuobst mit DGL-Nutzung' 10
+ 'Grünland (Dauergrünland)'.'Winter-Dinkel' 4
+ 'Grünland (Dauergrünland)'.'Wintergerste' 4
+ 'Grünland (Dauergrünland)'.'Winterweichweizen' 4
+ 'Grünland (Dauergrünland)'.'Zichorien/Wegwarten' 4
+ 'Grünland (Dauergrünland)'.'Zuckerrüben' 4
+ 'Kartoffeln'.'AL aus Erzeugung genommen' 4
+ 'Kartoffeln'.'Acker-/Puff-/Pferdebohne' 8
+ 'Kartoffeln'.'Ackergras' 4
+ 'Kartoffeln'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Kartoffeln'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Kartoffeln'.'Brachefläche Vertragsnaturs.' 4
+ 'Kartoffeln'.'Grünland (Dauergrünland)' 6
+ 'Kartoffeln'.'Kartoffeln' 2
+ 'Kartoffeln'.'Möhre (auch Futtermöhre)' 4
+ 'Kartoffeln'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Kartoffeln'.'Silomais (als Hauptfutter)' 8
+ 'Kartoffeln'.'Sommerraps' 10
+ 'Kartoffeln'.'Streuobst mit DGL-Nutzung' 6
+ 'Kartoffeln'.'Winter-Dinkel' 10
+ 'Kartoffeln'.'Wintergerste' 8
+ 'Kartoffeln'.'Winterweichweizen' 10
+ 'Kartoffeln'.'Zichorien/Wegwarten' 4
+ 'Kartoffeln'.'Zuckerrüben' 10
+ 'Möhre (auch Futtermöhre)'.'AL aus Erzeugung genommen' 6
+ 'Möhre (auch Futtermöhre)'.'Acker-/Puff-/Pferdebohne' 4
+ 'Möhre (auch Futtermöhre)'.'Ackergras' 6
+ 'Möhre (auch Futtermöhre)'.'Blühfläche (MSL-Maßnahme)' 6
+ 'Möhre (auch Futtermöhre)'.'Blühstreifen (MSL-Maßnahme)' 6
+ 'Möhre (auch Futtermöhre)'.'Brachefläche Vertragsnaturs.' 6
+ 'Möhre (auch Futtermöhre)'.'Grünland (Dauergrünland)' 8
+ 'Möhre (auch Futtermöhre)'.'Kartoffeln' 6
+ 'Möhre (auch Futtermöhre)'.'Möhre (auch Futtermöhre)' 4
+ 'Möhre (auch Futtermöhre)'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 6
+ 'Möhre (auch Futtermöhre)'.'Silomais (als Hauptfutter)' 10
+ 'Möhre (auch Futtermöhre)'.'Sommerraps' 4
+ 'Möhre (auch Futtermöhre)'.'Streuobst mit DGL-Nutzung' 8
+ 'Möhre (auch Futtermöhre)'.'Winter-Dinkel' 8
+ 'Möhre (auch Futtermöhre)'.'Wintergerste' 10
+ 'Möhre (auch Futtermöhre)'.'Winterweichweizen' 8
+ 'Möhre (auch Futtermöhre)'.'Zichorien/Wegwarten' 4
+ 'Möhre (auch Futtermöhre)'.'Zuckerrüben' 3
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'AL aus Erzeugung genommen' 8
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Acker-/Puff-/Pferdebohne' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Ackergras' 8
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Blühfläche (MSL-Maßnahme)' 8
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Blühstreifen (MSL-Maßnahme)' 8
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Brachefläche Vertragsnaturs.' 8
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Grünland (Dauergrünland)' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Kartoffeln' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Möhre (auch Futtermöhre)' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 8
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Silomais (als Hauptfutter)' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Sommerraps' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Streuobst mit DGL-Nutzung' 10
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Winter-Dinkel' 4
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Wintergerste' 6
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Winterweichweizen' 4
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Zichorien/Wegwarten' 4
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.'Zuckerrüben' 10
+ 'Silomais (als Hauptfutter)'.'AL aus Erzeugung genommen' 6
+ 'Silomais (als Hauptfutter)'.'Acker-/Puff-/Pferdebohne' 10
+ 'Silomais (als Hauptfutter)'.'Ackergras' 8
+ 'Silomais (als Hauptfutter)'.'Blühfläche (MSL-Maßnahme)' 6
+ 'Silomais (als Hauptfutter)'.'Blühstreifen (MSL-Maßnahme)' 6
+ 'Silomais (als Hauptfutter)'.'Brachefläche Vertragsnaturs.' 6
+ 'Silomais (als Hauptfutter)'.'Grünland (Dauergrünland)' 10
+ 'Silomais (als Hauptfutter)'.'Kartoffeln' 10
+ 'Silomais (als Hauptfutter)'.'Möhre (auch Futtermöhre)' 4
+ 'Silomais (als Hauptfutter)'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 6
+ 'Silomais (als Hauptfutter)'.'Silomais (als Hauptfutter)' 8
+ 'Silomais (als Hauptfutter)'.'Sommerraps' 4
+ 'Silomais (als Hauptfutter)'.'Streuobst mit DGL-Nutzung' 10
+ 'Silomais (als Hauptfutter)'.'Winter-Dinkel' 8
+ 'Silomais (als Hauptfutter)'.'Wintergerste' 6
+ 'Silomais (als Hauptfutter)'.'Winterweichweizen' 8
+ 'Silomais (als Hauptfutter)'.'Zichorien/Wegwarten' 4
+ 'Silomais (als Hauptfutter)'.'Zuckerrüben' 4
+ 'Sommerraps'.'AL aus Erzeugung genommen' 4
+ 'Sommerraps'.'Acker-/Puff-/Pferdebohne' 2
+ 'Sommerraps'.'Ackergras' 6
+ 'Sommerraps'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Sommerraps'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Sommerraps'.'Brachefläche Vertragsnaturs.' 4
+ 'Sommerraps'.'Grünland (Dauergrünland)' 10
+ 'Sommerraps'.'Kartoffeln' 8
+ 'Sommerraps'.'Möhre (auch Futtermöhre)' 4
+ 'Sommerraps'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Sommerraps'.'Silomais (als Hauptfutter)' 10
+ 'Sommerraps'.'Sommerraps' 4
+ 'Sommerraps'.'Streuobst mit DGL-Nutzung' 10
+ 'Sommerraps'.'Winter-Dinkel' 10
+ 'Sommerraps'.'Wintergerste' 8
+ 'Sommerraps'.'Winterweichweizen' 10
+ 'Sommerraps'.'Zichorien/Wegwarten' 4
+ 'Sommerraps'.'Zuckerrüben' 4
+ 'Streuobst mit DGL-Nutzung'.'AL aus Erzeugung genommen' 4
+ 'Streuobst mit DGL-Nutzung'.'Acker-/Puff-/Pferdebohne' 4
+ 'Streuobst mit DGL-Nutzung'.'Ackergras' 4
+ 'Streuobst mit DGL-Nutzung'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Streuobst mit DGL-Nutzung'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Streuobst mit DGL-Nutzung'.'Brachefläche Vertragsnaturs.' 4
+ 'Streuobst mit DGL-Nutzung'.'Grünland (Dauergrünland)' 10
+ 'Streuobst mit DGL-Nutzung'.'Kartoffeln' 4
+ 'Streuobst mit DGL-Nutzung'.'Möhre (auch Futtermöhre)' 4
+ 'Streuobst mit DGL-Nutzung'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Streuobst mit DGL-Nutzung'.'Silomais (als Hauptfutter)' 4
+ 'Streuobst mit DGL-Nutzung'.'Sommerraps' 4
+ 'Streuobst mit DGL-Nutzung'.'Streuobst mit DGL-Nutzung' 10
+ 'Streuobst mit DGL-Nutzung'.'Winter-Dinkel' 4
+ 'Streuobst mit DGL-Nutzung'.'Wintergerste' 4
+ 'Streuobst mit DGL-Nutzung'.'Winterweichweizen' 4
+ 'Streuobst mit DGL-Nutzung'.'Zichorien/Wegwarten' 4
+ 'Streuobst mit DGL-Nutzung'.'Zuckerrüben' 4
+ 'Winter-Dinkel'.'AL aus Erzeugung genommen' 6
+ 'Winter-Dinkel'.'Acker-/Puff-/Pferdebohne' 10
+ 'Winter-Dinkel'.'Ackergras' 6
+ 'Winter-Dinkel'.'Blühfläche (MSL-Maßnahme)' 6
+ 'Winter-Dinkel'.'Blühstreifen (MSL-Maßnahme)' 6
+ 'Winter-Dinkel'.'Brachefläche Vertragsnaturs.' 6
+ 'Winter-Dinkel'.'Grünland (Dauergrünland)' 8
+ 'Winter-Dinkel'.'Kartoffeln' 10
+ 'Winter-Dinkel'.'Möhre (auch Futtermöhre)' 10
+ 'Winter-Dinkel'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 6
+ 'Winter-Dinkel'.'Silomais (als Hauptfutter)' 10
+ 'Winter-Dinkel'.'Sommerraps' 10
+ 'Winter-Dinkel'.'Streuobst mit DGL-Nutzung' 8
+ 'Winter-Dinkel'.'Winter-Dinkel' 4
+ 'Winter-Dinkel'.'Wintergerste' 6
+ 'Winter-Dinkel'.'Winterweichweizen' 4
+ 'Winter-Dinkel'.'Zichorien/Wegwarten' 4
+ 'Winter-Dinkel'.'Zuckerrüben' 10
+ 'Wintergerste'.'AL aus Erzeugung genommen' 8
+ 'Wintergerste'.'Acker-/Puff-/Pferdebohne' 10
+ 'Wintergerste'.'Ackergras' 8
+ 'Wintergerste'.'Blühfläche (MSL-Maßnahme)' 8
+ 'Wintergerste'.'Blühstreifen (MSL-Maßnahme)' 8
+ 'Wintergerste'.'Brachefläche Vertragsnaturs.' 8
+ 'Wintergerste'.'Grünland (Dauergrünland)' 10
+ 'Wintergerste'.'Kartoffeln' 10
+ 'Wintergerste'.'Möhre (auch Futtermöhre)' 10
+ 'Wintergerste'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 8
+ 'Wintergerste'.'Silomais (als Hauptfutter)' 10
+ 'Wintergerste'.'Sommerraps' 10
+ 'Wintergerste'.'Streuobst mit DGL-Nutzung' 10
+ 'Wintergerste'.'Winter-Dinkel' 4
+ 'Wintergerste'.'Wintergerste' 4
+ 'Wintergerste'.'Winterweichweizen' 4
+ 'Wintergerste'.'Zichorien/Wegwarten' 4
+ 'Wintergerste'.'Zuckerrüben' 10
+ 'Winterweichweizen'.'AL aus Erzeugung genommen' 6
+ 'Winterweichweizen'.'Acker-/Puff-/Pferdebohne' 10
+ 'Winterweichweizen'.'Ackergras' 6
+ 'Winterweichweizen'.'Blühfläche (MSL-Maßnahme)' 6
+ 'Winterweichweizen'.'Blühstreifen (MSL-Maßnahme)' 6
+ 'Winterweichweizen'.'Brachefläche Vertragsnaturs.' 6
+ 'Winterweichweizen'.'Grünland (Dauergrünland)' 8
+ 'Winterweichweizen'.'Kartoffeln' 10
+ 'Winterweichweizen'.'Möhre (auch Futtermöhre)' 10
+ 'Winterweichweizen'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 6
+ 'Winterweichweizen'.'Silomais (als Hauptfutter)' 10
+ 'Winterweichweizen'.'Sommerraps' 10
+ 'Winterweichweizen'.'Streuobst mit DGL-Nutzung' 8
+ 'Winterweichweizen'.'Winter-Dinkel' 4
+ 'Winterweichweizen'.'Wintergerste' 6
+ 'Winterweichweizen'.'Winterweichweizen' 4
+ 'Winterweichweizen'.'Zichorien/Wegwarten' 4
+ 'Winterweichweizen'.'Zuckerrüben' 10
+ 'Zichorien/Wegwarten'.'AL aus Erzeugung genommen' 4
+ 'Zichorien/Wegwarten'.'Acker-/Puff-/Pferdebohne' 4
+ 'Zichorien/Wegwarten'.'Ackergras' 4
+ 'Zichorien/Wegwarten'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Zichorien/Wegwarten'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Zichorien/Wegwarten'.'Brachefläche Vertragsnaturs.' 4
+ 'Zichorien/Wegwarten'.'Grünland (Dauergrünland)' 4
+ 'Zichorien/Wegwarten'.'Kartoffeln' 4
+ 'Zichorien/Wegwarten'.'Möhre (auch Futtermöhre)' 4
+ 'Zichorien/Wegwarten'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Zichorien/Wegwarten'.'Silomais (als Hauptfutter)' 4
+ 'Zichorien/Wegwarten'.'Sommerraps' 4
+ 'Zichorien/Wegwarten'.'Streuobst mit DGL-Nutzung' 4
+ 'Zichorien/Wegwarten'.'Winter-Dinkel' 4
+ 'Zichorien/Wegwarten'.'Wintergerste' 4
+ 'Zichorien/Wegwarten'.'Winterweichweizen' 4
+ 'Zichorien/Wegwarten'.'Zichorien/Wegwarten' 4
+ 'Zichorien/Wegwarten'.'Zuckerrüben' 4
+ 'Zuckerrüben'.'AL aus Erzeugung genommen' 4
+ 'Zuckerrüben'.'Acker-/Puff-/Pferdebohne' 6
+ 'Zuckerrüben'.'Ackergras' 2
+ 'Zuckerrüben'.'Blühfläche (MSL-Maßnahme)' 4
+ 'Zuckerrüben'.'Blühstreifen (MSL-Maßnahme)' 4
+ 'Zuckerrüben'.'Brachefläche Vertragsnaturs.' 4
+ 'Zuckerrüben'.'Grünland (Dauergrünland)' 8
+ 'Zuckerrüben'.'Kartoffeln' 8
+ 'Zuckerrüben'.'Möhre (auch Futtermöhre)' 4
+ 'Zuckerrüben'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 4
+ 'Zuckerrüben'.'Silomais (als Hauptfutter)' 8
+ 'Zuckerrüben'.'Sommerraps' 4
+ 'Zuckerrüben'.'Streuobst mit DGL-Nutzung' 8
+ 'Zuckerrüben'.'Winter-Dinkel' 8
+ 'Zuckerrüben'.'Wintergerste' 4
+ 'Zuckerrüben'.'Winterweichweizen' 8
+ 'Zuckerrüben'.'Zichorien/Wegwarten' 4
+ 'Zuckerrüben'.'Zuckerrüben' 2
+/;
+
+set plots_years_crops(plots,years,crops) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.2019.'' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2018.'Winter-Dinkel' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2019.'' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2018.'Winter-Dinkel' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2019.'' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2018.'Winter-Dinkel' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2019.'' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.2018.'AL aus Erzeugung genommen' 'YES'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.2019.'' 'YES'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.2019.'' 'YES'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.2019.'' 'YES'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.2019.'' 'YES'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.2019.'' 'YES'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.2019.'' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.2019.'' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.2018.'Zuckerrüben' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.2019.'' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.2018.'AL aus Erzeugung genommen' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.2018.'Zuckerrüben' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.2019.'' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.2018.'AL aus Erzeugung genommen' 'YES'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.2019.'' 'YES'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.2018.'Streuobst mit DGL-Nutzung' 'YES'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.2019.'' 'YES'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.2018.'Streuobst mit DGL-Nutzung' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.2019.'' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd'.2019.'' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.2018.'Zuckerrüben' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.2019.'' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.2018.'AL aus Erzeugung genommen' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.2019.'' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.2018.'Wintergerste' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.2019.'' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.2018.'Wintergerste' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.2019.'' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.2018.'Wintergerste' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.2019.'' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.2018.'Wintergerste' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.2019.'' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.2018.'Zichorien/Wegwarten' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.2019.'' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.2018.'Zichorien/Wegwarten' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.2018.'Kartoffeln' 'YES'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.2019.'' 'YES'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.2019.'' 'YES'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.2018.'AL aus Erzeugung genommen' 'YES'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.2018.'AL aus Erzeugung genommen' 'YES'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.2019.'' 'YES'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.2019.'' 'YES'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.2018.'Kartoffeln' 'YES'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.2019.'' 'YES'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.2018.'Zichorien/Wegwarten' 'YES'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.2019.'' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.2019.'' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.2019.'' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.2019.'' 'YES'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.2019.'' 'YES'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.2018.'Sommerraps' 'YES'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.2019.'' 'YES'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.2018.'Winterweichweizen' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265'.2019.'' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265'.2018.'Wintergerste' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.2019.'' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.2018.'Wintergerste' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.2019.'' 'YES'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.2019.'' 'YES'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '832aeba4-3cc2-4956-847f-197c33c30920'.2018.'Winter-Dinkel' 'YES'
+ '832aeba4-3cc2-4956-847f-197c33c30920'.2019.'' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.2018.'Silomais (als Hauptfutter)' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.2019.'' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.2019.'' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.2019.'' 'YES'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.2018.'Kartoffeln' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88'.2019.'' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88'.2018.'Kartoffeln' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.2019.'' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.2018.'Kartoffeln' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.2018.'Winter-Dinkel' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.2018.'Wintergerste' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.2019.'' 'YES'
+ 'be099576-da78-433d-996a-9a8882c07da5'.2019.'' 'YES'
+ 'be099576-da78-433d-996a-9a8882c07da5'.2018.'Winter-Dinkel' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.2018.'Winter-Dinkel' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.2018.'Wintergerste' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.2019.'' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2019.'' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2018.'Kartoffeln' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2019.'' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2018.'Kartoffeln' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2019.'' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2018.'Kartoffeln' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.2018.'Kartoffeln' 'YES'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.2019.'' 'YES'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.2019.'' 'YES'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.2019.'' 'YES'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.2018.'Zuckerrüben' 'YES'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.2019.'' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.2019.'' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.2018.'Kartoffeln' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.2019.'' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.2018.'Kartoffeln' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.2019.'' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.2018.'Kartoffeln' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.2019.'' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.2018.'Kartoffeln' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.2018.'Winterweichweizen' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.2019.'' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.2018.'Winterweichweizen' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.2019.'' 'YES'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.2019.'' 'YES'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.2019.'' 'YES'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.2018.'Grünland (Dauergrünland)' 'YES'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.2018.'Brachefläche Vertragsnaturs.' 'YES'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.2019.'' 'YES'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.2019.'' 'YES'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.2018.'Grünland (Dauergrünland)' 'YES'
+ '1c50e312-a250-415d-98f6-59c6104819a5'.2019.'' 'YES'
+ '1c50e312-a250-415d-98f6-59c6104819a5'.2018.'Silomais (als Hauptfutter)' 'YES'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.2018.'Brachefläche Vertragsnaturs.' 'YES'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.2019.'' 'YES'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.2018.'AL aus Erzeugung genommen' 'YES'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.2019.'' 'YES'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.2019.'' 'YES'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.2019.'' 'YES'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.2018.'Grünland (Dauergrünland)' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.2018.'Wintergerste' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.2019.'' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.2018.'Wintergerste' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.2019.'' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.2019.'' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.2019.'' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.2019.'' 'YES'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.2018.'Kartoffeln' 'YES'
+ '46c0848e-eaad-4472-bcad-b102763c651d'.2019.'' 'YES'
+ '46c0848e-eaad-4472-bcad-b102763c651d'.2018.'Winterweichweizen' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.2019.'' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.2018.'Zichorien/Wegwarten' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.2019.'' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.2018.'Zichorien/Wegwarten' 'YES'
+ '90bb769e-5c63-455f-a84b-3a2786919000'.2019.'' 'YES'
+ '90bb769e-5c63-455f-a84b-3a2786919000'.2018.'Winterweichweizen' 'YES'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.2019.'' 'YES'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.2018.'Winter-Dinkel' 'YES'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.2018.'Winterweichweizen' 'YES'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.2019.'' 'YES'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.2019.'' 'YES'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.2019.'' 'YES'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.2019.'' 'YES'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '04f48caf-b707-4096-832b-f283f673dd0a'.2019.'' 'YES'
+ '04f48caf-b707-4096-832b-f283f673dd0a'.2018.'Winter-Dinkel' 'YES'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.2018.'Grünland (Dauergrünland)' 'YES'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.2019.'' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2019.'' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2019.'' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2019.'' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.2019.'' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.2018.'Winterweichweizen' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.2019.'' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.2018.'Winterweichweizen' 'YES'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.2018.'Silomais (als Hauptfutter)' 'YES'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.2019.'' 'YES'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.2018.'Silomais (als Hauptfutter)' 'YES'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.2019.'' 'YES'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.2019.'' 'YES'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.2018.'Winterweichweizen' 'YES'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.2019.'' 'YES'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.2019.'' 'YES'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.2018.'Kartoffeln' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df'.2019.'' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df'.2018.'Kartoffeln' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.2019.'' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.2018.'Kartoffeln' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.2019.'' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.2019.'' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd'.2019.'' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.2019.'' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.2019.'' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.2018.'Zichorien/Wegwarten' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2018.'Winterweichweizen' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2019.'' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2018.'Zuckerrüben' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2018.'Winterweichweizen' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2019.'' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2018.'Zuckerrüben' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2019.'' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2018.'Zuckerrüben' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2018.'Zichorien/Wegwarten' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2019.'' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2018.'Zuckerrüben' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2018.'Zichorien/Wegwarten' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2019.'' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2018.'Zuckerrüben' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2018.'Zichorien/Wegwarten' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2018.'Winterweichweizen' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2019.'' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2018.'Zuckerrüben' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.2019.'' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.2018.'Zichorien/Wegwarten' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.2019.'' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.2018.'Zichorien/Wegwarten' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129'.2019.'' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129'.2018.'Zichorien/Wegwarten' 'YES'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.2018.'Winterweichweizen' 'YES'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.2019.'' 'YES'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.2019.'' 'YES'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.2018.'Winterweichweizen' 'YES'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.2019.'' 'YES'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.2018.'Winterweichweizen' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.2018.'Winterweichweizen' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.2019.'' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.2018.'Winterweichweizen' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.2019.'' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.2018.'Winterweichweizen' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.2019.'' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.2018.'Wintergerste' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.2019.'' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.2018.'Winter-Dinkel' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.2018.'Wintergerste' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.2019.'' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.2018.'Winter-Dinkel' 'YES'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.2019.'' 'YES'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.2018.'Zuckerrüben' 'YES'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.2019.'' 'YES'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.2018.'Ackergras' 'YES'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.2019.'' 'YES'
+ 'adf79930-93a6-4307-a5d1-a51802927013'.2018.'Zuckerrüben' 'YES'
+ 'adf79930-93a6-4307-a5d1-a51802927013'.2019.'' 'YES'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.2019.'' 'YES'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.2018.'Zichorien/Wegwarten' 'YES'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.2018.'Zichorien/Wegwarten' 'YES'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.2019.'' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2018.'Winter-Dinkel' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2019.'' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.2019.'' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.2018.'Möhre (auch Futtermöhre)' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.2018.'Zuckerrüben' 'YES'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.2019.'' 'YES'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.2018.'Zuckerrüben' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.2019.'' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.2018.'Winter-Dinkel' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.2018.'Zuckerrüben' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.2019.'' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.2018.'Winter-Dinkel' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.2018.'Zuckerrüben' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.2019.'' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.2018.'Silomais (als Hauptfutter)' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.2018.'Zuckerrüben' 'YES'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.2019.'' 'YES'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.2018.'Winter-Dinkel' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.2019.'' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.2018.'Silomais (als Hauptfutter)' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.2018.'Zuckerrüben' 'YES'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.2019.'' 'YES'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.2018.'Winter-Dinkel' 'YES'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.2018.'Winter-Dinkel' 'YES'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.2019.'' 'YES'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.2018.'Winter-Dinkel' 'YES'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.2019.'' 'YES'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.2018.'Winter-Dinkel' 'YES'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.2019.'' 'YES'
+ '504ce189-c609-466e-82a7-6d2f555db011'.2018.'Grünland (Dauergrünland)' 'YES'
+ '504ce189-c609-466e-82a7-6d2f555db011'.2019.'' 'YES'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.2018.'Kartoffeln' 'YES'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.2019.'' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2019.'' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2018.'Winterweichweizen' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2019.'' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2018.'Winterweichweizen' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2019.'' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2018.'Winterweichweizen' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2018.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.2018.'Grünland (Dauergrünland)' 'YES'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.2019.'' 'YES'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.2018.'Acker-/Puff-/Pferdebohne' 'YES'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.2019.'' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.2019.'' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.2018.'Kartoffeln' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.2019.'' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.2018.'Kartoffeln' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.2019.'' 'YES'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.2019.'' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2019.'' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2018.'Zuckerrüben' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2019.'' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2018.'Zuckerrüben' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2019.'' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2018.'Zuckerrüben' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2018.'Blühfläche (MSL-Maßnahme)' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2018.'Blühstreifen (MSL-Maßnahme)' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.2019.'' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.2018.'Möhre (auch Futtermöhre)' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.2018.'Zuckerrüben' 'YES'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.2018.'Silomais (als Hauptfutter)' 'YES'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.2019.'' 'YES'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.2019.'' 'YES'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.2018.'Grünland (Dauergrünland)' 'YES'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.2019.'' 'YES'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.2018.'Brachefläche Vertragsnaturs.' 'YES'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.2018.'Winterweichweizen' 'YES'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.2019.'' 'YES'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.2019.'' 'YES'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.2018.'Silomais (als Hauptfutter)' 'YES'
+/;
+
+set plots_years_cropGroup(plots,years,cropGroup) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.2019.'' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2018.'Brachliegendes Land' 'YES'
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.2019.'' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2018.'Brachliegendes Land' 'YES'
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.2019.'' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2018.'Brachliegendes Land' 'YES'
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.2019.'' 'YES'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.2018.'Brachliegendes Land' 'YES'
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.2019.'' 'YES'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.2018.'Dauergrünland' 'YES'
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.2019.'' 'YES'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.2018.'Dauergrünland' 'YES'
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.2019.'' 'YES'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.2019.'' 'YES'
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.2018.'Dauergrünland' 'YES'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.2019.'' 'YES'
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.2018.'Dauergrünland' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.2019.'' 'YES'
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.2018.'Brachliegendes Land' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.2019.'' 'YES'
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.2018.'Brachliegendes Land' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.2019.'' 'YES'
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.2018.'Brachliegendes Land' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.2019.'' 'YES'
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.2018.'Brachliegendes Land' 'YES'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.2019.'' 'YES'
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.2018.'Dauergrünland' 'YES'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.2019.'' 'YES'
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.2018.'Dauergrünland' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.2018.'Brachliegendes Land' 'YES'
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.2019.'' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd'.2018.'Brachliegendes Land' 'YES'
+ '9bf23158-c825-4172-b872-1451e97973cd'.2019.'' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.2019.'' 'YES'
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.2018.'Brachliegendes Land' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.2019.'' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.2018.'Wintergerste' 'YES'
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.2018.'Brachliegendes Land' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.2019.'' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.2018.'Wintergerste' 'YES'
+ '62c20800-7b23-492e-a848-897d1bf550aa'.2018.'Brachliegendes Land' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.2018.'Brachliegendes Land' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.2019.'' 'YES'
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.2018.'Wintergerste' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.2018.'Brachliegendes Land' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.2019.'' 'YES'
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.2018.'Wintergerste' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.2019.'' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.2018.'Brachliegendes Land' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.2019.'' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.2018.'Brachliegendes Land' 'YES'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.2019.'' 'YES'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.2019.'' 'YES'
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.2018.'Brachliegendes Land' 'YES'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.2018.'Brachliegendes Land' 'YES'
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.2019.'' 'YES'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.2019.'' 'YES'
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.2019.'' 'YES'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.2019.'' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.2018.'Brachliegendes Land' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.2019.'' 'YES'
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.2018.'Brachliegendes Land' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.2019.'' 'YES'
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.2018.'Dauergrünland' 'YES'
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.2019.'' 'YES'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.2019.'' 'YES'
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.2018.'Sommerraps' 'YES'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.2019.'' 'YES'
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.2018.'Winterweizen' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265'.2019.'' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265'.2018.'Wintergerste' 'YES'
+ '07319d55-0831-4b6b-9136-eaba02345265'.2018.'Brachliegendes Land' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.2019.'' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.2018.'Wintergerste' 'YES'
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.2018.'Brachliegendes Land' 'YES'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.2019.'' 'YES'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.2019.'' 'YES'
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '832aeba4-3cc2-4956-847f-197c33c30920'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '832aeba4-3cc2-4956-847f-197c33c30920'.2019.'' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.2018.'Gattung: Zea (Mais)' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.2019.'' 'YES'
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.2018.'Brachliegendes Land' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.2019.'' 'YES'
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.2018.'Brachliegendes Land' 'YES'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.2019.'' 'YES'
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88'.2019.'' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '418457b2-675d-499c-9798-470309cc2c88'.2018.'Brachliegendes Land' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.2019.'' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.2018.'Brachliegendes Land' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.2018.'Wintergerste' 'YES'
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.2019.'' 'YES'
+ 'be099576-da78-433d-996a-9a8882c07da5'.2019.'' 'YES'
+ 'be099576-da78-433d-996a-9a8882c07da5'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.2018.'Wintergerste' 'YES'
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.2019.'' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2019.'' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.2018.'Brachliegendes Land' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2019.'' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.2018.'Brachliegendes Land' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2019.'' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.2018.'Brachliegendes Land' 'YES'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.2019.'' 'YES'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.2018.'Dauergrünland' 'YES'
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.2019.'' 'YES'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.2018.'Dauergrünland' 'YES'
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.2019.'' 'YES'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.2019.'' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.2019.'' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.2018.'Brachliegendes Land' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.2019.'' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.2018.'Brachliegendes Land' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.2019.'' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.2018.'Brachliegendes Land' 'YES'
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.2019.'' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.2018.'Brachliegendes Land' 'YES'
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.2018.'Winterweizen' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.2018.'Brachliegendes Land' 'YES'
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.2019.'' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.2018.'Winterweizen' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.2018.'Brachliegendes Land' 'YES'
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.2019.'' 'YES'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.2019.'' 'YES'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.2019.'' 'YES'
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.2018.'Dauergrünland' 'YES'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.2018.'Brachliegendes Land' 'YES'
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.2019.'' 'YES'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.2019.'' 'YES'
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.2018.'Dauergrünland' 'YES'
+ '1c50e312-a250-415d-98f6-59c6104819a5'.2019.'' 'YES'
+ '1c50e312-a250-415d-98f6-59c6104819a5'.2018.'Gattung: Zea (Mais)' 'YES'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.2018.'Brachliegendes Land' 'YES'
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.2019.'' 'YES'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.2018.'Brachliegendes Land' 'YES'
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.2019.'' 'YES'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.2019.'' 'YES'
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.2019.'' 'YES'
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.2018.'Dauergrünland' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.2018.'Wintergerste' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.2019.'' 'YES'
+ '98b482d0-0b8a-453b-99be-6133b9159012'.2018.'Brachliegendes Land' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.2018.'Wintergerste' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.2019.'' 'YES'
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.2018.'Brachliegendes Land' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.2018.'Brachliegendes Land' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.2019.'' 'YES'
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.2018.'Brachliegendes Land' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.2019.'' 'YES'
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.2019.'' 'YES'
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '46c0848e-eaad-4472-bcad-b102763c651d'.2019.'' 'YES'
+ '46c0848e-eaad-4472-bcad-b102763c651d'.2018.'Winterweizen' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.2018.'Brachliegendes Land' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.2019.'' 'YES'
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.2018.'Brachliegendes Land' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.2019.'' 'YES'
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '90bb769e-5c63-455f-a84b-3a2786919000'.2019.'' 'YES'
+ '90bb769e-5c63-455f-a84b-3a2786919000'.2018.'Winterweizen' 'YES'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.2019.'' 'YES'
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.2018.'Winterweizen' 'YES'
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.2019.'' 'YES'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.2019.'' 'YES'
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.2018.'Dauergrünland' 'YES'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.2018.'Dauergrünland' 'YES'
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.2019.'' 'YES'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.2019.'' 'YES'
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '04f48caf-b707-4096-832b-f283f673dd0a'.2019.'' 'YES'
+ '04f48caf-b707-4096-832b-f283f673dd0a'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.2018.'Dauergrünland' 'YES'
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.2019.'' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2019.'' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.2018.'Brachliegendes Land' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2019.'' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.2018.'Brachliegendes Land' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2019.'' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.2018.'Brachliegendes Land' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.2018.'Brachliegendes Land' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.2019.'' 'YES'
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.2018.'Winterweizen' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.2018.'Brachliegendes Land' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.2019.'' 'YES'
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.2018.'Winterweizen' 'YES'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.2018.'Gattung: Zea (Mais)' 'YES'
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.2019.'' 'YES'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.2018.'Gattung: Zea (Mais)' 'YES'
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.2019.'' 'YES'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.2019.'' 'YES'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.2018.'Winterweizen' 'YES'
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.2019.'' 'YES'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.2019.'' 'YES'
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df'.2018.'Brachliegendes Land' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df'.2019.'' 'YES'
+ '942d608b-0530-45d3-b561-e748775ca3df'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.2018.'Brachliegendes Land' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.2019.'' 'YES'
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.2018.'Brachliegendes Land' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.2019.'' 'YES'
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.2018.'Brachliegendes Land' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.2019.'' 'YES'
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd'.2019.'' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '406a49ee-fd33-4773-be14-599049d132fd'.2018.'Brachliegendes Land' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.2019.'' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.2018.'Brachliegendes Land' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.2018.'Brachliegendes Land' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.2019.'' 'YES'
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2018.'Winterweizen' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2019.'' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2018.'Brachliegendes Land' 'YES'
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2018.'Winterweizen' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2019.'' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2018.'Brachliegendes Land' 'YES'
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2018.'Brachliegendes Land' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2019.'' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2018.'Brachliegendes Land' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2019.'' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2018.'Brachliegendes Land' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2019.'' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2018.'Winterweizen' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2019.'' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2018.'Brachliegendes Land' 'YES'
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.2019.'' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.2018.'Brachliegendes Land' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.2019.'' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.2018.'Brachliegendes Land' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129'.2018.'Brachliegendes Land' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129'.2019.'' 'YES'
+ '87569063-f344-4960-84ac-8a00995f7129'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.2018.'Winterweizen' 'YES'
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.2019.'' 'YES'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.2019.'' 'YES'
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.2018.'Winterweizen' 'YES'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.2019.'' 'YES'
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.2018.'Winterweizen' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.2018.'Winterweizen' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.2019.'' 'YES'
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.2018.'Brachliegendes Land' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.2018.'Winterweizen' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.2019.'' 'YES'
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.2018.'Brachliegendes Land' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.2018.'Winterweizen' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.2019.'' 'YES'
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.2018.'Brachliegendes Land' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.2018.'Wintergerste' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.2019.'' 'YES'
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.2018.'Wintergerste' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.2019.'' 'YES'
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.2019.'' 'YES'
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.2019.'' 'YES'
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.2018.'Gras oder andere Grünfutterpflanzen' 'YES'
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.2019.'' 'YES'
+ 'adf79930-93a6-4307-a5d1-a51802927013'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'adf79930-93a6-4307-a5d1-a51802927013'.2019.'' 'YES'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.2019.'' 'YES'
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.2018.'Gattung: Cichorium (Zichorien/Wegwarten)' 'YES'
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.2019.'' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2018.'Brachliegendes Land' 'YES'
+ '17675ef9-c1e0-4096-9685-6ad121429638'.2019.'' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.2019.'' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.2018.'Gattung: Daucus (Möhren)' 'YES'
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.2019.'' 'YES'
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.2019.'' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.2019.'' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.2019.'' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.2018.'Gattung: Zea (Mais)' 'YES'
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.2019.'' 'YES'
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.2019.'' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.2018.'Gattung: Zea (Mais)' 'YES'
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.2019.'' 'YES'
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.2019.'' 'YES'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.2019.'' 'YES'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.2018.'Triticum spelta (Dinkel/Spelz) (Winter)' 'YES'
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.2019.'' 'YES'
+ '504ce189-c609-466e-82a7-6d2f555db011'.2018.'Dauergrünland' 'YES'
+ '504ce189-c609-466e-82a7-6d2f555db011'.2019.'' 'YES'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.2019.'' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2019.'' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2018.'Winterweizen' 'YES'
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.2018.'Brachliegendes Land' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2019.'' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2018.'Winterweizen' 'YES'
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.2018.'Brachliegendes Land' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2019.'' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2018.'Winterweizen' 'YES'
+ '61bf025a-a630-441b-9612-268670c03819'.2018.'Brachliegendes Land' 'YES'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.2018.'Dauergrünland' 'YES'
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.2019.'' 'YES'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.2018.'Gattung: Vicia (Wicken)' 'YES'
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.2019.'' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.2019.'' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.2018.'Brachliegendes Land' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.2019.'' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.2018.'Art: Solanum tuberosum (Kartoffel)' 'YES'
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.2018.'Brachliegendes Land' 'YES'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.2019.'' 'YES'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.2019.'' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2019.'' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.2018.'Brachliegendes Land' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2019.'' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2018.'Gattung: Beta (Rüben)' 'YES'
+ '9433e518-c807-4c77-91c8-ef226f369599'.2018.'Brachliegendes Land' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2019.'' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'af34df35-516c-40cb-8612-40be618abc60'.2018.'Brachliegendes Land' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.2019.'' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.2018.'Gattung: Daucus (Möhren)' 'YES'
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.2018.'Gattung: Beta (Rüben)' 'YES'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.2018.'Gattung: Zea (Mais)' 'YES'
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.2019.'' 'YES'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.2019.'' 'YES'
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.2018.'Dauergrünland' 'YES'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.2019.'' 'YES'
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.2018.'Brachliegendes Land' 'YES'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.2018.'Winterweizen' 'YES'
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.2019.'' 'YES'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.2019.'' 'YES'
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.2018.'Gattung: Zea (Mais)' 'YES'
+/;
+
+parameter p_grossMarginData(curPlots,curCrops) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'AL aus Erzeugung genommen' -1123
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Acker-/Puff-/Pferdebohne' 73
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Ackergras' -851
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Blühfläche (MSL-Maßnahme)' -321
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Blühstreifen (MSL-Maßnahme)' -1205
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Brachefläche Vertragsnaturs.' -1123
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Grünland (Dauergrünland)' -101
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Kartoffeln' 14890
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Möhre (auch Futtermöhre)' -3594
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1205
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Sommerraps' -517
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Streuobst mit DGL-Nutzung' 1057
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Winter-Dinkel' 2564
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Wintergerste' -127
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Winterweichweizen' 733
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Zichorien/Wegwarten' 0
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a'.'Zuckerrüben' -2535
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'AL aus Erzeugung genommen' -81
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Acker-/Puff-/Pferdebohne' -41
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Ackergras' -193
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Blühfläche (MSL-Maßnahme)' -23
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Blühstreifen (MSL-Maßnahme)' -87
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Brachefläche Vertragsnaturs.' -81
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Grünland (Dauergrünland)' -48
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Kartoffeln' 1023
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Möhre (auch Futtermöhre)' 15
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -87
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Silomais (als Hauptfutter)' -123
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Sommerraps' -41
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Streuobst mit DGL-Nutzung' 49
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Winter-Dinkel' 146
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Wintergerste' 0
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Winterweichweizen' 25
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Zichorien/Wegwarten' 0
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c'.'Zuckerrüben' -159
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'AL aus Erzeugung genommen' -239
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Acker-/Puff-/Pferdebohne' 16
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Ackergras' -180
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Blühfläche (MSL-Maßnahme)' -68
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Brachefläche Vertragsnaturs.' -239
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Grünland (Dauergrünland)' -21
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Kartoffeln' 3164
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Möhre (auch Futtermöhre)' 871
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -256
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Silomais (als Hauptfutter)' -347
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Sommerraps' -130
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Streuobst mit DGL-Nutzung' 225
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Winter-Dinkel' 234
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Wintergerste' -27
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Winterweichweizen' -66
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Zichorien/Wegwarten' 0
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548'.'Zuckerrüben' -392
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'AL aus Erzeugung genommen' -12975
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Acker-/Puff-/Pferdebohne' 846
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Ackergras' -17873
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Blühfläche (MSL-Maßnahme)' -3708
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Blühstreifen (MSL-Maßnahme)' -13925
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Brachefläche Vertragsnaturs.' -12975
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Grünland (Dauergrünland)' -4024
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Kartoffeln' 171983
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Möhre (auch Futtermöhre)' 47270
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -13925
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Silomais (als Hauptfutter)' -18933
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Sommerraps' -7119
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Streuobst mit DGL-Nutzung' 10317
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Wintergerste' -1474
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Winterweichweizen' -3587
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Zichorien/Wegwarten' 0
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01'.'Zuckerrüben' -21446
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'AL aus Erzeugung genommen' -206
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Acker-/Puff-/Pferdebohne' -118
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Ackergras' -514
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Blühfläche (MSL-Maßnahme)' -59
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Blühstreifen (MSL-Maßnahme)' -221
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Brachefläche Vertragsnaturs.' -206
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Grünland (Dauergrünland)' -147
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Kartoffeln' 2332
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Möhre (auch Futtermöhre)' -139
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -221
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Silomais (als Hauptfutter)' -336
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Sommerraps' -102
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Streuobst mit DGL-Nutzung' 108
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Winter-Dinkel' 329
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Wintergerste' -24
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Winterweichweizen' 34
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Zichorien/Wegwarten' 0
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25'.'Zuckerrüben' -420
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'AL aus Erzeugung genommen' -620
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Acker-/Puff-/Pferdebohne' -354
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Ackergras' -1198
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Blühfläche (MSL-Maßnahme)' -177
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Blühstreifen (MSL-Maßnahme)' -666
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Brachefläche Vertragsnaturs.' -620
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Grünland (Dauergrünland)' -52
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Kartoffeln' 2927
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Möhre (auch Futtermöhre)' -1980
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -666
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Silomais (als Hauptfutter)' -1377
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Sommerraps' -282
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Streuobst mit DGL-Nutzung' 589
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Winter-Dinkel' 609
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Wintergerste' -280
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Winterweichweizen' -171
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Zichorien/Wegwarten' 0
+ 'dfd29eda-4254-4961-b746-8fc2810780d8'.'Zuckerrüben' -1395
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'AL aus Erzeugung genommen' -206
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Acker-/Puff-/Pferdebohne' -117
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Ackergras' -397
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Blühfläche (MSL-Maßnahme)' -59
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Blühstreifen (MSL-Maßnahme)' -221
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Brachefläche Vertragsnaturs.' -206
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Grünland (Dauergrünland)' -17
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Kartoffeln' 969
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Möhre (auch Futtermöhre)' -656
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -221
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Silomais (als Hauptfutter)' -456
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Sommerraps' -94
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Streuobst mit DGL-Nutzung' 195
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Winter-Dinkel' 202
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Wintergerste' -93
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Winterweichweizen' -57
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Zichorien/Wegwarten' 0
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5'.'Zuckerrüben' -463
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'AL aus Erzeugung genommen' -73
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Acker-/Puff-/Pferdebohne' -42
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Ackergras' -142
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Blühfläche (MSL-Maßnahme)' -21
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Blühstreifen (MSL-Maßnahme)' -79
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Brachefläche Vertragsnaturs.' -73
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Grünland (Dauergrünland)' -6
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Kartoffeln' 346
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Möhre (auch Futtermöhre)' -234
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -79
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Silomais (als Hauptfutter)' -163
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Sommerraps' -33
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Streuobst mit DGL-Nutzung' 70
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Winter-Dinkel' 72
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Wintergerste' -33
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Winterweichweizen' -20
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Zichorien/Wegwarten' 0
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4'.'Zuckerrüben' -165
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'AL aus Erzeugung genommen' -264
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Acker-/Puff-/Pferdebohne' -151
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Ackergras' -511
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Blühfläche (MSL-Maßnahme)' -76
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Blühstreifen (MSL-Maßnahme)' -284
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Brachefläche Vertragsnaturs.' -264
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Grünland (Dauergrünland)' -23
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Kartoffeln' 1246
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Möhre (auch Futtermöhre)' -844
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -284
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Silomais (als Hauptfutter)' -587
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Sommerraps' -121
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Streuobst mit DGL-Nutzung' 250
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Winter-Dinkel' 260
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Wintergerste' -119
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Winterweichweizen' -73
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Zichorien/Wegwarten' 0
+ 'af0eca4b-2bf8-4300-b130-b5faed050747'.'Zuckerrüben' -595
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'AL aus Erzeugung genommen' -1175
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Ackergras' -2858
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Blühfläche (MSL-Maßnahme)' -336
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Blühstreifen (MSL-Maßnahme)' -1261
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Brachefläche Vertragsnaturs.' -1175
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Grünland (Dauergrünland)' -760
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Kartoffeln' 15753
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Möhre (auch Futtermöhre)' -3615
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1261
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Silomais (als Hauptfutter)' -1534
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Sommerraps' -455
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Streuobst mit DGL-Nutzung' 736
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Winter-Dinkel' 3130
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Wintergerste' -112
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Winterweichweizen' 1112
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Zichorien/Wegwarten' 0
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec'.'Zuckerrüben' -1696
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'AL aus Erzeugung genommen' -70
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Acker-/Puff-/Pferdebohne' -39
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Ackergras' -170
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Blühfläche (MSL-Maßnahme)' -20
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Blühstreifen (MSL-Maßnahme)' -75
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Brachefläche Vertragsnaturs.' -70
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Grünland (Dauergrünland)' -45
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Kartoffeln' 802
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Möhre (auch Futtermöhre)' -36
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -75
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Silomais (als Hauptfutter)' -104
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Sommerraps' -27
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Streuobst mit DGL-Nutzung' 44
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Winter-Dinkel' 112
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Wintergerste' -7
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Winterweichweizen' 13
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Zichorien/Wegwarten' 0
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be'.'Zuckerrüben' -131
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'AL aus Erzeugung genommen' -1226
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Acker-/Puff-/Pferdebohne' -355
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Ackergras' -2929
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Blühfläche (MSL-Maßnahme)' -350
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Blühstreifen (MSL-Maßnahme)' -1316
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Brachefläche Vertragsnaturs.' -1226
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Grünland (Dauergrünland)' -209
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Kartoffeln' 14779
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Möhre (auch Futtermöhre)' -3420
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1316
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Silomais (als Hauptfutter)' -1777
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Sommerraps' -474
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Streuobst mit DGL-Nutzung' 1162
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Winter-Dinkel' 2946
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Wintergerste' -491
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Winterweichweizen' 926
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838'.'Zichorien/Wegwarten' 0
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'AL aus Erzeugung genommen' -73
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Acker-/Puff-/Pferdebohne' -41
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Ackergras' -179
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Blühfläche (MSL-Maßnahme)' -21
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Blühstreifen (MSL-Maßnahme)' -79
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Brachefläche Vertragsnaturs.' -73
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Grünland (Dauergrünland)' -48
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Kartoffeln' 843
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Möhre (auch Futtermöhre)' -39
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -79
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Silomais (als Hauptfutter)' -111
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Sommerraps' -29
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Streuobst mit DGL-Nutzung' 45
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Winter-Dinkel' 118
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Wintergerste' -7
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Winterweichweizen' 14
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Zichorien/Wegwarten' 0
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201'.'Zuckerrüben' -139
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'AL aus Erzeugung genommen' -264
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Acker-/Puff-/Pferdebohne' -149
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Ackergras' -486
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Blühfläche (MSL-Maßnahme)' -76
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Blühstreifen (MSL-Maßnahme)' -284
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Brachefläche Vertragsnaturs.' -264
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Grünland (Dauergrünland)' 3
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Kartoffeln' 1273
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Möhre (auch Futtermöhre)' -808
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -284
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Silomais (als Hauptfutter)' -561
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Sommerraps' -96
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Streuobst mit DGL-Nutzung' 288
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Winter-Dinkel' 261
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Wintergerste' -115
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Winterweichweizen' -68
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Zichorien/Wegwarten' 0
+ '41eea2c7-b219-429c-b0bb-e8debdb10713'.'Zuckerrüben' -559
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'AL aus Erzeugung genommen' -103
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Acker-/Puff-/Pferdebohne' -58
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Ackergras' -189
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Blühfläche (MSL-Maßnahme)' -29
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Blühstreifen (MSL-Maßnahme)' -110
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Brachefläche Vertragsnaturs.' -103
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Grünland (Dauergrünland)' 1
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Kartoffeln' 495
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Möhre (auch Futtermöhre)' -315
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -110
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Silomais (als Hauptfutter)' -218
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Sommerraps' -37
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Streuobst mit DGL-Nutzung' 112
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Winter-Dinkel' 102
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Wintergerste' -45
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Winterweichweizen' -26
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Zichorien/Wegwarten' 0
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0'.'Zuckerrüben' -218
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'AL aus Erzeugung genommen' -48
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Acker-/Puff-/Pferdebohne' -24
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Ackergras' -110
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Blühfläche (MSL-Maßnahme)' -14
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Blühstreifen (MSL-Maßnahme)' -51
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Brachefläche Vertragsnaturs.' -48
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Grünland (Dauergrünland)' -24
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Kartoffeln' 613
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Möhre (auch Futtermöhre)' 18
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -51
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Silomais (als Hauptfutter)' -64
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Sommerraps' -18
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Streuobst mit DGL-Nutzung' 35
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Winter-Dinkel' 87
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Wintergerste' 1
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Winterweichweizen' 16
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Zichorien/Wegwarten' 0
+ '82d6f669-12d4-4aeb-b1a5-766982547928'.'Zuckerrüben' -85
+ '9bf23158-c825-4172-b872-1451e97973cd'.'AL aus Erzeugung genommen' -2973
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Ackergras' -6861
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Blühfläche (MSL-Maßnahme)' -850
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Blühstreifen (MSL-Maßnahme)' -3191
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Brachefläche Vertragsnaturs.' -2973
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Grünland (Dauergrünland)' -1519
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Kartoffeln' 44317
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Möhre (auch Futtermöhre)' -7026
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3191
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Silomais (als Hauptfutter)' -3414
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Sommerraps' -1132
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Streuobst mit DGL-Nutzung' 2157
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Winter-Dinkel' 8775
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Wintergerste' 72
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Winterweichweizen' 3442
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Zichorien/Wegwarten' 0
+ '9bf23158-c825-4172-b872-1451e97973cd'.'Zuckerrüben' -3878
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'AL aus Erzeugung genommen' -2210
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Acker-/Puff-/Pferdebohne' -720
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Ackergras' -5398
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Blühfläche (MSL-Maßnahme)' -631
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Blühstreifen (MSL-Maßnahme)' -2371
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Brachefläche Vertragsnaturs.' -2210
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Grünland (Dauergrünland)' -536
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Kartoffeln' 25352
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Möhre (auch Futtermöhre)' -6841
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2371
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Silomais (als Hauptfutter)' -3339
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Sommerraps' -860
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Streuobst mit DGL-Nutzung' 1978
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Winter-Dinkel' 5062
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Wintergerste' -972
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Winterweichweizen' 1489
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43'.'Zichorien/Wegwarten' 0
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'AL aus Erzeugung genommen' -22
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Acker-/Puff-/Pferdebohne' -12
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Ackergras' -53
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Blühfläche (MSL-Maßnahme)' -6
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Blühstreifen (MSL-Maßnahme)' -24
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Brachefläche Vertragsnaturs.' -22
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Grünland (Dauergrünland)' -13
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Kartoffeln' 255
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Möhre (auch Futtermöhre)' -9
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -24
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Silomais (als Hauptfutter)' -31
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Sommerraps' -7
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Streuobst mit DGL-Nutzung' 15
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Winter-Dinkel' 36
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Wintergerste' -2
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Winterweichweizen' 4
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Zichorien/Wegwarten' 0
+ '117f9e36-a169-4d42-8618-d73a8417eaff'.'Zuckerrüben' -39
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'AL aus Erzeugung genommen' -437
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Acker-/Puff-/Pferdebohne' 38
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Ackergras' -238
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Blühfläche (MSL-Maßnahme)' -125
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Blühstreifen (MSL-Maßnahme)' -469
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Brachefläche Vertragsnaturs.' -437
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Grünland (Dauergrünland)' 21
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Kartoffeln' 5899
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Möhre (auch Futtermöhre)' 1738
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -469
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Silomais (als Hauptfutter)' -530
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Sommerraps' -140
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Streuobst mit DGL-Nutzung' 501
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Winter-Dinkel' 433
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Winterweichweizen' -109
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Zichorien/Wegwarten' 0
+ '62c20800-7b23-492e-a848-897d1bf550aa'.'Zuckerrüben' -575
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'AL aus Erzeugung genommen' -26
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Acker-/Puff-/Pferdebohne' -14
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Ackergras' -61
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Blühfläche (MSL-Maßnahme)' -7
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Blühstreifen (MSL-Maßnahme)' -28
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Brachefläche Vertragsnaturs.' -26
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Grünland (Dauergrünland)' -16
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Kartoffeln' 298
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Möhre (auch Futtermöhre)' -11
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -28
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Silomais (als Hauptfutter)' -36
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Sommerraps' -8
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Streuobst mit DGL-Nutzung' 18
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Winter-Dinkel' 41
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Wintergerste' -2
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Winterweichweizen' 5
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Zichorien/Wegwarten' 0
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b'.'Zuckerrüben' -46
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'AL aus Erzeugung genommen' -562
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Acker-/Puff-/Pferdebohne' 49
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Ackergras' -305
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Blühfläche (MSL-Maßnahme)' -160
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Blühstreifen (MSL-Maßnahme)' -603
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Brachefläche Vertragsnaturs.' -562
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Grünland (Dauergrünland)' 28
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Kartoffeln' 7586
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Möhre (auch Futtermöhre)' 2236
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -603
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Silomais (als Hauptfutter)' -680
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Sommerraps' -178
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Streuobst mit DGL-Nutzung' 645
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Winter-Dinkel' 557
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Winterweichweizen' -140
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Zichorien/Wegwarten' 0
+ '8983c2f9-2095-427a-a4f7-8c501564dd17'.'Zuckerrüben' -738
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'AL aus Erzeugung genommen' -991
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Acker-/Puff-/Pferdebohne' -491
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Ackergras' -1671
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Blühfläche (MSL-Maßnahme)' -283
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Blühstreifen (MSL-Maßnahme)' -1064
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Brachefläche Vertragsnaturs.' -991
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Grünland (Dauergrünland)' -910
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Kartoffeln' 5631
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Möhre (auch Futtermöhre)' -2347
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1064
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Silomais (als Hauptfutter)' -2028
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Sommerraps' -372
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Streuobst mit DGL-Nutzung' 438
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Winter-Dinkel' 1152
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Wintergerste' -339
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Winterweichweizen' -137
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8'.'Zuckerrüben' -2040
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'AL aus Erzeugung genommen' -22
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Acker-/Puff-/Pferdebohne' -11
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Ackergras' -51
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Blühfläche (MSL-Maßnahme)' -6
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Blühstreifen (MSL-Maßnahme)' -24
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Brachefläche Vertragsnaturs.' -22
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Grünland (Dauergrünland)' -11
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Kartoffeln' 283
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Möhre (auch Futtermöhre)' 8
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -24
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Silomais (als Hauptfutter)' -30
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Sommerraps' -8
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Streuobst mit DGL-Nutzung' 16
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Winter-Dinkel' 40
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Wintergerste' 1
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Winterweichweizen' 7
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Zichorien/Wegwarten' 0
+ 'b0687f48-9937-402c-9557-baceab4a40c7'.'Zuckerrüben' -39
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'AL aus Erzeugung genommen' -1479
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Acker-/Puff-/Pferdebohne' -826
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Ackergras' -4090
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Blühfläche (MSL-Maßnahme)' -423
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Blühstreifen (MSL-Maßnahme)' -1588
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Brachefläche Vertragsnaturs.' -1479
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Grünland (Dauergrünland)' -2042
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Möhre (auch Futtermöhre)' -9796
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1588
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Silomais (als Hauptfutter)' -3489
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Sommerraps' -957
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Streuobst mit DGL-Nutzung' 40
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Winter-Dinkel' 1911
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Wintergerste' -651
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Winterweichweizen' -118
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Zichorien/Wegwarten' 0
+ '897db77e-363d-42ac-8f7b-42a07ce32653'.'Zuckerrüben' -3535
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'AL aus Erzeugung genommen' -95
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Acker-/Puff-/Pferdebohne' -74
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Ackergras' -273
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Blühfläche (MSL-Maßnahme)' -27
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Blühstreifen (MSL-Maßnahme)' -102
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Brachefläche Vertragsnaturs.' -95
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Grünland (Dauergrünland)' -106
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Kartoffeln' 684
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Möhre (auch Futtermöhre)' -325
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -102
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Silomais (als Hauptfutter)' -191
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Sommerraps' -44
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Streuobst mit DGL-Nutzung' 26
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Winter-Dinkel' 89
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Wintergerste' -46
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Winterweichweizen' -30
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Zichorien/Wegwarten' 0
+ '2948bd1f-2aca-4c98-822b-9789f72270b6'.'Zuckerrüben' -217
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'AL aus Erzeugung genommen' -202
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Acker-/Puff-/Pferdebohne' -156
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Ackergras' -578
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Blühfläche (MSL-Maßnahme)' -58
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Blühstreifen (MSL-Maßnahme)' -217
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Brachefläche Vertragsnaturs.' -202
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Grünland (Dauergrünland)' -224
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Kartoffeln' 1445
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Möhre (auch Futtermöhre)' -690
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -217
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Silomais (als Hauptfutter)' -407
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Sommerraps' -94
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Streuobst mit DGL-Nutzung' 53
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Winter-Dinkel' 188
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Wintergerste' -97
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Winterweichweizen' -63
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Zichorien/Wegwarten' 0
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76'.'Zuckerrüben' -462
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'AL aus Erzeugung genommen' -741
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Acker-/Puff-/Pferdebohne' 28
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Ackergras' -1246
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Blühfläche (MSL-Maßnahme)' -212
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Blühstreifen (MSL-Maßnahme)' -796
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Brachefläche Vertragsnaturs.' -741
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Grünland (Dauergrünland)' -378
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Möhre (auch Futtermöhre)' -1750
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -796
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Silomais (als Hauptfutter)' -997
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Sommerraps' -292
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Streuobst mit DGL-Nutzung' 539
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Winter-Dinkel' 2189
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Wintergerste' 318
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Winterweichweizen' 859
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Zichorien/Wegwarten' 0
+ '2ea2211b-5827-4873-9aa5-23002de2cc55'.'Zuckerrüben' -964
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'AL aus Erzeugung genommen' -1178
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Acker-/Puff-/Pferdebohne' -519
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Ackergras' -2242
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Blühfläche (MSL-Maßnahme)' -337
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Blühstreifen (MSL-Maßnahme)' -1265
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Brachefläche Vertragsnaturs.' -1178
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Grünland (Dauergrünland)' -1066
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Kartoffeln' 7635
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Möhre (auch Futtermöhre)' -7583
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1265
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Sommerraps' -543
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Streuobst mit DGL-Nutzung' 436
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Winter-Dinkel' 1283
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Wintergerste' -773
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Winterweichweizen' -250
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Zichorien/Wegwarten' 0
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4'.'Zuckerrüben' -3062
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'AL aus Erzeugung genommen' -2019
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Acker-/Puff-/Pferdebohne' -1077
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Ackergras' -3572
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Blühfläche (MSL-Maßnahme)' -577
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Blühstreifen (MSL-Maßnahme)' -2167
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Brachefläche Vertragsnaturs.' -2019
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Grünland (Dauergrünland)' -1964
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Kartoffeln' 10474
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Möhre (auch Futtermöhre)' -5568
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2167
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Silomais (als Hauptfutter)' -4211
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Sommerraps' -737
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Streuobst mit DGL-Nutzung' 825
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Winter-Dinkel' 2147
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Wintergerste' -802
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Winterweichweizen' -418
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc'.'Zuckerrüben' -4212
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'AL aus Erzeugung genommen' -6809
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Ackergras' -13065
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Blühfläche (MSL-Maßnahme)' -1946
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Blühstreifen (MSL-Maßnahme)' -7307
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Brachefläche Vertragsnaturs.' -6809
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Grünland (Dauergrünland)' -859
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Kartoffeln' 103313
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Möhre (auch Futtermöhre)' -12853
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -7307
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Silomais (als Hauptfutter)' -974
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Sommerraps' 2543
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Streuobst mit DGL-Nutzung' 9212
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Winter-Dinkel' 19502
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Wintergerste' 578
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Winterweichweizen' 8403
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Zichorien/Wegwarten' 0
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46'.'Zuckerrüben' 746
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'AL aus Erzeugung genommen' -95
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Acker-/Puff-/Pferdebohne' 22
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Ackergras' 42
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Blühfläche (MSL-Maßnahme)' -27
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Blühstreifen (MSL-Maßnahme)' -102
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Brachefläche Vertragsnaturs.' -95
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Grünland (Dauergrünland)' 67
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Kartoffeln' 1448
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Möhre (auch Futtermöhre)' 560
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Silomais (als Hauptfutter)' -14
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Sommerraps' 59
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Streuobst mit DGL-Nutzung' 195
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Winter-Dinkel' 106
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Wintergerste' 8
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Winterweichweizen' -9
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Zichorien/Wegwarten' 0
+ 'da5851fd-cded-42ed-9aa9-0df254007875'.'Zuckerrüben' 11
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'AL aus Erzeugung genommen' -239
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Acker-/Puff-/Pferdebohne' -114
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Ackergras' -278
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Blühfläche (MSL-Maßnahme)' -68
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Blühstreifen (MSL-Maßnahme)' -256
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Brachefläche Vertragsnaturs.' -239
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Grünland (Dauergrünland)' 165
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Kartoffeln' 1392
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Möhre (auch Futtermöhre)' -452
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -256
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Silomais (als Hauptfutter)' -347
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Sommerraps' 53
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Streuobst mit DGL-Nutzung' 486
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Winter-Dinkel' 264
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Wintergerste' -71
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Winterweichweizen' -22
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Zichorien/Wegwarten' 0
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697'.'Zuckerrüben' -292
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'AL aus Erzeugung genommen' -3516
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Acker-/Puff-/Pferdebohne' -2651
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Ackergras' -4049
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Blühfläche (MSL-Maßnahme)' -1005
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Blühstreifen (MSL-Maßnahme)' -3774
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Brachefläche Vertragsnaturs.' -3516
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Grünland (Dauergrünland)' 368
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Kartoffeln' 44749
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Möhre (auch Futtermöhre)' -8689
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3774
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Silomais (als Hauptfutter)' -4507
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Streuobst mit DGL-Nutzung' 3831
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Winter-Dinkel' 10347
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Wintergerste' 1440
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Winterweichweizen' 3985
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Zichorien/Wegwarten' 0
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0'.'Zuckerrüben' -7598
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'AL aus Erzeugung genommen' -235
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Acker-/Puff-/Pferdebohne' -62
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Ackergras' -438
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Blühfläche (MSL-Maßnahme)' -67
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Blühstreifen (MSL-Maßnahme)' -252
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Brachefläche Vertragsnaturs.' -235
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Grünland (Dauergrünland)' -166
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Kartoffeln' 2072
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Möhre (auch Futtermöhre)' 44
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -252
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Silomais (als Hauptfutter)' -400
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Sommerraps' -81
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Streuobst mit DGL-Nutzung' 143
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Winter-Dinkel' 107
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Wintergerste' -108
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Zichorien/Wegwarten' 0
+ '4a259f72-2eae-425d-a273-58bb12c20d51'.'Zuckerrüben' -411
+ '07319d55-0831-4b6b-9136-eaba02345265'.'AL aus Erzeugung genommen' -55
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Acker-/Puff-/Pferdebohne' -26
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Ackergras' -119
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Blühfläche (MSL-Maßnahme)' -16
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Blühstreifen (MSL-Maßnahme)' -59
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Brachefläche Vertragsnaturs.' -55
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Grünland (Dauergrünland)' -20
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Kartoffeln' 725
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Möhre (auch Futtermöhre)' 40
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -59
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Silomais (als Hauptfutter)' -57
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Sommerraps' -8
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Streuobst mit DGL-Nutzung' 52
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Winter-Dinkel' 101
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Wintergerste' 4
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Winterweichweizen' 21
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Zichorien/Wegwarten' 0
+ '07319d55-0831-4b6b-9136-eaba02345265'.'Zuckerrüben' -79
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'AL aus Erzeugung genommen' -7308
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Acker-/Puff-/Pferdebohne' -1784
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Ackergras' -8616
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Blühfläche (MSL-Maßnahme)' -2088
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Blühstreifen (MSL-Maßnahme)' -7843
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Brachefläche Vertragsnaturs.' -7308
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Grünland (Dauergrünland)' -2998
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Kartoffeln' 65985
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Möhre (auch Futtermöhre)' 3374
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -7843
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Silomais (als Hauptfutter)' -10966
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Sommerraps' -1130
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Streuobst mit DGL-Nutzung' 6600
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Winter-Dinkel' 3392
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Winterweichweizen' -4525
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Zichorien/Wegwarten' 0
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2'.'Zuckerrüben' -10755
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'AL aus Erzeugung genommen' -448
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Acker-/Puff-/Pferdebohne' 60
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Ackergras' -200
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Blühfläche (MSL-Maßnahme)' -128
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Blühstreifen (MSL-Maßnahme)' -481
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Brachefläche Vertragsnaturs.' -448
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Grünland (Dauergrünland)' 54
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Kartoffeln' 6329
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Möhre (auch Futtermöhre)' -1213
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -481
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Sommerraps' -148
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Streuobst mit DGL-Nutzung' 534
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Winter-Dinkel' 1079
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Wintergerste' -16
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Winterweichweizen' 346
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Zichorien/Wegwarten' 0
+ 'aa137361-c996-4a37-8fad-c97ce245d69e'.'Zuckerrüben' -912
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'AL aus Erzeugung genommen' -180
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Ackergras' -430
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Blühfläche (MSL-Maßnahme)' -51
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Blühstreifen (MSL-Maßnahme)' -193
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Brachefläche Vertragsnaturs.' -180
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Grünland (Dauergrünland)' -108
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Kartoffeln' 2431
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Möhre (auch Futtermöhre)' -539
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -193
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Silomais (als Hauptfutter)' -216
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Sommerraps' -57
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Streuobst mit DGL-Nutzung' 124
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Winter-Dinkel' 481
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Wintergerste' -15
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Winterweichweizen' 174
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Zichorien/Wegwarten' 0
+ '2801f938-ddbd-4ab4-8d5a-107e72273225'.'Zuckerrüben' -234
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'AL aus Erzeugung genommen' -888
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Acker-/Puff-/Pferdebohne' 78
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Ackergras' -1065
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Blühfläche (MSL-Maßnahme)' -254
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Blühstreifen (MSL-Maßnahme)' -953
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Brachefläche Vertragsnaturs.' -888
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Grünland (Dauergrünland)' -160
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Kartoffeln' 12002
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Möhre (auch Futtermöhre)' 3541
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -953
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Silomais (als Hauptfutter)' -1073
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Sommerraps' -279
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Streuobst mit DGL-Nutzung' 877
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Wintergerste' -74
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Winterweichweizen' -221
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Zichorien/Wegwarten' 0
+ '832aeba4-3cc2-4956-847f-197c33c30920'.'Zuckerrüben' -1164
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'AL aus Erzeugung genommen' -77
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Acker-/Puff-/Pferdebohne' -44
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Ackergras' -193
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Blühfläche (MSL-Maßnahme)' -22
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Blühstreifen (MSL-Maßnahme)' -83
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Brachefläche Vertragsnaturs.' -77
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Grünland (Dauergrünland)' -55
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Kartoffeln' 874
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Möhre (auch Futtermöhre)' -53
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -83
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Silomais (als Hauptfutter)' -127
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Sommerraps' -39
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Streuobst mit DGL-Nutzung' 40
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Winter-Dinkel' 123
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Wintergerste' -9
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Winterweichweizen' 13
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Zichorien/Wegwarten' 0
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3'.'Zuckerrüben' -158
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'AL aus Erzeugung genommen' -1039
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Acker-/Puff-/Pferdebohne' 66
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Ackergras' -803
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Blühfläche (MSL-Maßnahme)' -297
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Blühstreifen (MSL-Maßnahme)' -1115
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Brachefläche Vertragsnaturs.' -1039
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Grünland (Dauergrünland)' -103
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Kartoffeln' 13752
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Möhre (auch Futtermöhre)' -3339
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1115
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Sommerraps' -488
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Streuobst mit DGL-Nutzung' 963
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Winter-Dinkel' 2370
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Wintergerste' -120
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Winterweichweizen' 675
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Zichorien/Wegwarten' 0
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada'.'Zuckerrüben' -2359
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'AL aus Erzeugung genommen' -1329
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Acker-/Puff-/Pferdebohne' -741
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Ackergras' -3668
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Blühfläche (MSL-Maßnahme)' -380
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Blühstreifen (MSL-Maßnahme)' -1426
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Brachefläche Vertragsnaturs.' -1329
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Grünland (Dauergrünland)' -1829
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Möhre (auch Futtermöhre)' -8790
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1426
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Silomais (als Hauptfutter)' -3123
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Sommerraps' -849
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Streuobst mit DGL-Nutzung' 44
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Winter-Dinkel' 1717
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Wintergerste' -583
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Winterweichweizen' -104
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Zichorien/Wegwarten' 0
+ '468021ec-410e-4e22-8a27-516cf5a806f5'.'Zuckerrüben' -3159
+ '418457b2-675d-499c-9798-470309cc2c88'.'AL aus Erzeugung genommen' -2749
+ '418457b2-675d-499c-9798-470309cc2c88'.'Acker-/Puff-/Pferdebohne' -1494
+ '418457b2-675d-499c-9798-470309cc2c88'.'Ackergras' -7530
+ '418457b2-675d-499c-9798-470309cc2c88'.'Blühfläche (MSL-Maßnahme)' -786
+ '418457b2-675d-499c-9798-470309cc2c88'.'Blühstreifen (MSL-Maßnahme)' -2951
+ '418457b2-675d-499c-9798-470309cc2c88'.'Brachefläche Vertragsnaturs.' -2749
+ '418457b2-675d-499c-9798-470309cc2c88'.'Grünland (Dauergrünland)' -3735
+ '418457b2-675d-499c-9798-470309cc2c88'.'Möhre (auch Futtermöhre)' -17917
+ '418457b2-675d-499c-9798-470309cc2c88'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2951
+ '418457b2-675d-499c-9798-470309cc2c88'.'Silomais (als Hauptfutter)' -6417
+ '418457b2-675d-499c-9798-470309cc2c88'.'Sommerraps' -1763
+ '418457b2-675d-499c-9798-470309cc2c88'.'Streuobst mit DGL-Nutzung' 122
+ '418457b2-675d-499c-9798-470309cc2c88'.'Winter-Dinkel' 3655
+ '418457b2-675d-499c-9798-470309cc2c88'.'Wintergerste' -1151
+ '418457b2-675d-499c-9798-470309cc2c88'.'Winterweichweizen' -142
+ '418457b2-675d-499c-9798-470309cc2c88'.'Zichorien/Wegwarten' 0
+ '418457b2-675d-499c-9798-470309cc2c88'.'Zuckerrüben' -6499
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'AL aus Erzeugung genommen' -121
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Acker-/Puff-/Pferdebohne' -56
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Ackergras' -245
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Blühfläche (MSL-Maßnahme)' -35
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Brachefläche Vertragsnaturs.' -121
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Grünland (Dauergrünland)' -119
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Kartoffeln' 747
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Möhre (auch Futtermöhre)' -258
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -130
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Silomais (als Hauptfutter)' -273
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Sommerraps' -78
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Streuobst mit DGL-Nutzung' 32
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Winter-Dinkel' 22
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Wintergerste' -83
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Winterweichweizen' -105
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Zichorien/Wegwarten' 0
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f'.'Zuckerrüben' -288
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'AL aus Erzeugung genommen' -2683
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Acker-/Puff-/Pferdebohne' 548
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Ackergras' -651
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Blühfläche (MSL-Maßnahme)' -767
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Blühstreifen (MSL-Maßnahme)' -2880
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Brachefläche Vertragsnaturs.' -2683
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Grünland (Dauergrünland)' 704
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Kartoffeln' 40389
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Möhre (auch Futtermöhre)' 14106
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2880
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Silomais (als Hauptfutter)' -2696
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Sommerraps' -705
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Streuobst mit DGL-Nutzung' 3549
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Winter-Dinkel' 3135
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Winterweichweizen' -327
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Zichorien/Wegwarten' 0
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3'.'Zuckerrüben' -2975
+ 'be099576-da78-433d-996a-9a8882c07da5'.'AL aus Erzeugung genommen' -2070
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Acker-/Puff-/Pferdebohne' 422
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Ackergras' -1983
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Blühfläche (MSL-Maßnahme)' -592
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Blühstreifen (MSL-Maßnahme)' -2222
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Brachefläche Vertragsnaturs.' -2070
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Grünland (Dauergrünland)' 17
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Kartoffeln' 31153
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Möhre (auch Futtermöhre)' 10872
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2222
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Silomais (als Hauptfutter)' -2088
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Sommerraps' -552
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Streuobst mit DGL-Nutzung' 2360
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Wintergerste' 84
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Winterweichweizen' -253
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Zichorien/Wegwarten' 0
+ 'be099576-da78-433d-996a-9a8882c07da5'.'Zuckerrüben' -2307
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'AL aus Erzeugung genommen' -173
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Acker-/Puff-/Pferdebohne' 35
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Ackergras' -166
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Blühfläche (MSL-Maßnahme)' -49
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Blühstreifen (MSL-Maßnahme)' -185
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Brachefläche Vertragsnaturs.' -173
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Grünland (Dauergrünland)' 1
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Kartoffeln' 2595
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Möhre (auch Futtermöhre)' 904
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -185
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Silomais (als Hauptfutter)' -175
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Sommerraps' -47
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Streuobst mit DGL-Nutzung' 196
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Wintergerste' 7
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Winterweichweizen' -21
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Zichorien/Wegwarten' 0
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb'.'Zuckerrüben' -194
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'AL aus Erzeugung genommen' -114
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Acker-/Puff-/Pferdebohne' 33
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Ackergras' 65
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Blühfläche (MSL-Maßnahme)' -33
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Brachefläche Vertragsnaturs.' -114
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Grünland (Dauergrünland)' 91
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Kartoffeln' 1822
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Möhre (auch Futtermöhre)' 744
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -122
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Silomais (als Hauptfutter)' -7
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Sommerraps' 70
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Streuobst mit DGL-Nutzung' 241
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Winter-Dinkel' 137
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Wintergerste' 17
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Winterweichweizen' -2
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Zichorien/Wegwarten' 0
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad'.'Zuckerrüben' 20
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'AL aus Erzeugung genommen' -59
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Acker-/Puff-/Pferdebohne' -30
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Ackergras' -117
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Blühfläche (MSL-Maßnahme)' -17
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Blühstreifen (MSL-Maßnahme)' -63
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Brachefläche Vertragsnaturs.' -59
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Grünland (Dauergrünland)' -12
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Kartoffeln' 732
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Möhre (auch Futtermöhre)' 32
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -63
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Silomais (als Hauptfutter)' -31
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Sommerraps' 20
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Streuobst mit DGL-Nutzung' 75
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Winter-Dinkel' 98
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Wintergerste' 2
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Winterweichweizen' 19
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Zichorien/Wegwarten' 0
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845'.'Zuckerrüben' -48
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'AL aus Erzeugung genommen' -13625
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Acker-/Puff-/Pferdebohne' 1747
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Ackergras' -14478
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Blühfläche (MSL-Maßnahme)' -3894
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Blühstreifen (MSL-Maßnahme)' -14623
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Brachefläche Vertragsnaturs.' -13625
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Grünland (Dauergrünland)' -660
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Möhre (auch Futtermöhre)' -20144
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -14623
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Silomais (als Hauptfutter)' -4777
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Sommerraps' 8518
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Streuobst mit DGL-Nutzung' 19216
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Winter-Dinkel' 41233
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Wintergerste' 8004
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Winterweichweizen' 18489
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Zichorien/Wegwarten' 0
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af'.'Zuckerrüben' 2600
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'AL aus Erzeugung genommen' -1145
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Acker-/Puff-/Pferdebohne' 43
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Ackergras' -1929
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Blühfläche (MSL-Maßnahme)' -327
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Blühstreifen (MSL-Maßnahme)' -1229
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Brachefläche Vertragsnaturs.' -1145
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Grünland (Dauergrünland)' -587
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Möhre (auch Futtermöhre)' -2709
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1229
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Silomais (als Hauptfutter)' -1546
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Sommerraps' -458
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Streuobst mit DGL-Nutzung' 828
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Winter-Dinkel' 3380
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Wintergerste' 491
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Winterweichweizen' 1325
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Zichorien/Wegwarten' 0
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7'.'Zuckerrüben' -1499
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'AL aus Erzeugung genommen' -150
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Acker-/Puff-/Pferdebohne' -76
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Ackergras' -268
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Blühfläche (MSL-Maßnahme)' -43
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Blühstreifen (MSL-Maßnahme)' -162
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Brachefläche Vertragsnaturs.' -150
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Grünland (Dauergrünland)' 13
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Kartoffeln' 840
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Möhre (auch Futtermöhre)' -376
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -162
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Silomais (als Hauptfutter)' -322
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Sommerraps' -70
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Streuobst mit DGL-Nutzung' 159
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Winter-Dinkel' 174
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Wintergerste' -54
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Winterweichweizen' -23
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Zichorien/Wegwarten' 0
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1'.'Zuckerrüben' -330
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'AL aus Erzeugung genommen' -800
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Acker-/Puff-/Pferdebohne' -457
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Ackergras' -1543
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Blühfläche (MSL-Maßnahme)' -229
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Blühstreifen (MSL-Maßnahme)' -859
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Brachefläche Vertragsnaturs.' -800
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Grünland (Dauergrünland)' -65
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Kartoffeln' 3777
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Möhre (auch Futtermöhre)' -2552
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -859
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Silomais (als Hauptfutter)' -1774
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Sommerraps' -362
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Streuobst mit DGL-Nutzung' 763
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Winter-Dinkel' 786
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Wintergerste' -361
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Winterweichweizen' -220
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Zichorien/Wegwarten' 0
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e'.'Zuckerrüben' -1797
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'AL aus Erzeugung genommen' -899
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Acker-/Puff-/Pferdebohne' -526
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Ackergras' -2548
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Blühfläche (MSL-Maßnahme)' -257
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Blühstreifen (MSL-Maßnahme)' -965
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Brachefläche Vertragsnaturs.' -899
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Grünland (Dauergrünland)' -686
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Kartoffeln' 6491
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Möhre (auch Futtermöhre)' -4799
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -965
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Silomais (als Hauptfutter)' -1756
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Sommerraps' -361
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Streuobst mit DGL-Nutzung' 469
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Winter-Dinkel' 1321
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Wintergerste' -667
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Winterweichweizen' 68
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a'.'Zichorien/Wegwarten' 0
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'AL aus Erzeugung genommen' -859
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Acker-/Puff-/Pferdebohne' -17
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Ackergras' -1527
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Blühfläche (MSL-Maßnahme)' -245
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Blühstreifen (MSL-Maßnahme)' -922
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Brachefläche Vertragsnaturs.' -859
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Grünland (Dauergrünland)' -505
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Möhre (auch Futtermöhre)' -2379
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -922
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Silomais (als Hauptfutter)' -1226
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Sommerraps' -344
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Streuobst mit DGL-Nutzung' 575
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Winter-Dinkel' 2396
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Wintergerste' 297
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Winterweichweizen' 889
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Zichorien/Wegwarten' 0
+ '773c8711-bb91-4c11-9d85-947a419b16a8'.'Zuckerrüben' -1187
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'AL aus Erzeugung genommen' -48
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Acker-/Puff-/Pferdebohne' -27
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Ackergras' -116
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Blühfläche (MSL-Maßnahme)' -14
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Blühstreifen (MSL-Maßnahme)' -51
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Brachefläche Vertragsnaturs.' -48
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Grünland (Dauergrünland)' -31
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Kartoffeln' 549
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Möhre (auch Futtermöhre)' -24
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -51
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Silomais (als Hauptfutter)' -71
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Sommerraps' -18
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Streuobst mit DGL-Nutzung' 30
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Winter-Dinkel' 77
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Wintergerste' -5
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Winterweichweizen' 9
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Zichorien/Wegwarten' 0
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7'.'Zuckerrüben' -90
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'AL aus Erzeugung genommen' -44
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Acker-/Puff-/Pferdebohne' -24
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Ackergras' -105
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Blühfläche (MSL-Maßnahme)' -13
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Blühstreifen (MSL-Maßnahme)' -47
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Brachefläche Vertragsnaturs.' -44
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Grünland (Dauergrünland)' -26
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Kartoffeln' 532
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Möhre (auch Futtermöhre)' -6
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -47
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Silomais (als Hauptfutter)' -63
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Sommerraps' -17
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Streuobst mit DGL-Nutzung' 30
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Winter-Dinkel' 75
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Wintergerste' -2
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Winterweichweizen' 11
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Zichorien/Wegwarten' 0
+ '3180d0b2-1899-4126-bbcd-87547eb4083c'.'Zuckerrüben' -81
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'AL aus Erzeugung genommen' -279
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Acker-/Puff-/Pferdebohne' -6
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Ackergras' -495
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Blühfläche (MSL-Maßnahme)' -80
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Blühstreifen (MSL-Maßnahme)' -299
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Brachefläche Vertragsnaturs.' -279
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Grünland (Dauergrünland)' -163
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Möhre (auch Futtermöhre)' -772
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -299
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Silomais (als Hauptfutter)' -397
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Sommerraps' -110
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Streuobst mit DGL-Nutzung' 188
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Winter-Dinkel' 778
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Wintergerste' 97
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Winterweichweizen' 289
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Zichorien/Wegwarten' 0
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7'.'Zuckerrüben' -384
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'AL aus Erzeugung genommen' -18
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Acker-/Puff-/Pferdebohne' -9
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Ackergras' -39
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Blühfläche (MSL-Maßnahme)' -5
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Blühstreifen (MSL-Maßnahme)' -20
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Brachefläche Vertragsnaturs.' -18
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Grünland (Dauergrünland)' -6
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Kartoffeln' 243
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Möhre (auch Futtermöhre)' 15
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -20
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Silomais (als Hauptfutter)' -18
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Sommerraps' -2
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Streuobst mit DGL-Nutzung' 18
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Winter-Dinkel' 34
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Wintergerste' 1
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Winterweichweizen' 7
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Zichorien/Wegwarten' 0
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab'.'Zuckerrüben' -25
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'AL aus Erzeugung genommen' -360
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Acker-/Puff-/Pferdebohne' 82
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Ackergras' -275
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Blühfläche (MSL-Maßnahme)' -103
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Blühstreifen (MSL-Maßnahme)' -386
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Brachefläche Vertragsnaturs.' -360
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Grünland (Dauergrünland)' 54
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Kartoffeln' 5514
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Möhre (auch Futtermöhre)' 2024
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -386
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Silomais (als Hauptfutter)' -264
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Sommerraps' -4
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Streuobst mit DGL-Nutzung' 486
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Winter-Dinkel' 424
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Wintergerste' 26
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Zichorien/Wegwarten' 0
+ 'c2c47adf-5550-43bc-a632-1978362b3385'.'Zuckerrüben' -266
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'AL aus Erzeugung genommen' -448
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Acker-/Puff-/Pferdebohne' -51
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Ackergras' -489
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Blühfläche (MSL-Maßnahme)' -128
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Blühstreifen (MSL-Maßnahme)' -481
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Brachefläche Vertragsnaturs.' -448
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Grünland (Dauergrünland)' -149
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Kartoffeln' 4849
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Möhre (auch Futtermöhre)' -1937
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -481
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Sommerraps' -179
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Streuobst mit DGL-Nutzung' 367
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Winter-Dinkel' 825
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Wintergerste' -137
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Winterweichweizen' 155
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Zichorien/Wegwarten' 0
+ 'eb580833-1661-4f9b-899c-2071f8b938ae'.'Zuckerrüben' -1028
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'AL aus Erzeugung genommen' -242
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Acker-/Puff-/Pferdebohne' -131
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Ackergras' -452
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Blühfläche (MSL-Maßnahme)' -69
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Blühstreifen (MSL-Maßnahme)' -260
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Brachefläche Vertragsnaturs.' -242
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Grünland (Dauergrünland)' -3
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Kartoffeln' 1232
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Möhre (auch Futtermöhre)' -701
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -260
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Silomais (als Hauptfutter)' -530
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Sommerraps' -111
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Streuobst mit DGL-Nutzung' 242
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Winter-Dinkel' 256
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Wintergerste' -100
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Winterweichweizen' -55
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Zichorien/Wegwarten' 0
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842'.'Zuckerrüben' -538
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'AL aus Erzeugung genommen' -128
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Acker-/Puff-/Pferdebohne' -88
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Ackergras' -346
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Blühfläche (MSL-Maßnahme)' -37
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Blühstreifen (MSL-Maßnahme)' -138
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Brachefläche Vertragsnaturs.' -128
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Grünland (Dauergrünland)' -120
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Kartoffeln' 1164
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Möhre (auch Futtermöhre)' -279
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -138
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Silomais (als Hauptfutter)' -237
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Sommerraps' -62
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Streuobst mit DGL-Nutzung' 49
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Winter-Dinkel' 160
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Wintergerste' -41
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Winterweichweizen' -13
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Zichorien/Wegwarten' 0
+ '75aa23cd-bb23-4887-a463-5cf336760b89'.'Zuckerrüben' -279
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'AL aus Erzeugung genommen' -385
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Acker-/Puff-/Pferdebohne' -230
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Ackergras' -769
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Blühfläche (MSL-Maßnahme)' -110
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Blühstreifen (MSL-Maßnahme)' -414
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Brachefläche Vertragsnaturs.' -385
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Grünland (Dauergrünland)' -59
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Kartoffeln' 1676
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Möhre (auch Futtermöhre)' -1344
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -414
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Silomais (als Hauptfutter)' -868
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Sommerraps' -173
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Streuobst mit DGL-Nutzung' 349
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Winter-Dinkel' 350
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Wintergerste' -189
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Winterweichweizen' -126
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Zichorien/Wegwarten' 0
+ '78e399f2-2c4c-431b-931f-33121e8a869f'.'Zuckerrüben' -876
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'AL aus Erzeugung genommen' -206
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Acker-/Puff-/Pferdebohne' 37
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Ackergras' -99
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Blühfläche (MSL-Maßnahme)' -59
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Blühstreifen (MSL-Maßnahme)' -221
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Brachefläche Vertragsnaturs.' -206
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Grünland (Dauergrünland)' 22
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Kartoffeln' 3037
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Möhre (auch Futtermöhre)' -507
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -221
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Sommerraps' -91
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Streuobst mit DGL-Nutzung' 225
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Winter-Dinkel' 523
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Wintergerste' 2
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Winterweichweizen' 174
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Zichorien/Wegwarten' 0
+ '1c50e312-a250-415d-98f6-59c6104819a5'.'Zuckerrüben' -443
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'AL aus Erzeugung genommen' -128
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Acker-/Puff-/Pferdebohne' -87
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Ackergras' -342
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Blühfläche (MSL-Maßnahme)' -37
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Blühstreifen (MSL-Maßnahme)' -138
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Brachefläche Vertragsnaturs.' -128
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Grünland (Dauergrünland)' -115
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Kartoffeln' 1173
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Möhre (auch Futtermöhre)' -269
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -138
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Silomais (als Hauptfutter)' -228
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Sommerraps' -55
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Streuobst mit DGL-Nutzung' 55
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Winter-Dinkel' 160
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Wintergerste' -39
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Winterweichweizen' -11
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Zichorien/Wegwarten' 0
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a'.'Zuckerrüben' -270
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'AL aus Erzeugung genommen' -92
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Acker-/Puff-/Pferdebohne' -62
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Ackergras' -246
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Blühfläche (MSL-Maßnahme)' -26
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Blühstreifen (MSL-Maßnahme)' -98
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Brachefläche Vertragsnaturs.' -92
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Grünland (Dauergrünland)' -84
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Kartoffeln' 835
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Möhre (auch Futtermöhre)' -196
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -98
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Silomais (als Hauptfutter)' -166
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Sommerraps' -42
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Streuobst mit DGL-Nutzung' 37
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Winter-Dinkel' 114
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Wintergerste' -29
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Winterweichweizen' -9
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Zichorien/Wegwarten' 0
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7'.'Zuckerrüben' -196
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'AL aus Erzeugung genommen' -437
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Ackergras' -1018
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Blühfläche (MSL-Maßnahme)' -125
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Blühstreifen (MSL-Maßnahme)' -469
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Brachefläche Vertragsnaturs.' -437
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Grünland (Dauergrünland)' -236
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Kartoffeln' 6190
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Möhre (auch Futtermöhre)' -1170
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -469
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Silomais (als Hauptfutter)' -491
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Sommerraps' -133
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Streuobst mit DGL-Nutzung' 324
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Winter-Dinkel' 1222
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Wintergerste' -14
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Winterweichweizen' 461
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Zichorien/Wegwarten' 0
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c'.'Zuckerrüben' -536
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'AL aus Erzeugung genommen' -4885
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Acker-/Puff-/Pferdebohne' -2710
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Ackergras' -8597
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Blühfläche (MSL-Maßnahme)' -1396
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Blühstreifen (MSL-Maßnahme)' -5243
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Brachefläche Vertragsnaturs.' -4885
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Grünland (Dauergrünland)' 432
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Kartoffeln' 23945
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Möhre (auch Futtermöhre)' -14399
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5243
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Silomais (als Hauptfutter)' -9967
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Sommerraps' -1404
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Streuobst mit DGL-Nutzung' 5886
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Winter-Dinkel' 4859
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Wintergerste' -2064
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Winterweichweizen' -1185
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Zichorien/Wegwarten' 0
+ '18b795c9-41cc-4978-9a7b-0ed726815acb'.'Zuckerrüben' -9793
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'AL aus Erzeugung genommen' -2000
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Acker-/Puff-/Pferdebohne' -513
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Ackergras' -2594
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Blühfläche (MSL-Maßnahme)' -572
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Blühstreifen (MSL-Maßnahme)' -2147
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Brachefläche Vertragsnaturs.' -2000
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Grünland (Dauergrünland)' -975
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Kartoffeln' 17784
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Möhre (auch Futtermöhre)' 553
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2147
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Silomais (als Hauptfutter)' -3273
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Sommerraps' -562
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Streuobst mit DGL-Nutzung' 1578
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Winter-Dinkel' 917
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Winterweichweizen' -1268
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Zichorien/Wegwarten' 0
+ '98b482d0-0b8a-453b-99be-6133b9159012'.'Zuckerrüben' -3315
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'AL aus Erzeugung genommen' -81
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Acker-/Puff-/Pferdebohne' -61
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Ackergras' -223
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Blühfläche (MSL-Maßnahme)' -23
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Blühstreifen (MSL-Maßnahme)' -87
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Brachefläche Vertragsnaturs.' -81
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Grünland (Dauergrünland)' -81
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Kartoffeln' 596
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Möhre (auch Futtermöhre)' -256
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -87
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Silomais (als Hauptfutter)' -145
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Sommerraps' -24
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Streuobst mit DGL-Nutzung' 34
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Winter-Dinkel' 76
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Wintergerste' -37
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Winterweichweizen' -23
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Zichorien/Wegwarten' 0
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3'.'Zuckerrüben' -165
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'AL aus Erzeugung genommen' -5117
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Ackergras' -12085
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Blühfläche (MSL-Maßnahme)' -1462
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Blühstreifen (MSL-Maßnahme)' -5491
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Brachefläche Vertragsnaturs.' -5117
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Grünland (Dauergrünland)' -2893
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Kartoffeln' 75595
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Möhre (auch Futtermöhre)' -12624
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5491
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Silomais (als Hauptfutter)' -6534
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Sommerraps' -2403
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Streuobst mit DGL-Nutzung' 3300
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Winter-Dinkel' 15057
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Wintergerste' 47
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Winterweichweizen' 5803
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Zichorien/Wegwarten' 0
+ '6c988fcd-843c-4b96-9652-5d7d711a027f'.'Zuckerrüben' -7572
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'AL aus Erzeugung genommen' -81
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Acker-/Puff-/Pferdebohne' -46
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Ackergras' -200
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Blühfläche (MSL-Maßnahme)' -23
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Blühstreifen (MSL-Maßnahme)' -87
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Brachefläche Vertragsnaturs.' -81
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Grünland (Dauergrünland)' -56
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Kartoffeln' 920
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Möhre (auch Futtermöhre)' -51
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -87
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Silomais (als Hauptfutter)' -128
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Sommerraps' -37
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Streuobst mit DGL-Nutzung' 45
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Winter-Dinkel' 129
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Wintergerste' -9
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Winterweichweizen' 14
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Zichorien/Wegwarten' 0
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b'.'Zuckerrüben' -161
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'AL aus Erzeugung genommen' -2088
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Acker-/Puff-/Pferdebohne' 79
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Ackergras' -3509
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Blühfläche (MSL-Maßnahme)' -597
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Blühstreifen (MSL-Maßnahme)' -2241
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Brachefläche Vertragsnaturs.' -2088
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Grünland (Dauergrünland)' -1064
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Möhre (auch Futtermöhre)' -4930
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2241
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Silomais (als Hauptfutter)' -2807
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Sommerraps' -821
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Streuobst mit DGL-Nutzung' 1520
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Winter-Dinkel' 6165
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Wintergerste' 897
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Winterweichweizen' 2419
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Zichorien/Wegwarten' 0
+ 'd4a5559f-56b3-404f-8d26-d57115431d23'.'Zuckerrüben' -2714
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'AL aus Erzeugung genommen' -1567
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Acker-/Puff-/Pferdebohne' 302
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Ackergras' -1638
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Blühfläche (MSL-Maßnahme)' -448
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Blühstreifen (MSL-Maßnahme)' -1682
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Brachefläche Vertragsnaturs.' -1567
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Grünland (Dauergrünland)' -87
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Kartoffeln' 23388
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Möhre (auch Futtermöhre)' 7967
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1682
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Silomais (als Hauptfutter)' -1774
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Sommerraps' -598
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Streuobst mit DGL-Nutzung' 1639
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Winter-Dinkel' 1823
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Wintergerste' 41
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Zichorien/Wegwarten' 0
+ '46c0848e-eaad-4472-bcad-b102763c651d'.'Zuckerrüben' -2010
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'AL aus Erzeugung genommen' -18
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Acker-/Puff-/Pferdebohne' -10
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Ackergras' -45
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Blühfläche (MSL-Maßnahme)' -5
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Blühstreifen (MSL-Maßnahme)' -20
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Brachefläche Vertragsnaturs.' -18
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Grünland (Dauergrünland)' -12
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Kartoffeln' 211
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Möhre (auch Futtermöhre)' -9
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -20
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Silomais (als Hauptfutter)' -27
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Sommerraps' -7
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Streuobst mit DGL-Nutzung' 12
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Winter-Dinkel' 30
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Wintergerste' -2
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Winterweichweizen' 3
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Zichorien/Wegwarten' 0
+ '73ea45c9-cb05-4219-8d18-c64f864bad76'.'Zuckerrüben' -34
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'AL aus Erzeugung genommen' -4423
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Acker-/Puff-/Pferdebohne' -2489
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Ackergras' -8160
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Blühfläche (MSL-Maßnahme)' -1264
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Blühstreifen (MSL-Maßnahme)' -4747
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Brachefläche Vertragsnaturs.' -4423
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Grünland (Dauergrünland)' -4513
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Kartoffeln' 21274
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Möhre (auch Futtermöhre)' -13573
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -4747
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Silomais (als Hauptfutter)' -9418
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Sommerraps' -1639
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Streuobst mit DGL-Nutzung' 1647
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Winter-Dinkel' 4372
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Wintergerste' -1931
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Winterweichweizen' -1144
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f'.'Zuckerrüben' -9404
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'AL aus Erzeugung genommen' -1288
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Acker-/Puff-/Pferdebohne' 251
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Ackergras' -1325
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Blühfläche (MSL-Maßnahme)' -368
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Blühstreifen (MSL-Maßnahme)' -1383
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Brachefläche Vertragsnaturs.' -1288
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Grünland (Dauergrünland)' -56
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Kartoffeln' 19256
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Möhre (auch Futtermöhre)' 6590
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1383
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Silomais (als Hauptfutter)' -1428
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Sommerraps' -464
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Streuobst mit DGL-Nutzung' 1370
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Winter-Dinkel' 1500
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Wintergerste' 37
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Zichorien/Wegwarten' 0
+ '90bb769e-5c63-455f-a84b-3a2786919000'.'Zuckerrüben' -1611
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'AL aus Erzeugung genommen' -440
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Acker-/Puff-/Pferdebohne' 44
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Ackergras' -484
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Blühfläche (MSL-Maßnahme)' -126
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Blühstreifen (MSL-Maßnahme)' -473
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Brachefläche Vertragsnaturs.' -440
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Grünland (Dauergrünland)' -47
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Kartoffeln' 6015
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Möhre (auch Futtermöhre)' 1840
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -473
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Silomais (als Hauptfutter)' -470
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Sommerraps' -81
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Streuobst mit DGL-Nutzung' 482
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Wintergerste' -30
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Winterweichweizen' -103
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Zichorien/Wegwarten' 0
+ '41727e12-afd7-4396-8796-d24b69caa4f1'.'Zuckerrüben' -493
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'AL aus Erzeugung genommen' -1857
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Acker-/Puff-/Pferdebohne' 358
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Ackergras' -1944
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Blühfläche (MSL-Maßnahme)' -531
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Blühstreifen (MSL-Maßnahme)' -1993
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Brachefläche Vertragsnaturs.' -1857
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Grünland (Dauergrünland)' -105
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Kartoffeln' 27711
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Möhre (auch Futtermöhre)' 9436
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1993
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Silomais (als Hauptfutter)' -2106
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Sommerraps' -712
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Streuobst mit DGL-Nutzung' 1939
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Winter-Dinkel' 2160
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Wintergerste' 48
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Zichorien/Wegwarten' 0
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647'.'Zuckerrüben' -2387
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'AL aus Erzeugung genommen' -741
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Acker-/Puff-/Pferdebohne' -419
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Ackergras' -1385
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Blühfläche (MSL-Maßnahme)' -212
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Blühstreifen (MSL-Maßnahme)' -796
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Brachefläche Vertragsnaturs.' -741
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Grünland (Dauergrünland)' -15
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Kartoffeln' 3548
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Möhre (auch Futtermöhre)' -2300
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -796
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Silomais (als Hauptfutter)' -1597
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Sommerraps' -291
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Streuobst mit DGL-Nutzung' 774
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Winter-Dinkel' 732
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Wintergerste' -327
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Winterweichweizen' -195
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Zichorien/Wegwarten' 0
+ '37ecca36-c7d2-460a-993e-98592b04f3e1'.'Zuckerrüben' -1601
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'AL aus Erzeugung genommen' -308
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Acker-/Puff-/Pferdebohne' -174
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Ackergras' -573
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Blühfläche (MSL-Maßnahme)' -88
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Blühstreifen (MSL-Maßnahme)' -331
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Brachefläche Vertragsnaturs.' -308
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Grünland (Dauergrünland)' -3
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Kartoffeln' 1478
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Möhre (auch Futtermöhre)' -952
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -331
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Silomais (als Hauptfutter)' -661
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Sommerraps' -118
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Streuobst mit DGL-Nutzung' 326
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Winter-Dinkel' 304
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Wintergerste' -135
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Winterweichweizen' -81
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Zichorien/Wegwarten' 0
+ 'e1eab6e1-2965-4baf-9529-6765054d644e'.'Zuckerrüben' -662
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'AL aus Erzeugung genommen' -374
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Ackergras' -924
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Blühfläche (MSL-Maßnahme)' -107
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Blühstreifen (MSL-Maßnahme)' -402
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Brachefläche Vertragsnaturs.' -374
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Grünland (Dauergrünland)' -257
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Kartoffeln' 4799
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Möhre (auch Futtermöhre)' -1254
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -402
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Silomais (als Hauptfutter)' -498
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Sommerraps' -135
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Streuobst mit DGL-Nutzung' 229
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Winter-Dinkel' 952
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Wintergerste' -53
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Winterweichweizen' 324
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Zichorien/Wegwarten' 0
+ '589332f9-1da7-42d9-a2df-ee341accebfa'.'Zuckerrüben' -541
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'AL aus Erzeugung genommen' -496
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Acker-/Puff-/Pferdebohne' 30
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Ackergras' -699
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Blühfläche (MSL-Maßnahme)' -142
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Blühstreifen (MSL-Maßnahme)' -532
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Brachefläche Vertragsnaturs.' -496
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Grünland (Dauergrünland)' -166
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Kartoffeln' 6544
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Möhre (auch Futtermöhre)' 1774
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -532
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Silomais (als Hauptfutter)' -746
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Sommerraps' -293
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Streuobst mit DGL-Nutzung' 376
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Wintergerste' -59
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Winterweichweizen' -139
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Zichorien/Wegwarten' 0
+ '04f48caf-b707-4096-832b-f283f673dd0a'.'Zuckerrüben' -850
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'AL aus Erzeugung genommen' -723
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Acker-/Puff-/Pferdebohne' -555
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Ackergras' -1710
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Blühfläche (MSL-Maßnahme)' -207
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Blühstreifen (MSL-Maßnahme)' -776
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Brachefläche Vertragsnaturs.' -723
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Grünland (Dauergrünland)' -408
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Kartoffeln' 1477
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Möhre (auch Futtermöhre)' -3835
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -776
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Silomais (als Hauptfutter)' -1744
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Sommerraps' -273
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Streuobst mit DGL-Nutzung' 488
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Winter-Dinkel' 328
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Wintergerste' -533
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Winterweichweizen' -469
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Zichorien/Wegwarten' 0
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89'.'Zuckerrüben' -1715
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'AL aus Erzeugung genommen' -2019
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Ackergras' -3892
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Blühfläche (MSL-Maßnahme)' -577
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Blühstreifen (MSL-Maßnahme)' -2167
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Brachefläche Vertragsnaturs.' -2019
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Grünland (Dauergrünland)' -273
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Kartoffeln' 30589
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Möhre (auch Futtermöhre)' -3845
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2167
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Silomais (als Hauptfutter)' -331
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Sommerraps' 725
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Streuobst mit DGL-Nutzung' 2705
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Winter-Dinkel' 5779
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Wintergerste' 166
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Winterweichweizen' 2484
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Zichorien/Wegwarten' 0
+ '11252375-6e59-41c5-99f9-4351d4ede22b'.'Zuckerrüben' 163
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'AL aus Erzeugung genommen' -40
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Acker-/Puff-/Pferdebohne' 12
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Ackergras' 24
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Blühfläche (MSL-Maßnahme)' -12
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Blühstreifen (MSL-Maßnahme)' -43
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Brachefläche Vertragsnaturs.' -40
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Grünland (Dauergrünland)' 33
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Kartoffeln' 647
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Möhre (auch Futtermöhre)' 265
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Silomais (als Hauptfutter)' -2
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Sommerraps' 25
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Streuobst mit DGL-Nutzung' 86
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Winter-Dinkel' 49
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Wintergerste' 6
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Winterweichweizen' -1
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Zichorien/Wegwarten' 0
+ 'd013b984-d48c-48d1-9d44-f964000a55fd'.'Zuckerrüben' 8
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'AL aus Erzeugung genommen' -40
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Acker-/Puff-/Pferdebohne' -19
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Ackergras' -78
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Blühfläche (MSL-Maßnahme)' -12
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Blühstreifen (MSL-Maßnahme)' -43
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Brachefläche Vertragsnaturs.' -40
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Grünland (Dauergrünland)' -5
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Kartoffeln' 528
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Möhre (auch Futtermöhre)' 39
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -43
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Silomais (als Hauptfutter)' -18
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Sommerraps' 15
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Streuobst mit DGL-Nutzung' 54
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Winter-Dinkel' 71
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Wintergerste' 3
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Winterweichweizen' 16
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Zichorien/Wegwarten' 0
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9'.'Zuckerrüben' -30
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'AL aus Erzeugung genommen' -305
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Acker-/Puff-/Pferdebohne' -83
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Ackergras' -445
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Blühfläche (MSL-Maßnahme)' -87
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Brachefläche Vertragsnaturs.' -305
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Grünland (Dauergrünland)' -181
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Kartoffeln' 2649
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Möhre (auch Futtermöhre)' 5
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -327
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Silomais (als Hauptfutter)' -556
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Sommerraps' -140
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Streuobst mit DGL-Nutzung' 192
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Winter-Dinkel' 137
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Wintergerste' -145
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Winterweichweizen' -199
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Zichorien/Wegwarten' 0
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b'.'Zuckerrüben' -584
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'AL aus Erzeugung genommen' -9235
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Acker-/Puff-/Pferdebohne' -2526
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Ackergras' -18002
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Blühfläche (MSL-Maßnahme)' -2639
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Blühstreifen (MSL-Maßnahme)' -9911
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Brachefläche Vertragsnaturs.' -9235
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Grünland (Dauergrünland)' -7088
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Kartoffeln' 80335
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Möhre (auch Futtermöhre)' 198
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -9911
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Silomais (als Hauptfutter)' -16839
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Sommerraps' -4207
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Streuobst mit DGL-Nutzung' 4754
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Winter-Dinkel' 4166
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Wintergerste' -4391
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Zichorien/Wegwarten' 0
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae'.'Zuckerrüben' -17658
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'AL aus Erzeugung genommen' -3509
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Acker-/Puff-/Pferdebohne' 630
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Ackergras' -1680
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Blühfläche (MSL-Maßnahme)' -1003
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Blühstreifen (MSL-Maßnahme)' -3766
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Brachefläche Vertragsnaturs.' -3509
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Grünland (Dauergrünland)' 378
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Kartoffeln' 51844
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Möhre (auch Futtermöhre)' -8656
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3766
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Sommerraps' -1551
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Streuobst mit DGL-Nutzung' 3839
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Winter-Dinkel' 8934
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Wintergerste' 32
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Winterweichweizen' 2973
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Zichorien/Wegwarten' 0
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa'.'Zuckerrüben' -7567
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'AL aus Erzeugung genommen' -2129
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Acker-/Puff-/Pferdebohne' 51
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Ackergras' -1740
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Blühfläche (MSL-Maßnahme)' -608
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Blühstreifen (MSL-Maßnahme)' -2285
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Brachefläche Vertragsnaturs.' -2129
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Grünland (Dauergrünland)' -286
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Kartoffeln' 26994
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Möhre (auch Futtermöhre)' -7363
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2285
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Sommerraps' -915
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Streuobst mit DGL-Nutzung' 1989
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Winter-Dinkel' 4629
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Wintergerste' -335
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Winterweichweizen' 1236
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Zichorien/Wegwarten' 0
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f'.'Zuckerrüben' -4779
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'AL aus Erzeugung genommen' -345
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Acker-/Puff-/Pferdebohne' 21
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Ackergras' -277
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Blühfläche (MSL-Maßnahme)' -99
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Blühstreifen (MSL-Maßnahme)' -370
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Brachefläche Vertragsnaturs.' -345
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Grünland (Dauergrünland)' -41
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Kartoffeln' 4556
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Möhre (auch Futtermöhre)' -1119
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -370
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Sommerraps' -169
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Streuobst mit DGL-Nutzung' 310
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Winter-Dinkel' 787
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Wintergerste' -41
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Winterweichweizen' 222
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Zichorien/Wegwarten' 0
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f'.'Zuckerrüben' -793
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'AL aus Erzeugung genommen' -3072
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Acker-/Puff-/Pferdebohne' 237
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Ackergras' -3943
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Blühfläche (MSL-Maßnahme)' -878
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Blühstreifen (MSL-Maßnahme)' -3297
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Brachefläche Vertragsnaturs.' -3072
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Grünland (Dauergrünland)' -742
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Kartoffeln' 41138
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Möhre (auch Futtermöhre)' 11748
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3297
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Silomais (als Hauptfutter)' -4075
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Sommerraps' -1306
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Streuobst mit DGL-Nutzung' 2754
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Winter-Dinkel' 3033
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Wintergerste' -301
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Zichorien/Wegwarten' 0
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c'.'Zuckerrüben' -4522
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'AL aus Erzeugung genommen' -1509
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Acker-/Puff-/Pferdebohne' -840
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Ackergras' -4157
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Blühfläche (MSL-Maßnahme)' -431
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Blühstreifen (MSL-Maßnahme)' -1619
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Brachefläche Vertragsnaturs.' -1509
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Grünland (Dauergrünland)' -2072
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Möhre (auch Futtermöhre)' -9971
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1619
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Silomais (als Hauptfutter)' -3535
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Sommerraps' -952
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Streuobst mit DGL-Nutzung' 57
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Winter-Dinkel' 1950
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Wintergerste' -661
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Winterweichweizen' -116
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Zichorien/Wegwarten' 0
+ '2ad30be7-5e63-45b2-a008-f36cf360f046'.'Zuckerrüben' -3571
+ '942d608b-0530-45d3-b561-e748775ca3df'.'AL aus Erzeugung genommen' -1101
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Acker-/Puff-/Pferdebohne' -22
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Ackergras' -1959
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Blühfläche (MSL-Maßnahme)' -315
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Blühstreifen (MSL-Maßnahme)' -1182
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Brachefläche Vertragsnaturs.' -1101
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Grünland (Dauergrünland)' -648
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Möhre (auch Futtermöhre)' -3052
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1182
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Silomais (als Hauptfutter)' -1574
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Sommerraps' -442
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Streuobst mit DGL-Nutzung' 737
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Winter-Dinkel' 3072
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Wintergerste' 380
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Winterweichweizen' 1140
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Zichorien/Wegwarten' 0
+ '942d608b-0530-45d3-b561-e748775ca3df'.'Zuckerrüben' -1524
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'AL aus Erzeugung genommen' -55
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Acker-/Puff-/Pferdebohne' -29
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Ackergras' -131
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Blühfläche (MSL-Maßnahme)' -16
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Blühstreifen (MSL-Maßnahme)' -59
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Brachefläche Vertragsnaturs.' -55
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Grünland (Dauergrünland)' -32
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Kartoffeln' 665
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Möhre (auch Futtermöhre)' -7
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -59
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Silomais (als Hauptfutter)' -79
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Sommerraps' -21
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Streuobst mit DGL-Nutzung' 37
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Winter-Dinkel' 93
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Wintergerste' -2
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Winterweichweizen' 14
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Zichorien/Wegwarten' 0
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d'.'Zuckerrüben' -101
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'AL aus Erzeugung genommen' -37
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Acker-/Puff-/Pferdebohne' -21
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Ackergras' -90
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Blühfläche (MSL-Maßnahme)' -10
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Blühstreifen (MSL-Maßnahme)' -39
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Brachefläche Vertragsnaturs.' -37
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Grünland (Dauergrünland)' -24
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Kartoffeln' 421
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Möhre (auch Futtermöhre)' -20
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -39
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Silomais (als Hauptfutter)' -56
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Sommerraps' -15
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Streuobst mit DGL-Nutzung' 22
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Winter-Dinkel' 59
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Wintergerste' -4
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Winterweichweizen' 7
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Zichorien/Wegwarten' 0
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b'.'Zuckerrüben' -70
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'AL aus Erzeugung genommen' -1031
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Ackergras' -2524
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Blühfläche (MSL-Maßnahme)' -295
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Blühstreifen (MSL-Maßnahme)' -1107
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Brachefläche Vertragsnaturs.' -1031
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Grünland (Dauergrünland)' -681
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Kartoffeln' 13798
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Möhre (auch Futtermöhre)' -3202
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1107
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Silomais (als Hauptfutter)' -1381
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Sommerraps' -423
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Streuobst mit DGL-Nutzung' 625
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Winter-Dinkel' 2746
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Wintergerste' -102
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Winterweichweizen' 970
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Zichorien/Wegwarten' 0
+ '4b1e0484-0b88-481f-ad22-f7a818d63362'.'Zuckerrüben' -1536
+ '406a49ee-fd33-4773-be14-599049d132fd'.'AL aus Erzeugung genommen' -59
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Acker-/Puff-/Pferdebohne' -33
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Ackergras' -144
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Blühfläche (MSL-Maßnahme)' -17
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Blühstreifen (MSL-Maßnahme)' -63
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Brachefläche Vertragsnaturs.' -59
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Grünland (Dauergrünland)' -39
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Kartoffeln' 673
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Möhre (auch Futtermöhre)' -32
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -63
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Silomais (als Hauptfutter)' -89
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Sommerraps' -24
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Streuobst mit DGL-Nutzung' 35
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Winter-Dinkel' 94
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Wintergerste' -6
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Winterweichweizen' 11
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Zichorien/Wegwarten' 0
+ '406a49ee-fd33-4773-be14-599049d132fd'.'Zuckerrüben' -113
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'AL aus Erzeugung genommen' -2485
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Ackergras' -6086
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Blühfläche (MSL-Maßnahme)' -710
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Blühstreifen (MSL-Maßnahme)' -2667
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Brachefläche Vertragsnaturs.' -2485
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Grünland (Dauergrünland)' -1645
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Kartoffeln' 33234
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Möhre (auch Futtermöhre)' -7721
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2667
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Silomais (als Hauptfutter)' -3336
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Sommerraps' -1026
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Streuobst mit DGL-Nutzung' 1500
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Winter-Dinkel' 6616
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Wintergerste' -248
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Winterweichweizen' 2335
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Zichorien/Wegwarten' 0
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19'.'Zuckerrüben' -3711
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'AL aus Erzeugung genommen' -40
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Acker-/Puff-/Pferdebohne' -32
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Ackergras' -116
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Blühfläche (MSL-Maßnahme)' -12
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Blühstreifen (MSL-Maßnahme)' -43
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Brachefläche Vertragsnaturs.' -40
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Grünland (Dauergrünland)' -45
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Kartoffeln' 269
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Möhre (auch Futtermöhre)' -149
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -43
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Silomais (als Hauptfutter)' -80
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Sommerraps' -16
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Streuobst mit DGL-Nutzung' 12
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Winter-Dinkel' 34
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Wintergerste' -21
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Winterweichweizen' -15
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Zichorien/Wegwarten' 0
+ 'f0a77399-85f9-4826-baee-687280c4a25d'.'Zuckerrüben' -90
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'AL aus Erzeugung genommen' -5252
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Acker-/Puff-/Pferdebohne' -1667
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Ackergras' -10579
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Blühfläche (MSL-Maßnahme)' -1501
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Blühstreifen (MSL-Maßnahme)' -5637
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Brachefläche Vertragsnaturs.' -5252
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Grünland (Dauergrünland)' -4311
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Kartoffeln' 42534
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Möhre (auch Futtermöhre)' -2356
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5637
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Silomais (als Hauptfutter)' -9745
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Sommerraps' -2240
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Streuobst mit DGL-Nutzung' 2574
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Winter-Dinkel' 1984
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Wintergerste' -2743
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Zichorien/Wegwarten' 0
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46'.'Zuckerrüben' -10103
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'AL aus Erzeugung genommen' -106
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Acker-/Puff-/Pferdebohne' -34
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Ackergras' -163
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Blühfläche (MSL-Maßnahme)' -30
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Brachefläche Vertragsnaturs.' -106
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Grünland (Dauergrünland)' -69
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Kartoffeln' 863
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Möhre (auch Futtermöhre)' -47
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -114
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Silomais (als Hauptfutter)' -197
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Sommerraps' -45
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Streuobst mit DGL-Nutzung' 65
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Winter-Dinkel' 40
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Wintergerste' -55
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Winterweichweizen' -75
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Zichorien/Wegwarten' 0
+ '52bbc450-df59-4285-8f87-a82c4e6931b6'.'Zuckerrüben' -204
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'AL aus Erzeugung genommen' -37
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Acker-/Puff-/Pferdebohne' -29
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Ackergras' -105
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Blühfläche (MSL-Maßnahme)' -10
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Blühstreifen (MSL-Maßnahme)' -39
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Brachefläche Vertragsnaturs.' -37
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Grünland (Dauergrünland)' -41
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Kartoffeln' 245
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Möhre (auch Futtermöhre)' -136
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -39
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Silomais (als Hauptfutter)' -73
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Sommerraps' -15
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Streuobst mit DGL-Nutzung' 11
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Winter-Dinkel' 31
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Wintergerste' -19
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Winterweichweizen' -14
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Zichorien/Wegwarten' 0
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb'.'Zuckerrüben' -82
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'AL aus Erzeugung genommen' -5278
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Acker-/Puff-/Pferdebohne' -1303
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Ackergras' -12371
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Blühfläche (MSL-Maßnahme)' -1508
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Blühstreifen (MSL-Maßnahme)' -5665
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Brachefläche Vertragsnaturs.' -5278
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Grünland (Dauergrünland)' -570
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Kartoffeln' 67407
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Möhre (auch Futtermöhre)' -12838
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5665
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Silomais (als Hauptfutter)' -7522
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Sommerraps' -2209
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Streuobst mit DGL-Nutzung' 5110
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Winter-Dinkel' 13452
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Wintergerste' -1847
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Winterweichweizen' 4509
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6'.'Zichorien/Wegwarten' 0
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'AL aus Erzeugung genommen' -3498
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Acker-/Puff-/Pferdebohne' -2790
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Ackergras' -8554
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Blühfläche (MSL-Maßnahme)' -1000
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Blühstreifen (MSL-Maßnahme)' -3754
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Brachefläche Vertragsnaturs.' -3498
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Grünland (Dauergrünland)' -4927
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Kartoffeln' 5787
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Möhre (auch Futtermöhre)' -19666
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3754
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Silomais (als Hauptfutter)' -8610
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Sommerraps' -1361
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Streuobst mit DGL-Nutzung' 321
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Winter-Dinkel' 1321
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Wintergerste' -2721
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Winterweichweizen' -2453
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4'.'Zuckerrüben' -8462
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'AL aus Erzeugung genommen' -5370
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Acker-/Puff-/Pferdebohne' -1328
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Ackergras' -12601
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Blühfläche (MSL-Maßnahme)' -1535
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Blühstreifen (MSL-Maßnahme)' -5763
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Brachefläche Vertragsnaturs.' -5370
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Grünland (Dauergrünland)' -600
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Kartoffeln' 68544
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Möhre (auch Futtermöhre)' -13092
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5763
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Silomais (als Hauptfutter)' -7687
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Sommerraps' -2268
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Streuobst mit DGL-Nutzung' 5170
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Winter-Dinkel' 13684
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Wintergerste' -1882
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Winterweichweizen' 4581
+ '0370784e-5966-40a0-b2b6-079e4de82aa4'.'Zichorien/Wegwarten' 0
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'AL aus Erzeugung genommen' -3362
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Acker-/Puff-/Pferdebohne' -2681
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Ackergras' -8213
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Blühfläche (MSL-Maßnahme)' -961
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Blühstreifen (MSL-Maßnahme)' -3608
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Brachefläche Vertragsnaturs.' -3362
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Grünland (Dauergrünland)' -4730
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Kartoffeln' 5572
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Möhre (auch Futtermöhre)' -18890
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3608
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Silomais (als Hauptfutter)' -8266
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Sommerraps' -1300
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Streuobst mit DGL-Nutzung' 316
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Winter-Dinkel' 1271
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Wintergerste' -2614
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Winterweichweizen' -2356
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968'.'Zuckerrüben' -8121
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'AL aus Erzeugung genommen' -48
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Acker-/Puff-/Pferdebohne' -38
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Ackergras' -137
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Blühfläche (MSL-Maßnahme)' -14
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Blühstreifen (MSL-Maßnahme)' -51
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Brachefläche Vertragsnaturs.' -48
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Grünland (Dauergrünland)' -54
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Kartoffeln' 318
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Möhre (auch Futtermöhre)' -177
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -51
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Silomais (als Hauptfutter)' -95
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Sommerraps' -19
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Streuobst mit DGL-Nutzung' 14
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Winter-Dinkel' 41
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Wintergerste' -25
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Winterweichweizen' -18
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Zichorien/Wegwarten' 0
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195'.'Zuckerrüben' -106
+ '87569063-f344-4960-84ac-8a00995f7129'.'AL aus Erzeugung genommen' -874
+ '87569063-f344-4960-84ac-8a00995f7129'.'Acker-/Puff-/Pferdebohne' -696
+ '87569063-f344-4960-84ac-8a00995f7129'.'Ackergras' -2131
+ '87569063-f344-4960-84ac-8a00995f7129'.'Blühfläche (MSL-Maßnahme)' -250
+ '87569063-f344-4960-84ac-8a00995f7129'.'Blühstreifen (MSL-Maßnahme)' -938
+ '87569063-f344-4960-84ac-8a00995f7129'.'Brachefläche Vertragsnaturs.' -874
+ '87569063-f344-4960-84ac-8a00995f7129'.'Grünland (Dauergrünland)' -1227
+ '87569063-f344-4960-84ac-8a00995f7129'.'Kartoffeln' 1451
+ '87569063-f344-4960-84ac-8a00995f7129'.'Möhre (auch Futtermöhre)' -4904
+ '87569063-f344-4960-84ac-8a00995f7129'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -938
+ '87569063-f344-4960-84ac-8a00995f7129'.'Silomais (als Hauptfutter)' -2145
+ '87569063-f344-4960-84ac-8a00995f7129'.'Sommerraps' -335
+ '87569063-f344-4960-84ac-8a00995f7129'.'Streuobst mit DGL-Nutzung' 85
+ '87569063-f344-4960-84ac-8a00995f7129'.'Winter-Dinkel' 330
+ '87569063-f344-4960-84ac-8a00995f7129'.'Wintergerste' -679
+ '87569063-f344-4960-84ac-8a00995f7129'.'Winterweichweizen' -612
+ '87569063-f344-4960-84ac-8a00995f7129'.'Zuckerrüben' -2106
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'AL aus Erzeugung genommen' -3256
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Acker-/Puff-/Pferdebohne' -798
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Ackergras' -5624
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Blühfläche (MSL-Maßnahme)' -930
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Blühstreifen (MSL-Maßnahme)' -3494
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Brachefläche Vertragsnaturs.' -3256
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Grünland (Dauergrünland)' -1972
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Kartoffeln' 29365
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Möhre (auch Futtermöhre)' 1461
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3494
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Silomais (als Hauptfutter)' -4916
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Sommerraps' -532
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Streuobst mit DGL-Nutzung' 2456
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Winter-Dinkel' 1510
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Wintergerste' -1427
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Zichorien/Wegwarten' 0
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0'.'Zuckerrüben' -4834
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'AL aus Erzeugung genommen' -774
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Acker-/Puff-/Pferdebohne' 84
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Ackergras' -804
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Blühfläche (MSL-Maßnahme)' -221
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Blühstreifen (MSL-Maßnahme)' -831
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Brachefläche Vertragsnaturs.' -774
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Grünland (Dauergrünland)' -48
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Kartoffeln' 10645
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Möhre (auch Futtermöhre)' 3328
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -831
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Silomais (als Hauptfutter)' -759
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Sommerraps' -79
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Streuobst mit DGL-Nutzung' 900
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Winter-Dinkel' 775
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Wintergerste' -44
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Zichorien/Wegwarten' 0
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2'.'Zuckerrüben' -774
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'AL aus Erzeugung genommen' -367
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Acker-/Puff-/Pferdebohne' 82
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Ackergras' -298
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Blühfläche (MSL-Maßnahme)' -105
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Blühstreifen (MSL-Maßnahme)' -394
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Brachefläche Vertragsnaturs.' -367
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Grünland (Dauergrünland)' 42
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Kartoffeln' 5601
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Möhre (auch Futtermöhre)' 2031
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -394
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Silomais (als Hauptfutter)' -295
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Sommerraps' -27
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Streuobst mit DGL-Nutzung' 476
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Winter-Dinkel' 432
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Wintergerste' 24
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Zichorien/Wegwarten' 0
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97'.'Zuckerrüben' -306
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'AL aus Erzeugung genommen' -136
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Acker-/Puff-/Pferdebohne' -33
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Ackergras' -162
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Blühfläche (MSL-Maßnahme)' -39
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Brachefläche Vertragsnaturs.' -136
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Grünland (Dauergrünland)' -57
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Kartoffeln' 1224
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Möhre (auch Futtermöhre)' 60
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -146
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Silomais (als Hauptfutter)' -206
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Sommerraps' -23
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Streuobst mit DGL-Nutzung' 121
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Winter-Dinkel' 63
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Wintergerste' -60
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Winterweichweizen' -84
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Zichorien/Wegwarten' 0
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac'.'Zuckerrüben' -203
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'AL aus Erzeugung genommen' -2922
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Acker-/Puff-/Pferdebohne' -717
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Ackergras' -5053
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Blühfläche (MSL-Maßnahme)' -835
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Blühstreifen (MSL-Maßnahme)' -3136
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Brachefläche Vertragsnaturs.' -2922
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Grünland (Dauergrünland)' -1774
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Kartoffeln' 26343
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Möhre (auch Futtermöhre)' 1299
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3136
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Silomais (als Hauptfutter)' -4421
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Sommerraps' -486
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Streuobst mit DGL-Nutzung' 2197
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Winter-Dinkel' 1354
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Wintergerste' -1282
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Zichorien/Wegwarten' 0
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b'.'Zuckerrüben' -4350
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'AL aus Erzeugung genommen' -165
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Acker-/Puff-/Pferdebohne' -41
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Ackergras' -196
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Blühfläche (MSL-Maßnahme)' -47
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Brachefläche Vertragsnaturs.' -165
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Grünland (Dauergrünland)' -69
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Kartoffeln' 1489
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Möhre (auch Futtermöhre)' 74
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -177
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Silomais (als Hauptfutter)' -250
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Sommerraps' -27
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Streuobst mit DGL-Nutzung' 148
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Winter-Dinkel' 77
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Wintergerste' -72
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Winterweichweizen' -102
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Zichorien/Wegwarten' 0
+ '325b9566-02e5-48e3-ae6d-0c80308140d2'.'Zuckerrüben' -246
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'AL aus Erzeugung genommen' -2470
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Acker-/Puff-/Pferdebohne' 336
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Ackergras' -1040
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Blühfläche (MSL-Maßnahme)' -706
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Blühstreifen (MSL-Maßnahme)' -2651
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Brachefläche Vertragsnaturs.' -2470
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Grünland (Dauergrünland)' 340
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Kartoffeln' 34990
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Möhre (auch Futtermöhre)' 11162
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2651
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Silomais (als Hauptfutter)' -2791
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Sommerraps' -742
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Streuobst mit DGL-Nutzung' 3007
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Winter-Dinkel' 2636
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Winterweichweizen' -487
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Zichorien/Wegwarten' 0
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0'.'Zuckerrüben' -3053
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'AL aus Erzeugung genommen' -198
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Acker-/Puff-/Pferdebohne' 27
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Ackergras' -218
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Blühfläche (MSL-Maßnahme)' -57
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Blühstreifen (MSL-Maßnahme)' -213
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Brachefläche Vertragsnaturs.' -198
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Grünland (Dauergrünland)' -20
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Kartoffeln' 2808
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Möhre (auch Futtermöhre)' 896
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -213
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Silomais (als Hauptfutter)' -224
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Sommerraps' -59
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Streuobst mit DGL-Nutzung' 208
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Wintergerste' -6
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Winterweichweizen' -39
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Zichorien/Wegwarten' 0
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5'.'Zuckerrüben' -245
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'AL aus Erzeugung genommen' -5858
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Acker-/Puff-/Pferdebohne' -3433
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Ackergras' -16619
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Blühfläche (MSL-Maßnahme)' -1674
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Blühstreifen (MSL-Maßnahme)' -6287
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Brachefläche Vertragsnaturs.' -5858
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Grünland (Dauergrünland)' -4492
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Kartoffeln' 42242
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Möhre (auch Futtermöhre)' -31301
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -6287
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Silomais (als Hauptfutter)' -11482
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Sommerraps' -2375
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Streuobst mit DGL-Nutzung' 3021
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Winter-Dinkel' 8601
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Wintergerste' -4347
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Winterweichweizen' 438
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca'.'Zichorien/Wegwarten' 0
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'AL aus Erzeugung genommen' -389
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Acker-/Puff-/Pferdebohne' -107
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Ackergras' -569
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Blühfläche (MSL-Maßnahme)' -111
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Blühstreifen (MSL-Maßnahme)' -418
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Brachefläche Vertragsnaturs.' -389
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Grünland (Dauergrünland)' -232
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Kartoffeln' 3383
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Möhre (auch Futtermöhre)' -2081
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -418
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Sommerraps' -159
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Streuobst mit DGL-Nutzung' 244
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Winter-Dinkel' 571
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Wintergerste' -185
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Winterweichweizen' 29
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Zichorien/Wegwarten' 0
+ '962b04ec-184c-4117-b1e4-e5989f9bc970'.'Zuckerrüben' -940
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'AL aus Erzeugung genommen' -121
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Acker-/Puff-/Pferdebohne' -93
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Ackergras' -145
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Blühfläche (MSL-Maßnahme)' -35
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Blühstreifen (MSL-Maßnahme)' -130
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Brachefläche Vertragsnaturs.' -121
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Grünland (Dauergrünland)' -167
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Kartoffeln' 243
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Möhre (auch Futtermöhre)' -888
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -130
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Silomais (als Hauptfutter)' -269
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Sommerraps' -50
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Streuobst mit DGL-Nutzung' 13
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Winter-Dinkel' 113
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Wintergerste' -58
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Winterweichweizen' -37
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Zichorien/Wegwarten' 0
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb'.'Zuckerrüben' -293
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'AL aus Erzeugung genommen' -2455
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Acker-/Puff-/Pferdebohne' -1442
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Ackergras' -6989
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Blühfläche (MSL-Maßnahme)' -702
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Blühstreifen (MSL-Maßnahme)' -2635
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Brachefläche Vertragsnaturs.' -2455
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Grünland (Dauergrünland)' -1911
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Kartoffeln' 17657
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Möhre (auch Futtermöhre)' -13164
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2635
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Silomais (als Hauptfutter)' -4862
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Sommerraps' -1025
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Streuobst mit DGL-Nutzung' 1225
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Winter-Dinkel' 3602
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Wintergerste' -1827
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Winterweichweizen' 175
+ 'adf79930-93a6-4307-a5d1-a51802927013'.'Zichorien/Wegwarten' 0
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'AL aus Erzeugung genommen' -675
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Acker-/Puff-/Pferdebohne' -380
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Ackergras' -1244
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Blühfläche (MSL-Maßnahme)' -193
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Blühstreifen (MSL-Maßnahme)' -725
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Brachefläche Vertragsnaturs.' -675
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Grünland (Dauergrünland)' -688
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Kartoffeln' 3251
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Möhre (auch Futtermöhre)' -2069
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -725
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Silomais (als Hauptfutter)' -1436
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Sommerraps' -248
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Streuobst mit DGL-Nutzung' 253
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Winter-Dinkel' 668
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Wintergerste' -295
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Winterweichweizen' -174
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc'.'Zuckerrüben' -1433
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'AL aus Erzeugung genommen' -1927
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Acker-/Puff-/Pferdebohne' -949
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Ackergras' -3191
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Blühfläche (MSL-Maßnahme)' -551
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Blühstreifen (MSL-Maßnahme)' -2068
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Brachefläche Vertragsnaturs.' -1927
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Grünland (Dauergrünland)' -1736
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Kartoffeln' 11011
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Möhre (auch Futtermöhre)' -4482
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2068
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Silomais (als Hauptfutter)' -3883
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Sommerraps' -666
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Streuobst mit DGL-Nutzung' 903
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Winter-Dinkel' 2244
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Wintergerste' -650
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Winterweichweizen' -255
+ '80d35033-3e80-4924-ba59-8ae110f002f2'.'Zuckerrüben' -3883
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'AL aus Erzeugung genommen' -903
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Acker-/Puff-/Pferdebohne' 156
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Ackergras' -1083
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Blühfläche (MSL-Maßnahme)' -258
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Blühstreifen (MSL-Maßnahme)' -969
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Brachefläche Vertragsnaturs.' -903
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Grünland (Dauergrünland)' -151
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Kartoffeln' 13274
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Möhre (auch Futtermöhre)' 4323
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -969
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Silomais (als Hauptfutter)' -1218
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Sommerraps' -527
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Streuobst mit DGL-Nutzung' 795
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Wintergerste' 1
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Winterweichweizen' -143
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Zichorien/Wegwarten' 0
+ '17675ef9-c1e0-4096-9685-6ad121429638'.'Zuckerrüben' -1425
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'AL aus Erzeugung genommen' -5568
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Acker-/Puff-/Pferdebohne' -2412
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Ackergras' -1363
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Blühfläche (MSL-Maßnahme)' -1591
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Blühstreifen (MSL-Maßnahme)' -5976
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Brachefläche Vertragsnaturs.' -5568
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Grünland (Dauergrünland)' 2938
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Kartoffeln' 55477
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5976
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Silomais (als Hauptfutter)' -17
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Sommerraps' 1449
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Streuobst mit DGL-Nutzung' 10628
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Winter-Dinkel' 14616
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Wintergerste' 4636
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Winterweichweizen' 5889
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Zichorien/Wegwarten' 0
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69'.'Zuckerrüben' -7709
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'AL aus Erzeugung genommen' -3957
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Acker-/Puff-/Pferdebohne' -1150
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Ackergras' -9476
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Blühfläche (MSL-Maßnahme)' -1131
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Blühstreifen (MSL-Maßnahme)' -4247
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Brachefläche Vertragsnaturs.' -3957
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Grünland (Dauergrünland)' -704
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Kartoffeln' 47648
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Möhre (auch Futtermöhre)' -11081
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -4247
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Silomais (als Hauptfutter)' -5784
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Sommerraps' -1560
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Streuobst mit DGL-Nutzung' 3707
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Winter-Dinkel' 9505
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Wintergerste' -1591
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Winterweichweizen' 2981
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6'.'Zichorien/Wegwarten' 0
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'AL aus Erzeugung genommen' -1571
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Acker-/Puff-/Pferdebohne' 192
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Ackergras' -1901
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Blühfläche (MSL-Maßnahme)' -449
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Blühstreifen (MSL-Maßnahme)' -1686
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Brachefläche Vertragsnaturs.' -1571
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Grünland (Dauergrünland)' -287
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Kartoffeln' 22004
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Möhre (auch Futtermöhre)' 6769
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1686
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Silomais (als Hauptfutter)' -2017
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Sommerraps' -698
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Streuobst mit DGL-Nutzung' 1460
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Wintergerste' -78
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Winterweichweizen' -336
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Zichorien/Wegwarten' 0
+ '760a2209-962a-46a8-8fde-618e7c33b40f'.'Zuckerrüben' -2271
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'AL aus Erzeugung genommen' -3201
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Acker-/Puff-/Pferdebohne' -934
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Ackergras' -7690
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Blühfläche (MSL-Maßnahme)' -915
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Blühstreifen (MSL-Maßnahme)' -3435
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Brachefläche Vertragsnaturs.' -3201
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Grünland (Dauergrünland)' -599
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Kartoffeln' 38488
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Möhre (auch Futtermöhre)' -9011
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3435
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Silomais (als Hauptfutter)' -4732
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Sommerraps' -1294
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Streuobst mit DGL-Nutzung' 2954
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Winter-Dinkel' 7685
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Wintergerste' -1292
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Winterweichweizen' 2402
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2'.'Zichorien/Wegwarten' 0
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'AL aus Erzeugung genommen' -125
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Acker-/Puff-/Pferdebohne' 25
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Ackergras' -40
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Blühfläche (MSL-Maßnahme)' -36
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Blühstreifen (MSL-Maßnahme)' -134
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Brachefläche Vertragsnaturs.' -125
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Grünland (Dauergrünland)' 27
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Kartoffeln' 1867
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Möhre (auch Futtermöhre)' -289
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -134
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Sommerraps' -42
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Streuobst mit DGL-Nutzung' 156
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Winter-Dinkel' 319
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Wintergerste' 4
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Winterweichweizen' 110
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Zichorien/Wegwarten' 0
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5'.'Zuckerrüben' -251
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'AL aus Erzeugung genommen' -1424
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Acker-/Puff-/Pferdebohne' 197
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Ackergras' -1540
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Blühfläche (MSL-Maßnahme)' -407
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Blühstreifen (MSL-Maßnahme)' -1528
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Brachefläche Vertragsnaturs.' -1424
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Grünland (Dauergrünland)' -127
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Kartoffeln' 20212
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Möhre (auch Futtermöhre)' 6488
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1528
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Silomais (als Hauptfutter)' -1570
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Sommerraps' -392
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Streuobst mit DGL-Nutzung' 1521
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Wintergerste' -41
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Winterweichweizen' -277
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Zichorien/Wegwarten' 0
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798'.'Zuckerrüben' -1707
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'AL aus Erzeugung genommen' -316
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Acker-/Puff-/Pferdebohne' -112
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Ackergras' -776
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Blühfläche (MSL-Maßnahme)' -90
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Blühstreifen (MSL-Maßnahme)' -339
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Brachefläche Vertragsnaturs.' -316
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Grünland (Dauergrünland)' -85
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Kartoffeln' 3464
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Möhre (auch Futtermöhre)' -1051
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -339
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Silomais (als Hauptfutter)' -471
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Sommerraps' -108
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Streuobst mit DGL-Nutzung' 288
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Winter-Dinkel' 689
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Wintergerste' -149
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Winterweichweizen' 192
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c'.'Zichorien/Wegwarten' 0
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'AL aus Erzeugung genommen' -1086
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Acker-/Puff-/Pferdebohne' 96
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Ackergras' -1301
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Blühfläche (MSL-Maßnahme)' -310
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Blühstreifen (MSL-Maßnahme)' -1166
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Brachefläche Vertragsnaturs.' -1086
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Grünland (Dauergrünland)' -195
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Kartoffeln' 14683
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Möhre (auch Futtermöhre)' 4334
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1166
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Silomais (als Hauptfutter)' -1310
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Sommerraps' -339
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Streuobst mit DGL-Nutzung' 1075
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Wintergerste' -91
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Winterweichweizen' -271
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Zichorien/Wegwarten' 0
+ '661a1298-f7e1-41ec-8044-37ad4dde2860'.'Zuckerrüben' -1420
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'AL aus Erzeugung genommen' -1270
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Acker-/Puff-/Pferdebohne' 112
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Ackergras' -1523
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Blühfläche (MSL-Maßnahme)' -363
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Blühstreifen (MSL-Maßnahme)' -1363
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Brachefläche Vertragsnaturs.' -1270
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Grünland (Dauergrünland)' -229
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Kartoffeln' 17159
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Möhre (auch Futtermöhre)' 5061
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1363
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Silomais (als Hauptfutter)' -1534
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Sommerraps' -400
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Streuobst mit DGL-Nutzung' 1254
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Wintergerste' -107
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Winterweichweizen' -317
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Zichorien/Wegwarten' 0
+ 'cf694c2d-99bf-432c-ba1d-66944917d223'.'Zuckerrüben' -1664
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'AL aus Erzeugung genommen' -543
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Acker-/Puff-/Pferdebohne' 72
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Ackergras' -610
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Blühfläche (MSL-Maßnahme)' -155
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Blühstreifen (MSL-Maßnahme)' -583
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Brachefläche Vertragsnaturs.' -543
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Grünland (Dauergrünland)' -65
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Kartoffeln' 7678
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Möhre (auch Futtermöhre)' 2432
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -583
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Silomais (als Hauptfutter)' -630
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Sommerraps' -179
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Streuobst mit DGL-Nutzung' 556
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Wintergerste' -19
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Winterweichweizen' -109
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Zichorien/Wegwarten' 0
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444'.'Zuckerrüben' -694
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'AL aus Erzeugung genommen' -1277
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Acker-/Puff-/Pferdebohne' 165
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Ackergras' -1477
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Blühfläche (MSL-Maßnahme)' -365
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Blühstreifen (MSL-Maßnahme)' -1371
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Brachefläche Vertragsnaturs.' -1277
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Grünland (Dauergrünland)' -183
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Kartoffeln' 17991
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Möhre (auch Futtermöhre)' 5636
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1371
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Silomais (als Hauptfutter)' -1543
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Sommerraps' -477
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Streuobst mit DGL-Nutzung' 1262
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Wintergerste' -52
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Winterweichweizen' -262
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Zichorien/Wegwarten' 0
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c'.'Zuckerrüben' -1714
+ '504ce189-c609-466e-82a7-6d2f555db011'.'AL aus Erzeugung genommen' -323
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Acker-/Puff-/Pferdebohne' -180
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Ackergras' -580
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Blühfläche (MSL-Maßnahme)' -92
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Blühstreifen (MSL-Maßnahme)' -347
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Brachefläche Vertragsnaturs.' -323
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Grünland (Dauergrünland)' 17
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Kartoffeln' 1571
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Möhre (auch Futtermöhre)' -968
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -347
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Silomais (als Hauptfutter)' -671
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Sommerraps' -104
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Streuobst mit DGL-Nutzung' 372
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Winter-Dinkel' 320
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Wintergerste' -138
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Winterweichweizen' -80
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Zichorien/Wegwarten' 0
+ '504ce189-c609-466e-82a7-6d2f555db011'.'Zuckerrüben' -664
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'AL aus Erzeugung genommen' -1589
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Acker-/Puff-/Pferdebohne' -887
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Ackergras' -4391
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Blühfläche (MSL-Maßnahme)' -454
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Blühstreifen (MSL-Maßnahme)' -1706
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Brachefläche Vertragsnaturs.' -1589
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Grünland (Dauergrünland)' -2191
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Möhre (auch Futtermöhre)' -10520
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1706
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Silomais (als Hauptfutter)' -3742
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Sommerraps' -1021
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Streuobst mit DGL-Nutzung' 48
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Winter-Dinkel' 2053
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Wintergerste' -699
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Winterweichweizen' -125
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Zichorien/Wegwarten' 0
+ '756eae07-b2a6-495d-8499-cc070eb0709f'.'Zuckerrüben' -3788
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'AL aus Erzeugung genommen' -73
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Acker-/Puff-/Pferdebohne' -41
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Ackergras' -179
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Blühfläche (MSL-Maßnahme)' -21
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Blühstreifen (MSL-Maßnahme)' -79
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Brachefläche Vertragsnaturs.' -73
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Grünland (Dauergrünland)' -48
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Kartoffeln' 842
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Möhre (auch Futtermöhre)' -39
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -79
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Silomais (als Hauptfutter)' -111
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Sommerraps' -29
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Streuobst mit DGL-Nutzung' 45
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Winter-Dinkel' 118
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Wintergerste' -7
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Winterweichweizen' 14
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Zichorien/Wegwarten' 0
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78'.'Zuckerrüben' -139
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'AL aus Erzeugung genommen' -29
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Acker-/Puff-/Pferdebohne' 2
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Ackergras' -19
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Blühfläche (MSL-Maßnahme)' -8
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Blühstreifen (MSL-Maßnahme)' -32
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Brachefläche Vertragsnaturs.' -29
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Grünland (Dauergrünland)' -1
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Kartoffeln' 393
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Möhre (auch Futtermöhre)' 112
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Silomais (als Hauptfutter)' -39
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Sommerraps' -13
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Streuobst mit DGL-Nutzung' 31
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Winter-Dinkel' 29
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Wintergerste' -3
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Winterweichweizen' -8
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Zichorien/Wegwarten' 0
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf'.'Zuckerrüben' -44
+ '61bf025a-a630-441b-9612-268670c03819'.'AL aus Erzeugung genommen' -3043
+ '61bf025a-a630-441b-9612-268670c03819'.'Acker-/Puff-/Pferdebohne' 234
+ '61bf025a-a630-441b-9612-268670c03819'.'Ackergras' -3917
+ '61bf025a-a630-441b-9612-268670c03819'.'Blühfläche (MSL-Maßnahme)' -870
+ '61bf025a-a630-441b-9612-268670c03819'.'Blühstreifen (MSL-Maßnahme)' -3266
+ '61bf025a-a630-441b-9612-268670c03819'.'Brachefläche Vertragsnaturs.' -3043
+ '61bf025a-a630-441b-9612-268670c03819'.'Grünland (Dauergrünland)' -744
+ '61bf025a-a630-441b-9612-268670c03819'.'Kartoffeln' 40728
+ '61bf025a-a630-441b-9612-268670c03819'.'Möhre (auch Futtermöhre)' 11613
+ '61bf025a-a630-441b-9612-268670c03819'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3266
+ '61bf025a-a630-441b-9612-268670c03819'.'Silomais (als Hauptfutter)' -4053
+ '61bf025a-a630-441b-9612-268670c03819'.'Sommerraps' -1309
+ '61bf025a-a630-441b-9612-268670c03819'.'Streuobst mit DGL-Nutzung' 2716
+ '61bf025a-a630-441b-9612-268670c03819'.'Winter-Dinkel' 3003
+ '61bf025a-a630-441b-9612-268670c03819'.'Wintergerste' -300
+ '61bf025a-a630-441b-9612-268670c03819'.'Zichorien/Wegwarten' 0
+ '61bf025a-a630-441b-9612-268670c03819'.'Zuckerrüben' -4501
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'AL aus Erzeugung genommen' -235
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Acker-/Puff-/Pferdebohne' -133
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Ackergras' -440
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Blühfläche (MSL-Maßnahme)' -67
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Blühstreifen (MSL-Maßnahme)' -252
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Brachefläche Vertragsnaturs.' -235
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Grünland (Dauergrünland)' -6
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Kartoffeln' 1123
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Möhre (auch Futtermöhre)' -731
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -252
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Silomais (als Hauptfutter)' -507
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Sommerraps' -94
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Streuobst mit DGL-Nutzung' 243
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Winter-Dinkel' 232
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Wintergerste' -104
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Winterweichweizen' -62
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Zichorien/Wegwarten' 0
+ '80f10183-f24a-40d6-891d-c8789bfb494f'.'Zuckerrüben' -509
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'AL aus Erzeugung genommen' -462
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Ackergras' -1070
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Blühfläche (MSL-Maßnahme)' -132
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Blühstreifen (MSL-Maßnahme)' -496
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Brachefläche Vertragsnaturs.' -462
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Grünland (Dauergrünland)' -239
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Kartoffeln' 6888
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Möhre (auch Futtermöhre)' -1098
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -496
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Silomais (als Hauptfutter)' -537
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Sommerraps' -180
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Streuobst mit DGL-Nutzung' 332
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Winter-Dinkel' 1365
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Wintergerste' 11
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Winterweichweizen' 534
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Zichorien/Wegwarten' 0
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a'.'Zuckerrüben' -611
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'AL aus Erzeugung genommen' -70
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Acker-/Puff-/Pferdebohne' -39
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Ackergras' -170
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Blühfläche (MSL-Maßnahme)' -20
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Blühstreifen (MSL-Maßnahme)' -75
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Brachefläche Vertragsnaturs.' -70
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Grünland (Dauergrünland)' -45
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Kartoffeln' 802
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Möhre (auch Futtermöhre)' -36
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -75
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Silomais (als Hauptfutter)' -104
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Sommerraps' -27
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Streuobst mit DGL-Nutzung' 44
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Winter-Dinkel' 112
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Wintergerste' -7
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Winterweichweizen' 13
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Zichorien/Wegwarten' 0
+ '09c89b3f-7352-4fee-9b24-52c2bf079785'.'Zuckerrüben' -131
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'AL aus Erzeugung genommen' -3329
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Acker-/Puff-/Pferdebohne' 124
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Ackergras' -5611
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Blühfläche (MSL-Maßnahme)' -951
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Blühstreifen (MSL-Maßnahme)' -3573
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Brachefläche Vertragsnaturs.' -3329
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Grünland (Dauergrünland)' -1709
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Möhre (auch Futtermöhre)' -7883
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -3573
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Silomais (als Hauptfutter)' -4503
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Sommerraps' -1338
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Streuobst mit DGL-Nutzung' 2403
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Winter-Dinkel' 9825
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Wintergerste' 1425
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Winterweichweizen' 3850
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Zichorien/Wegwarten' 0
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906'.'Zuckerrüben' -4369
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'AL aus Erzeugung genommen' -184
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Acker-/Puff-/Pferdebohne' -51
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Ackergras' -274
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Blühfläche (MSL-Maßnahme)' -52
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Blühstreifen (MSL-Maßnahme)' -197
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Brachefläche Vertragsnaturs.' -184
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Grünland (Dauergrünland)' -113
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Kartoffeln' 1589
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Möhre (auch Futtermöhre)' -987
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -197
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Sommerraps' -78
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Streuobst mit DGL-Nutzung' 110
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Winter-Dinkel' 269
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Wintergerste' -88
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Winterweichweizen' 13
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Zichorien/Wegwarten' 0
+ 'f779261f-a616-4928-b102-68a2e6acd1ae'.'Zuckerrüben' -448
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'AL aus Erzeugung genommen' -1472
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Acker-/Puff-/Pferdebohne' -406
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Ackergras' -2177
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Blühfläche (MSL-Maßnahme)' -421
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Blühstreifen (MSL-Maßnahme)' -1580
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Brachefläche Vertragsnaturs.' -1472
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Grünland (Dauergrünland)' -893
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Kartoffeln' 12770
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Möhre (auch Futtermöhre)' -7893
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1580
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Sommerraps' -616
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Streuobst mit DGL-Nutzung' 901
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Winter-Dinkel' 2159
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Wintergerste' -704
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Winterweichweizen' 104
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Zichorien/Wegwarten' 0
+ 'c838fbfb-6875-4f5f-9917-6e292398805a'.'Zuckerrüben' -3578
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'AL aus Erzeugung genommen' -40
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Acker-/Puff-/Pferdebohne' -31
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Ackergras' -114
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Blühfläche (MSL-Maßnahme)' -12
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Blühstreifen (MSL-Maßnahme)' -43
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Brachefläche Vertragsnaturs.' -40
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Grünland (Dauergrünland)' -43
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Kartoffeln' 292
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Möhre (auch Futtermöhre)' -134
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -43
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Silomais (als Hauptfutter)' -78
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Sommerraps' -16
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Streuobst mit DGL-Nutzung' 13
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Winter-Dinkel' 38
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Wintergerste' -19
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Winterweichweizen' -12
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Zichorien/Wegwarten' 0
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d'.'Zuckerrüben' -89
+ '9433e518-c807-4c77-91c8-ef226f369599'.'AL aus Erzeugung genommen' -4794
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Acker-/Puff-/Pferdebohne' -2801
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Ackergras' -13548
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Blühfläche (MSL-Maßnahme)' -1370
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Blühstreifen (MSL-Maßnahme)' -5145
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Brachefläche Vertragsnaturs.' -4794
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Grünland (Dauergrünland)' -3612
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Kartoffeln' 34681
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Möhre (auch Futtermöhre)' -25514
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -5145
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Silomais (als Hauptfutter)' -9283
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Sommerraps' -1876
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Streuobst mit DGL-Nutzung' 2567
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Winter-Dinkel' 7046
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Wintergerste' -3546
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Winterweichweizen' 379
+ '9433e518-c807-4c77-91c8-ef226f369599'.'Zichorien/Wegwarten' 0
+ 'af34df35-516c-40cb-8612-40be618abc60'.'AL aus Erzeugung genommen' -51
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Acker-/Puff-/Pferdebohne' -14
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Ackergras' -74
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Blühfläche (MSL-Maßnahme)' -15
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Brachefläche Vertragsnaturs.' -51
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Grünland (Dauergrünland)' -30
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Kartoffeln' 448
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Möhre (auch Futtermöhre)' 2
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -55
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Silomais (als Hauptfutter)' -93
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Sommerraps' -22
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Streuobst mit DGL-Nutzung' 33
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Winter-Dinkel' 23
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Wintergerste' -24
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Winterweichweizen' -33
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Zichorien/Wegwarten' 0
+ 'af34df35-516c-40cb-8612-40be618abc60'.'Zuckerrüben' -97
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'AL aus Erzeugung genommen' -6214
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Acker-/Puff-/Pferdebohne' -1329
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Ackergras' -11916
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Blühfläche (MSL-Maßnahme)' -1776
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Blühstreifen (MSL-Maßnahme)' -6669
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Brachefläche Vertragsnaturs.' -6214
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Grünland (Dauergrünland)' 2536
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Kartoffeln' 81384
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Möhre (auch Futtermöhre)' -11715
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -6669
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Silomais (als Hauptfutter)' -2676
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Sommerraps' 1438
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Streuobst mit DGL-Nutzung' 11211
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Winter-Dinkel' 15364
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Wintergerste' -1835
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Winterweichweizen' 5847
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656'.'Zichorien/Wegwarten' 0
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'AL aus Erzeugung genommen' -848
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Acker-/Puff-/Pferdebohne' -105
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Ackergras' -1001
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Blühfläche (MSL-Maßnahme)' -242
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Blühstreifen (MSL-Maßnahme)' -910
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Brachefläche Vertragsnaturs.' -848
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Grünland (Dauergrünland)' -332
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Kartoffeln' 9092
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Möhre (auch Futtermöhre)' -3738
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -910
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Sommerraps' -387
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Streuobst mit DGL-Nutzung' 622
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Winter-Dinkel' 1556
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Wintergerste' -269
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Winterweichweizen' 279
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Zichorien/Wegwarten' 0
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3'.'Zuckerrüben' -2018
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'AL aus Erzeugung genommen' -51
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Acker-/Puff-/Pferdebohne' -29
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Ackergras' -93
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Blühfläche (MSL-Maßnahme)' -15
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Blühstreifen (MSL-Maßnahme)' -55
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Brachefläche Vertragsnaturs.' -51
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Grünland (Dauergrünland)' 2
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Kartoffeln' 249
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Möhre (auch Futtermöhre)' -155
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -55
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Silomais (als Hauptfutter)' -107
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Sommerraps' -17
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Streuobst mit DGL-Nutzung' 59
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Winter-Dinkel' 51
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Wintergerste' -22
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Winterweichweizen' -13
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Zichorien/Wegwarten' 0
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05'.'Zuckerrüben' -106
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'AL aus Erzeugung genommen' -224
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Acker-/Puff-/Pferdebohne' -152
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Ackergras' -598
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Blühfläche (MSL-Maßnahme)' -64
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Blühstreifen (MSL-Maßnahme)' -240
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Brachefläche Vertragsnaturs.' -224
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Grünland (Dauergrünland)' -203
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Kartoffeln' 2041
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Möhre (auch Futtermöhre)' -473
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -240
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Silomais (als Hauptfutter)' -400
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Sommerraps' -98
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Streuobst mit DGL-Nutzung' 94
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Winter-Dinkel' 279
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Wintergerste' -69
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Winterweichweizen' -20
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Zichorien/Wegwarten' 0
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f'.'Zuckerrüben' -473
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'AL aus Erzeugung genommen' -2059
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Acker-/Puff-/Pferdebohne' -552
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Ackergras' -3925
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Blühfläche (MSL-Maßnahme)' -588
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Blühstreifen (MSL-Maßnahme)' -2210
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Brachefläche Vertragsnaturs.' -2059
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Grünland (Dauergrünland)' -1516
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Kartoffeln' 18041
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Möhre (auch Futtermöhre)' 215
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -2210
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Silomais (als Hauptfutter)' -3629
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Sommerraps' -821
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Streuobst mit DGL-Nutzung' 1156
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Winter-Dinkel' 934
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Wintergerste' -964
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Zichorien/Wegwarten' 0
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1'.'Zuckerrüben' -3766
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'AL aus Erzeugung genommen' -1321
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Acker-/Puff-/Pferdebohne' 115
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Ackergras' -732
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Blühfläche (MSL-Maßnahme)' -378
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Blühstreifen (MSL-Maßnahme)' -1418
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Brachefläche Vertragsnaturs.' -1321
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Grünland (Dauergrünland)' 58
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Kartoffeln' 17835
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Möhre (auch Futtermöhre)' -3978
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)' -1418
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Sommerraps' -437
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Streuobst mit DGL-Nutzung' 1505
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Winter-Dinkel' 3036
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Wintergerste' -113
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Winterweichweizen' 914
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Zichorien/Wegwarten' 0
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3'.'Zuckerrüben' -2732
+/;
+
+parameter p_catchCropCosts(curPlots) /
+ 'e69d709f-3e7f-4e87-8822-4f358f65e27a' 416.99
+ '7e339fa0-9624-4e30-a9f5-0b7ba527746c' 30.42
+ '9e3f95b9-f157-49a1-90fa-d77dd9281548' 89.6
+ 'cf9046bf-4ede-422a-8d0d-b101d93b1d01' 4056.68
+ 'ec7fbec3-6a33-46dc-9e7b-702fe8a12c25' 77.28
+ 'dfd29eda-4254-4961-b746-8fc2810780d8' 231.71
+ 'dc47d5b0-61c7-4f8f-be11-0731143053a5' 77.21
+ '5e9ab68a-8642-4498-8d34-656f98c7e7d4' 27.62
+ 'af0eca4b-2bf8-4300-b130-b5faed050747' 99.2
+ 'ad77f050-d5d6-4a99-b2ca-65f6ec9d3fec' 432.17
+ 'fb80e9a2-1eb8-45cc-89a5-111d791930be' 26.04
+ 'bff5d2b8-32fa-4a6b-89f0-fc311d879838' 451.14
+ '3f90a33a-9417-4ebb-b1d9-39eb63238201' 27.44
+ '41eea2c7-b219-429c-b0bb-e8debdb10713' 98.3
+ '6d7f01d1-f639-4b7c-b4a9-caf786fb55c0' 38.32
+ '82d6f669-12d4-4aeb-b1a5-766982547928' 17.81
+ '9bf23158-c825-4172-b872-1451e97973cd' 1066.62
+ 'c8b6a71d-f9a5-4d3f-8a4e-7d1a2de7ca43' 802.7
+ '117f9e36-a169-4d42-8618-d73a8417eaff' 8.19
+ '62c20800-7b23-492e-a848-897d1bf550aa' 161.49
+ '69d26aa8-8ece-470c-8e5e-8a88fcfa6d3b' 9.55
+ '8983c2f9-2095-427a-a4f7-8c501564dd17' 207.26
+ '755f90f4-5c80-4ffe-b296-176c9a0897d8' 365.38
+ 'b0687f48-9937-402c-9557-baceab4a40c7' 8.22
+ '897db77e-363d-42ac-8f7b-42a07ce32653' 554.7
+ '2948bd1f-2aca-4c98-822b-9789f72270b6' 35.92
+ '6fdcfd80-bfaf-48bb-a215-d29367414c76' 75.92
+ '2ea2211b-5827-4873-9aa5-23002de2cc55' 274.14
+ 'e6c300ff-d2ec-4dbb-9518-ff07c5f6a5b4' 439.7
+ '40485ad5-f8ab-45b8-b127-05a3b72531bc' 733.44
+ '8249279c-1066-4a7d-aa3b-4edb3f8ccb46' 2168.26
+ 'da5851fd-cded-42ed-9aa9-0df254007875' 33.56
+ 'ff206c21-faf0-4d38-8fb8-582dd4cec697' 83.78
+ '7bb9bb1e-f89a-4091-b10f-98257f532ea0' 1260.93
+ '4a259f72-2eae-425d-a273-58bb12c20d51' 87.22
+ '07319d55-0831-4b6b-9136-eaba02345265' 20.19
+ '089c84cf-12e7-429f-a868-d3b6fbc71ac2' 2419.28
+ 'aa137361-c996-4a37-8fad-c97ce245d69e' 165.63
+ '2801f938-ddbd-4ab4-8d5a-107e72273225' 66.69
+ '832aeba4-3cc2-4956-847f-197c33c30920' 326.33
+ '645092bc-3fba-4e66-8a8c-1e8b997f1ce3' 29.05
+ 'c50d41ed-f0c8-40ad-9235-269c823dcada' 386.44
+ '468021ec-410e-4e22-8a27-516cf5a806f5' 498.9
+ '418457b2-675d-499c-9798-470309cc2c88' 1012.78
+ '5cbde61c-edc0-48af-bb47-f0b7b329ae4f' 46.21
+ 'a8beed1b-1a77-4d16-916e-ea55fa5a02b3' 959.17
+ 'be099576-da78-433d-996a-9a8882c07da5' 746.48
+ 'd69fb323-25f9-462a-a774-e12f4547f7eb' 63.85
+ '0490c1fc-c37d-4116-8d3a-c59b8b5ac6ad' 40.1
+ 'b4d518c4-c54e-4f57-92b9-4f5f76e41845' 20.69
+ 'ff5dd788-dcdf-49c7-9677-5043d27c07af' 3887.77
+ 'd036f9a7-b339-44f3-af6f-5307453a56d7' 421.28
+ 'c078b244-2ee1-454a-a549-fc2fb69786b1' 56.57
+ 'dc3c6f16-32bf-400b-a968-99ae8184769e' 298.12
+ 'b8f72cd1-4b04-4738-b210-7a906f69692a' 333.53
+ '773c8711-bb91-4c11-9d85-947a419b16a8' 317.23
+ 'fb1ec988-0c61-4797-86bd-7bd33190bfb7' 17.82
+ '3180d0b2-1899-4126-bbcd-87547eb4083c' 16.44
+ '4857289d-5aac-4a72-8bf4-f07e2c1222a7' 103.81
+ 'be68b03a-cd6a-47e7-b8a7-62155639f3ab' 6.71
+ 'c2c47adf-5550-43bc-a632-1978362b3385' 130.89
+ 'eb580833-1661-4f9b-899c-2071f8b938ae' 166.89
+ '0296dc54-5a18-4aed-8f4d-acdf71eb1842' 90.94
+ '75aa23cd-bb23-4887-a463-5cf336760b89' 48.35
+ '78e399f2-2c4c-431b-931f-33121e8a869f' 144.38
+ '1c50e312-a250-415d-98f6-59c6104819a5' 77.06
+ '966fce17-6c64-4aa6-925b-633b6d8ad31a' 48.13
+ 'e06a14c7-72b1-4c25-ace8-d78a004436e7' 34.48
+ '1c153d01-1357-43c9-8cb8-27dd2584f55c' 161.27
+ '18b795c9-41cc-4978-9a7b-0ed726815acb' 1691.88
+ '98b482d0-0b8a-453b-99be-6133b9159012' 721.81
+ 'e342f4cb-cb96-4faf-83e2-aa9059c299e3' 29.9
+ '6c988fcd-843c-4b96-9652-5d7d711a027f' 1793.8
+ '84715f8b-1bc0-4abc-a5ff-053f26c66f6b' 30.33
+ 'd4a5559f-56b3-404f-8d26-d57115431d23' 758.26
+ '46c0848e-eaad-4472-bcad-b102763c651d' 572.71
+ '73ea45c9-cb05-4219-8d18-c64f864bad76' 6.85
+ 'ffdda6f9-456c-4011-a856-8bad6b96832f' 1555.3
+ '90bb769e-5c63-455f-a84b-3a2786919000' 471.98
+ '41727e12-afd7-4396-8796-d24b69caa4f1' 161.54
+ 'a832b579-4bbe-4b1c-b953-67bc07b9e647' 676.07
+ '37ecca36-c7d2-460a-993e-98592b04f3e1' 274.83
+ 'e1eab6e1-2965-4baf-9529-6765054d644e' 114.85
+ '589332f9-1da7-42d9-a2df-ee341accebfa' 138.95
+ '04f48caf-b707-4096-832b-f283f673dd0a' 185.99
+ '9928e5c6-2ba0-4170-aec7-e31ea73e2e89' 268.03
+ '11252375-6e59-41c5-99f9-4351d4ede22b' 691.56
+ 'd013b984-d48c-48d1-9d44-f964000a55fd' 14.23
+ 'fd00f198-fbcc-4020-a4ed-b1f043be4ae9' 14.22
+ '4705bb33-a5d2-4c11-a4a3-f21b1ed9e39b' 113.98
+ 'b2c09839-a9e5-4276-b1ce-3e659be37cae' 3046.39
+ '811b02f3-8bcd-4e3c-a8a2-25c68f01ecaa' 1258.07
+ '31c9c258-e260-4b3a-9fc1-b7d80e8b043f' 777.64
+ 'bf322444-e8a7-45bb-bc5d-caea785c286f' 129.78
+ '59cf2052-a8e3-4ff6-9399-81ea2d46f34c' 1102.84
+ '2ad30be7-5e63-45b2-a008-f36cf360f046' 564.73
+ '942d608b-0530-45d3-b561-e748775ca3df' 405.42
+ 'f1acc677-f5a0-4244-aeae-4b67302c2f2d' 20.56
+ '72b4a4b4-a1e0-4c9f-8ad3-d2c093e7d01b' 13.73
+ '4b1e0484-0b88-481f-ad22-f7a818d63362' 380.92
+ '406a49ee-fd33-4773-be14-599049d132fd' 21.98
+ 'ece2b479-39a6-4ba6-995f-a41cbafb4f19' 900.03
+ 'f0a77399-85f9-4826-baee-687280c4a25d' 15.12
+ '61468f24-0f5e-4dc2-99cb-446cdc533e46' 1832.46
+ '52bbc450-df59-4285-8f87-a82c4e6931b6' 39.83
+ 'f7b14802-d307-497a-bb90-d64ffc2f93eb' 13.74
+ '2cf84190-abd4-4d5a-824e-a9d87e35dbb6' 1841.9
+ '9fb38ea9-06a1-4df1-baf6-5bbdfd72c6f4' 1250.76
+ '0370784e-5966-40a0-b2b6-079e4de82aa4' 1872.19
+ '2a8d520c-9775-45dc-be21-bb96a8eeb968' 1204.04
+ 'a41096b4-c97c-4ea7-a9f3-42ed42c8f195' 17.87
+ '87569063-f344-4960-84ac-8a00995f7129' 323.45
+ '89169ec1-9569-4dc4-9476-d75c2a7775b0' 1143.89
+ '3b02a586-f0a0-42ad-8767-1bc04a6743b2' 281.4
+ 'a3dc0120-437d-4d85-a643-2d13d847ce97' 134.02
+ '1a0a2754-ae19-4235-8f13-0d19fbeaa6ac' 49.84
+ '2dbeeab2-ab4c-449e-9ea0-e80dfdde409b' 1031.59
+ '325b9566-02e5-48e3-ae6d-0c80308140d2' 60.57
+ '45d69c20-4a16-43b8-ae53-dcd77376cba0' 887.49
+ '4a9ede6d-dd0e-4f66-bfc0-0b269213e7e5' 73.43
+ 'a654075c-da0f-4f72-91b4-1a5128ef1dca' 2030.15
+ '962b04ec-184c-4117-b1e4-e5989f9bc970' 145.43
+ 'fc72d0fc-6c2e-42d1-93d1-5e77b1c899eb' 45.44
+ 'adf79930-93a6-4307-a5d1-a51802927013' 893.72
+ '0ee752a7-d8c1-4537-938a-d719e418d0fc' 249.94
+ '80d35033-3e80-4924-ba59-8ae110f002f2' 699.61
+ '17675ef9-c1e0-4096-9685-6ad121429638' 336.61
+ '1565b8d7-9d8c-4244-b6db-3153d7959f69' 1805.72
+ 'a903a08f-0c09-44e2-af15-a1a0bb2a5ee6' 1403.68
+ '760a2209-962a-46a8-8fde-618e7c33b40f' 576.14
+ '2083a36b-15e0-42f4-afb1-033cdd2bf0a2' 1148.56
+ '7ffa3f95-d13c-4a57-b7ee-844cf4d45fa5' 46.4
+ '2c3deed5-75ff-4999-9cd1-8f9dce1a2798' 518.27
+ '5da28634-1f8a-4a73-bded-5e248e4bc95c' 117.09
+ '661a1298-f7e1-41ec-8044-37ad4dde2860' 398.03
+ 'cf694c2d-99bf-432c-ba1d-66944917d223' 464.18
+ 'f57b417b-e6dd-41e1-81e9-0705b587c444' 200.67
+ 'c6e2fbe2-4235-4cde-a599-dd8600c2ad7c' 468.4
+ '504ce189-c609-466e-82a7-6d2f555db011' 119.55
+ '756eae07-b2a6-495d-8499-cc070eb0709f' 594.9
+ '36fef4df-964e-4090-8886-d6a9dcbf6b78' 27.44
+ '5147342e-ce8d-400e-b51d-bcfb69ee07bf' 10.99
+ '61bf025a-a630-441b-9612-268670c03819' 1093.07
+ '80f10183-f24a-40d6-891d-c8789bfb494f' 87.71
+ '3c375743-49d8-4c01-b1f0-0f2d43e3a70a' 171.77
+ '09c89b3f-7352-4fee-9b24-52c2bf079785' 26.04
+ '93b182a8-21e2-45a5-9b5e-061b4d1cc906' 1188.85
+ 'f779261f-a616-4928-b102-68a2e6acd1ae' 68.94
+ 'c838fbfb-6875-4f5f-9917-6e292398805a' 542.94
+ '19a5e0d8-abf9-41a5-afc3-5f0c27d89b3d' 15.12
+ '9433e518-c807-4c77-91c8-ef226f369599' 1683.31
+ 'af34df35-516c-40cb-8612-40be618abc60' 19.26
+ '5eb3ca40-c63d-42d9-b7ad-fcc883f88656' 1996.8
+ 'e2a97a68-25dc-4da2-95b9-8afaefc132f3' 316.34
+ '03e65efa-2d62-40eb-9fd1-5e0038cf5d05' 19.1
+ 'b0105fe8-77e6-4648-83bd-0a89ef13c88f' 83.86
+ '7d5305c1-b021-499c-a662-e92f3b7ce1f1' 749.13
+ '0593928d-8f8d-48ad-9f57-d2a6245cada3' 483.01
+/;
+
+parameter p_laborReq(crops,halfMonths) /
+ 'AL aus Erzeugung genommen'.MRZ1 1.41
+ 'AL aus Erzeugung genommen'.JUN1 1.39
+ 'AL aus Erzeugung genommen'.JUL2 1.39
+ 'AL aus Erzeugung genommen'.SEP1 1.39
+ 'AL aus Erzeugung genommen'.OKT2 1.08
+ 'Acker-/Puff-/Pferdebohne'.MRZ1 1.81
+ 'Acker-/Puff-/Pferdebohne'.MAI2 0.27
+ 'Acker-/Puff-/Pferdebohne'.AUG2 1.9
+ 'Acker-/Puff-/Pferdebohne'.SEP1 1
+ 'Acker-/Puff-/Pferdebohne'.SEP2 0.04
+ 'Acker-/Puff-/Pferdebohne'.OKT1 1.16
+ 'Acker-/Puff-/Pferdebohne'.OKT2 1.88
+ 'Ackergras'.JAN2 0.25
+ 'Ackergras'.FEB1 1.24
+ 'Ackergras'.MRZ1 2.99
+ 'Ackergras'.MRZ2 0.66
+ 'Ackergras'.MAI2 3.37
+ 'Ackergras'.JUN2 3.38
+ 'Ackergras'.JUL2 2.75
+ 'Ackergras'.AUG2 5.06
+ 'Ackergras'.SEP2 3
+ 'Ackergras'.OKT1 0.04
+ 'Ackergras'.OKT2 1.83
+ 'Blühfläche (MSL-Maßnahme)'.JUN1 4.91
+ 'Blühstreifen (MSL-Maßnahme)'.JUN1 10.51
+ 'Brachefläche Vertragsnaturs.'.MRZ1 1.41
+ 'Brachefläche Vertragsnaturs.'.JUN1 1.39
+ 'Brachefläche Vertragsnaturs.'.JUL2 1.39
+ 'Brachefläche Vertragsnaturs.'.SEP1 1.39
+ 'Brachefläche Vertragsnaturs.'.OKT2 1.08
+ 'Grünland (Dauergrünland)'.MRZ1 2.15
+ 'Grünland (Dauergrünland)'.MRZ2 0.92
+ 'Grünland (Dauergrünland)'.MAI2 3.38
+ 'Grünland (Dauergrünland)'.JUN2 2.79
+ 'Grünland (Dauergrünland)'.JUL2 4.08
+ 'Grünland (Dauergrünland)'.AUG2 2.26
+ 'Grünland (Dauergrünland)'.SEP2 0.05
+ 'Kartoffeln'.MRZ1 1.07
+ 'Kartoffeln'.MRZ2 0.29
+ 'Kartoffeln'.APR1 1.42
+ 'Kartoffeln'.APR2 0.69
+ 'Kartoffeln'.MAI1 0.38
+ 'Kartoffeln'.JUN2 0.68
+ 'Kartoffeln'.JUL1 0.68
+ 'Kartoffeln'.JUL2 0.34
+ 'Kartoffeln'.AUG1 0.82
+ 'Kartoffeln'.AUG2 2.08
+ 'Kartoffeln'.SEP2 31.44
+ 'Kartoffeln'.OKT1 0.15
+ 'Kartoffeln'.NOV1 3.27
+ 'Möhre (auch Futtermöhre)'.APR1 5.33
+ 'Möhre (auch Futtermöhre)'.APR2 4.82
+ 'Möhre (auch Futtermöhre)'.MAI1 1.83
+ 'Möhre (auch Futtermöhre)'.MAI2 52.04
+ 'Möhre (auch Futtermöhre)'.JUN1 53.65
+ 'Möhre (auch Futtermöhre)'.JUN2 2.12
+ 'Möhre (auch Futtermöhre)'.JUL1 52.62
+ 'Möhre (auch Futtermöhre)'.JUL2 1.07
+ 'Möhre (auch Futtermöhre)'.AUG1 2.24
+ 'Möhre (auch Futtermöhre)'.AUG2 1.44
+ 'Möhre (auch Futtermöhre)'.SEP1 51.95
+ 'Möhre (auch Futtermöhre)'.OKT1 12.73
+ 'Möhre (auch Futtermöhre)'.OKT2 1.08
+ 'Pufferstreifen ÖVF AL (inkl. Feldrand ÖVF)'.JUN1 10.51
+ 'Silomais (als Hauptfutter)'.MRZ2 1.24
+ 'Silomais (als Hauptfutter)'.APR1 3.07
+ 'Silomais (als Hauptfutter)'.APR2 1.07
+ 'Silomais (als Hauptfutter)'.MAI1 0.43
+ 'Silomais (als Hauptfutter)'.MAI2 0.37
+ 'Silomais (als Hauptfutter)'.SEP2 4.2
+ 'Silomais (als Hauptfutter)'.OKT1 1.27
+ 'Silomais (als Hauptfutter)'.OKT2 1.88
+ 'Sommerraps'.FEB2 0.55
+ 'Sommerraps'.AUG2 1.94
+ 'Sommerraps'.OKT1 6.42
+ 'Streuobst mit DGL-Nutzung'.MRZ1 2.15
+ 'Streuobst mit DGL-Nutzung'.MRZ2 0.52
+ 'Streuobst mit DGL-Nutzung'.MAI2 1.58
+ 'Streuobst mit DGL-Nutzung'.JUN1 0.46
+ 'Streuobst mit DGL-Nutzung'.JUL1 3.76
+ 'Streuobst mit DGL-Nutzung'.SEP1 1.58
+ 'Streuobst mit DGL-Nutzung'.SEP2 1.24
+ 'Winter-Dinkel'.FEB2 0.62
+ 'Winter-Dinkel'.MRZ1 1.94
+ 'Winter-Dinkel'.AUG1 1.87
+ 'Winter-Dinkel'.AUG2 1
+ 'Winter-Dinkel'.SEP1 0.04
+ 'Winter-Dinkel'.SEP2 0.92
+ 'Winter-Dinkel'.OKT2 3.71
+ 'Wintergerste'.FEB1 0.5
+ 'Wintergerste'.FEB2 0.31
+ 'Wintergerste'.MRZ2 0.12
+ 'Wintergerste'.APR1 0.45
+ 'Wintergerste'.APR2 0.27
+ 'Wintergerste'.JUL1 2.43
+ 'Wintergerste'.JUL2 0.85
+ 'Wintergerste'.AUG1 0.15
+ 'Wintergerste'.AUG2 0.92
+ 'Wintergerste'.SEP1 2.15
+ 'Wintergerste'.SEP2 1.38
+ 'Wintergerste'.OKT2 0.43
+ 'Winterweichweizen'.FEB1 0.5
+ 'Winterweichweizen'.FEB2 0.31
+ 'Winterweichweizen'.MRZ2 0.12
+ 'Winterweichweizen'.APR1 0.47
+ 'Winterweichweizen'.APR2 0.27
+ 'Winterweichweizen'.MAI1 0.12
+ 'Winterweichweizen'.JUN1 0.44
+ 'Winterweichweizen'.AUG1 2.4
+ 'Winterweichweizen'.AUG2 1
+ 'Winterweichweizen'.SEP1 0.29
+ 'Winterweichweizen'.SEP2 2.8
+ 'Winterweichweizen'.OKT1 0.57
+ 'Winterweichweizen'.OKT2 1.24
+ 'Zuckerrüben'.FEB2 0.5
+ 'Zuckerrüben'.MRZ1 0.82
+ 'Zuckerrüben'.MRZ2 1.41
+ 'Zuckerrüben'.MAI2 0.27
+ 'Zuckerrüben'.JUL2 0.12
+ 'Zuckerrüben'.AUG1 0.27
+ 'Zuckerrüben'.SEP2 4.45
+ 'Zuckerrüben'.OKT1 1.31
+ 'Zuckerrüben'.OKT2 1.88
+/;

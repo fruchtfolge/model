@@ -217,6 +217,11 @@ parameter p_croppingFactor(curCrops,curCrops) /
  'Winterweizen'.'Winterweizen' 4
 /;
 
+set plots_years_crops(plots,years,crops) /
+
+/;
+
+
 set plots_years_cropGroup(plots,years,cropGroup) /
  '206f726b-4544-431f-a61b-1caa13ff9799'.2019.'' 'YES'
  '206f726b-4544-431f-a61b-1caa13ff9799'.2018.'Winterweizen' 'YES'

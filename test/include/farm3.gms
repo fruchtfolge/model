@@ -175,6 +175,10 @@ parameter p_croppingFactor(curCrops,curCrops) /
  'Winterweizen - Brotweizen'.'Winterweizen - Brotweizen' 4
 /;
 
+set plots_years_crops(plots,years,crops) /
+
+/;
+
 set plots_years_cropGroup(plots,years,cropGroup) /
  '25dffac4-41ad-4d46-9a92-03cd8097597c'.2019.'' 'YES'
  '25dffac4-41ad-4d46-9a92-03cd8097597c'.2018.'Gattung: Zea (Mais)' 'YES'

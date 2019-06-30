@@ -43,7 +43,8 @@ v_binCropPlot.up(curCrops,curPlots)
   $ (not plots_rootCropCap(curPlots))) = 0;
 
 *
-*  --- when a cropping factor of 0 is given for a previous crop - crop combination
+*  --- when a cropping factor of 0 is given for a previous
+*      crop - crop  combination,
 *      the crop can't be grown
 *  
 v_binCropPlot.up(curCrops,curPlots)
@@ -55,18 +56,17 @@ v_binCropPlot.up(curCrops,curPlots)
   $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
 
 *
-*  --- when a plot is permanent pasture, it has to be used in the same way as in the previous year
+*  --- when a plot is permanent pasture, it has to be used in the same 
+*      way as in the previous year
 *
 v_binCropPlot.lo(curCrops,curPlots)
   $ (plots_permPast(curPlots)
   $ sum((years,curYear) 
      $ (sameas(years,curYear) 
-     $ sum((cropGroup) 
-      $ (crops_cropGroup(curCrops,cropGroup) 
-      $ plots_years_cropGroup(curPlots,years - 1,cropGroup)),
-      1)),
+     $ plots_years_crops(curPlots,years - 1,curCrops)),
     1)) 
   = 1;
+
 *
 *  --- allow permanent pasture crops only on permanent pastures
 *  
@@ -74,6 +74,7 @@ v_binCropPlot.up(curCrops,curPlots)
   $ ((not plots_permPast(curPlots))
   $ (sum(permPastCrops $ sameas(curCrops,permPastCrops),1)))
   = 0;
+
 *
 *  --- Enter user specified constraints into the model, 
 *
