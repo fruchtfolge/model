@@ -33,7 +33,7 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curCrops,curPlots) $ (not p_grossMarginData(curPlots,curCrops)) = 0;
+v_binCropPlot.up(curCrops,curPlots) $ (not p_plot_crop_data(curPlots,curCrops,"grossMargin")) = 0;
 
 *
 *  --- root crops can obly be grown on root crop capable plots
@@ -49,8 +49,8 @@ v_binCropPlot.up(curCrops,curPlots)
 *  
 v_binCropPlot.up(curCrops,curPlots)
   $ sum((years,curYear,curCrops1) 
-  $ ((not sameas(curCrops1,'')) 
-  $ sameas(years,curYear)
+*  $ ((not sameas(curCrops1,'')) 
+  $ (sameas(years,curYear)
   $ sum((cropGroup) $ (crops_cropGroup(curCrops,cropGroup) 
     $ plots_years_cropGroup(curPlots,years - 1,cropGroup)), 1)
   $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;

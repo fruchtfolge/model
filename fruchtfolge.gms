@@ -55,8 +55,8 @@ Equations
 *
 *  --- include model
 *
-$include '%WORKDIR%model/catchCrop.gms'
-$include '%WORKDIR%model/cropRotation.gms'
+$include '%WORKDIR%model/catch_crop.gms'
+$include '%WORKDIR%model/crop_rotation.gms'
 $include '%WORKDIR%model/greening.gms'
 $include '%WORKDIR%model/labour.gms'
 

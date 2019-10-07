@@ -59,8 +59,8 @@ p_costCatchCrop(curPlots) =
 *  --- Source: Own regression made from KTBL - Verfahrensrechner Pflanze data
 *              Based on crop "Zwischenfrucht Senf"
 *
-set catchCropMonths(halfMonths) /'AUG2','SEP1','SEP2','FEB2'/;
-Parameter p_timeReqCatchCrop(curPlots,halfMonths);
+set catchCropMonths(months) /'AUG','SEP','FEB'/;
+Parameter p_timeReqCatchCrop(curPlots,months);
 
 p_timeReqCatchCrop(curPlots,catchCropMonths)
   = (0.04827586207 * p_plotData(curPlots,'distance')
