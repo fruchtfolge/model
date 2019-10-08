@@ -33,7 +33,8 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curCrops,curPlots) $ (not p_plot_crop_data(curPlots,curCrops,"grossMargin")) = 0;
+v_binCropPlot.up(curCrops,curPlots) $ (not sum((manAmounts,solidAmounts),
+  p_grossMarginData(curPlots,curCrops,'0','0',"grossMargin"))) = 0;
 
 *
 *  --- root crops can obly be grown on root crop capable plots
