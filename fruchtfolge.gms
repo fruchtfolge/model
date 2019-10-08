@@ -43,7 +43,7 @@ $endif.labour
 ;
 
 Binary Variables
-  v_binCropPlot(curCrops,curPlots)
+  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
   v_binCatchCrop(curCrops,curPlots)
 ;
 
@@ -57,6 +57,7 @@ Equations
 *
 $include '%WORKDIR%model/catch_crop.gms'
 $include '%WORKDIR%model/crop_rotation.gms'
+$include '%WORKDIR%model/fertilizer_ordinance.gms'
 $include '%WORKDIR%model/greening.gms'
 $include '%WORKDIR%model/labour.gms'
 
@@ -65,12 +66,13 @@ $include '%WORKDIR%model/labour.gms'
 *
 e_totGM..
   v_totGM =E=
-    sum((curPlots,curCrops),
-    v_binCropPlot(curCrops,curPlots)
-    * p_grossMarginData(curPlots,curCrops)
+    sum((curPlots,curCrops,manAmounts,solidAmounts),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
+    * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,'grossMarginHa')
     - v_binCatchCrop(curCrops,curPlots)
     * p_plotData(curPlots,'size')
-    * p_costCatchCrop(curPlots));
+    * p_costCatchCrop(curPlots))
+    - sum(manType, v_manExports(manType) * 12);
 
 e_obje..
   v_obje =E=
@@ -113,6 +115,9 @@ model Fruchtfolge /
   e_catchCropEqBinCrop
   e_maxShares
   e_oneCropPlot
+  e_man_balance
+  e_170_avg
+  e_170_plots
 $iftheni.constraints defined constraints
   e_minimumShares
   e_maximumShares

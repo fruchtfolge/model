@@ -6,8 +6,8 @@ Equations
 
 * Only activate ecological focus area equation if arable land is greater than 15ha
 e_efa $ (p_totArabLand >= 15)..
-  sum((curPlots,curCrops),
-      v_binCropPlot(curCrops,curPlots)
+  sum((curPlots,curCrops,manAmounts,solidAmounts),
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
       * p_plotData(curPlots,"size")
       * p_cropData(curCrops,"efaFactor")
       + v_binCatchCrop(curCrops,curPlots)
@@ -21,8 +21,8 @@ e_efa $ (p_totArabLand >= 15)..
 
 * Only activate 75% diversifaction rule if arable land is greater than 10ha
 e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
-  sum((curPlots,curCrops) $ crops_cropGroup(curCrops,cropGroup),
-      v_binCropPlot(curCrops,curPlots)
+  sum((curPlots,curCrops,manAmounts,solidAmounts) $ crops_cropGroup(curCrops,cropGroup),
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
       * p_plotData(curPlots,"size")
   )
   =L= 
@@ -35,13 +35,13 @@ e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
 e_95diversification(cropGroup,cropGroup1)
   $ ((p_totArabLand >= 30)
   $ (not sameas(cropGroup,cropGroup1)))..
-  sum((curPlots,curCrops) $ crops_cropGroup(curCrops,cropGroup),
-    v_binCropPlot(curCrops,curPlots)
+  sum((curPlots,curCrops,manAmounts,solidAmounts) $ crops_cropGroup(curCrops,cropGroup),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
     * p_plotData(curPlots,"size")
   )
   +
-  sum((curPlots,curCrops) $ crops_cropGroup(curCrops,cropGroup1),
-    v_binCropPlot(curCrops,curPlots)
+  sum((curPlots,curCrops,manAmounts,solidAmounts) $ crops_cropGroup(curCrops,cropGroup1),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
     * p_plotData(curPlots,"size")
   )
   =L= 

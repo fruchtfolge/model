@@ -15,7 +15,8 @@ e_oneCatchCropPlot(curPlots)..
 *  --- ensure that catch crop option matches actually grown crop
 *
 e_catchCropEqBinCrop(curCrops,curPlots)..
-  v_binCatchCrop(curCrops,curPlots) =L= v_binCropPlot(curCrops,curPlots)
+  v_binCatchCrop(curCrops,curPlots) =L= sum((manAmounts,solidAmounts),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts))
 ;
 *
 * --- Only allow growing of catch crops if the succeeding crop is a summer

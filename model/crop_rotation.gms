@@ -12,8 +12,8 @@ $endif.constraints
 *      crop rotational settings
 *
 e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
-  sum(curPlots, 
-    v_binCropPlot(curCrops,curPlots)
+  sum((curPlots,manAmounts,solidAmounts), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
     * p_plotData(curPlots,"size")
   )
   =L= 
@@ -25,7 +25,8 @@ e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
 *  --- ensure that only one crop is grown on a plot
 *
 e_oneCropPlot(curPlots)..
-  sum(curCrops, v_binCropPlot(curCrops,curPlots))
+  sum((curCrops,manAmounts,solidAmounts), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts))
   + v_devOneCrop(curPlots)
   =E= 1
 ;
@@ -33,13 +34,14 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curCrops,curPlots) $ (not sum((manAmounts,solidAmounts),
-  p_grossMarginData(curPlots,curCrops,'0','0',"grossMargin"))) = 0;
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) $ (not
+  p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,"grossMarginHa")) = 0;
+
 
 *
 *  --- root crops can obly be grown on root crop capable plots
 *
-v_binCropPlot.up(curCrops,curPlots) 
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) 
   $ (crops_rootCrop(curCrops) 
   $ (not plots_rootCropCap(curPlots))) = 0;
 
@@ -48,7 +50,7 @@ v_binCropPlot.up(curCrops,curPlots)
 *      crop - crop  combination,
 *      the crop can't be grown
 *  
-v_binCropPlot.up(curCrops,curPlots)
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
   $ sum((years,curYear,curCrops1) 
 *  $ ((not sameas(curCrops1,'')) 
   $ (sameas(years,curYear)
@@ -60,22 +62,42 @@ v_binCropPlot.up(curCrops,curPlots)
 *  --- when a plot is permanent pasture, it has to be used in the same 
 *      way as in the previous year
 *
-v_binCropPlot.lo(curCrops,curPlots)
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
   $ (plots_permPast(curPlots)
-  $ sum((years,curYear) 
+  $ (not sum((years,curYear) 
      $ (sameas(years,curYear) 
      $ plots_years_crops(curPlots,years - 1,curCrops)),
-    1)) 
-  = 1;
+    1))) 
+  = 0;
 
 *
 *  --- allow permanent pasture crops only on permanent pastures
 *  
-v_binCropPlot.up(curCrops,curPlots)
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
   $ ((not plots_permPast(curPlots))
   $ (sum(permPastCrops $ sameas(curCrops,permPastCrops),1)))
   = 0;
 
+*
+*  --- prohibit a crop - manure combination if it exceeds n and p from DBE calculation
+*
+set actManAmounts(manAmounts);
+actManAmounts(manAmounts) $ (manAmounts.pos gt 1) = YES;
+set actSolidAmounts(solidAmounts);
+actSolidAmounts(solidAmounts) $ (solidAmounts.pos gt 1) = YES;
+
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) 
+  $ ((p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,"minNAmount") eq 0)
+  $ ((manAmounts.pos > 1)
+  or (solidAmounts.pos > 1)))
+  = 0;
+
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) 
+  $ ((p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,"minPAmount") eq 0)
+  $ ((manAmounts.pos > 1)
+  or (solidAmounts.pos > 1)))
+  = 0;
+  
 *
 *  --- Enter user specified constraints into the model, 
 *
