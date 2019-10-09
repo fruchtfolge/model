@@ -119,6 +119,7 @@ model Fruchtfolge /
   e_catchCropEqBinCrop
   e_maxShares
   e_oneCropPlot
+  e_permPast
   e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots

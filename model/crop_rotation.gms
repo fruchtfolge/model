@@ -1,6 +1,7 @@
 Equations
   e_maxShares(curCrops)
   e_oneCropPlot(curPlots)
+  e_permPast(curCrops,curPlots)
 $iftheni.constraints defined constraints
   e_minimumShares(constraints,curCrops,curCrops1)
   e_maximumShares(constraints,curCrops,curCrops1) 
@@ -53,26 +54,27 @@ v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
 *  
 v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
   $ sum((years,curYear,curCrops1) 
-*  $ ((not sameas(curCrops1,'')) 
-  $ (sameas(years,curYear)
+  $ ((not sameas(curCrops1,'')) 
+  $ sameas(years,curYear)
   $ sum((cropGroup) $ (crops_cropGroup(curCrops,cropGroup) 
     $ plots_years_cropGroup(curPlots,years - 1,cropGroup)), 1)
   $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
 
-* TODO: Rewrite as an equation
 *
 *  --- when a plot is permanent pasture, it has to be used in the same 
 *      way as in the previous year
 *
-$ontext
-v_binCropPlot.lo(curCrops,curPlots,manAmounts,solidAmounts)
+e_permPast(curCrops,curPlots)
   $ (plots_permPast(curPlots)
-  $ (not sum((years,curYear) 
+  $ (sum((years,curYear) 
      $ (sameas(years,curYear) 
      $ plots_years_crops(curPlots,years - 1,curCrops)),
-    1))) 
-  = 1;
-$offtext
+    1))) ..
+  sum((manAmounts,solidAmounts),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts))
+  =G= 1
+;
+
 *
 *  --- allow permanent pasture crops only on permanent pastures
 *  
