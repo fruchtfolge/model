@@ -76,7 +76,7 @@ e_totGM..
       )
       * p_plotData(curPlots,'size')
     )
-    - sum(manType, v_manExports(manType) * 12);
+    - sum(manType, v_manExports(manType) * 15);
 
 e_obje..
   v_obje =E=
@@ -121,7 +121,7 @@ model Fruchtfolge /
   e_oneCropPlot
   e_man_balance
   e_170_avg
-  e_170_plots
+  $$ifi "%duev2020%"=="true" e_170_plots
 $iftheni.constraints defined constraints
   e_minimumShares
   e_maximumShares
