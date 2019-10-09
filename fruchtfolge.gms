@@ -66,12 +66,16 @@ $include '%WORKDIR%model/labour.gms'
 *
 e_totGM..
   v_totGM =E=
-    sum((curPlots,curCrops,manAmounts,solidAmounts),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
-    * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,'grossMarginHa')
-    - v_binCatchCrop(curCrops,curPlots)
-    * p_plotData(curPlots,'size')
-    * p_costCatchCrop(curPlots))
+    sum((curPlots,curCrops),
+      (sum((manAmounts,solidAmounts), 
+        v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
+        * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,'grossMarginHa')
+       )
+       - (v_binCatchCrop(curCrops,curPlots)
+       * p_costCatchCrop(curPlots))
+      )
+      * p_plotData(curPlots,'size')
+    )
     - sum(manType, v_manExports(manType) * 12);
 
 e_obje..
@@ -106,7 +110,7 @@ $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
 
-option optCR=0;
+option optCR=0.02;
 
 model Fruchtfolge /
   e_obje

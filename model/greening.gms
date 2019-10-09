@@ -10,8 +10,8 @@ e_efa $ (p_totArabLand >= 15)..
       v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
       * p_plotData(curPlots,"size")
       * p_cropData(curCrops,"efaFactor")
-      + v_binCatchCrop(curCrops,curPlots)
-      * p_plotData(curPlots,"size")
+      + (v_binCatchCrop(curCrops,curPlots)
+      * p_plotData(curPlots,"size"))
   )
   + v_devEfa5
   =G= 

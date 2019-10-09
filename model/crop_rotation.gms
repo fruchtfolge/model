@@ -34,8 +34,9 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) $ (not
-  p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,"grossMarginHa")) = 0;
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) $ ((not
+  p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,"grossMarginHa"))
+  $ (not plots_permPast(curPlots))) = 0;
 
 
 *
@@ -58,18 +59,20 @@ v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
     $ plots_years_cropGroup(curPlots,years - 1,cropGroup)), 1)
   $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
 
+* TODO: Rewrite as an equation
 *
 *  --- when a plot is permanent pasture, it has to be used in the same 
 *      way as in the previous year
 *
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
+$ontext
+v_binCropPlot.lo(curCrops,curPlots,manAmounts,solidAmounts)
   $ (plots_permPast(curPlots)
   $ (not sum((years,curYear) 
      $ (sameas(years,curYear) 
      $ plots_years_crops(curPlots,years - 1,curCrops)),
     1))) 
-  = 0;
-
+  = 1;
+$offtext
 *
 *  --- allow permanent pasture crops only on permanent pastures
 *  
@@ -81,11 +84,6 @@ v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts)
 *
 *  --- prohibit a crop - manure combination if it exceeds n and p from DBE calculation
 *
-set actManAmounts(manAmounts);
-actManAmounts(manAmounts) $ (manAmounts.pos gt 1) = YES;
-set actSolidAmounts(solidAmounts);
-actSolidAmounts(solidAmounts) $ (solidAmounts.pos gt 1) = YES;
-
 v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts) 
   $ ((p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,"minNAmount") eq 0)
   $ ((manAmounts.pos > 1)

@@ -38,7 +38,6 @@ v_binCatchCrop.up(curCrops,curPlots)
       $ plots_years_cropGroup(curPlots,years - 1,cropGroup)),1)
     $ (not crops_catchCrop(curCrops1))
     ),1) = 0;
-
 *
 * --- Disallow catch crops to be grown on permanent pastures
 *
