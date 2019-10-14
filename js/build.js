@@ -23,7 +23,7 @@ readFile('fruchtfolge.gms','utf8')
         const statement = line.split('$include ')
         const includePath = statement[1].replace('%WORKDIR%',__dirname + path.sep + '..' + path.sep).replace(/'/g,'').replace(/"/g,'')
         console.log(includePath);
-        model += await readFile(includePath,'utf8')
+        model += await readFile(includePath,'utf8') + '\n'
       } else {
         model += line + '\n'
       }

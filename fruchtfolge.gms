@@ -16,6 +16,22 @@ p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
 
+Parameter p_priceManExport(months) /
+  jan  15
+  feb  15
+  mrz  15
+  apr  15
+  mai  30
+  jun  30
+  jul  30
+  aug  30
+  sep  30
+  okt  30
+  nov  30
+  dez  30
+/;
+
+
 alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
@@ -54,9 +70,9 @@ Equations
 *
 *  --- include model
 *
-* $include '%WORKDIR%model/catch_crop.gms'
 $include '%WORKDIR%model/crop_rotation.gms'
 $include '%WORKDIR%model/fertilizer_ordinance.gms'
+$include '%WORKDIR%model/storage.gms'
 $include '%WORKDIR%model/greening.gms'
 $include '%WORKDIR%model/labour.gms'
 
@@ -71,7 +87,7 @@ e_totGM..
       * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )
-    - sum(manType, v_manExports(manType) * 15);
+    - sum((manType,months), v_manExports(manType,months) * p_priceManExport(months));
 
 e_obje..
   v_obje =E=
@@ -105,17 +121,20 @@ $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
 
-option optCR=0.02;
+option optCR=0.0;
 
 model Fruchtfolge /
   e_obje
   e_totGM
   e_maxShares
   e_oneCropPlot
-  e_permPast
-  e_man_balance
+*  e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots
+  e_storageBal
+  e_manureSpring
+  e_manureAutumn
+  e_maxStorageCap
 $iftheni.constraints defined constraints
   e_minimumShares
   e_maximumShares
@@ -128,8 +147,6 @@ $iftheni.labour defined p_availLabour
 $endif.labour
 /;
 
-*Fruchtfolge.limrow = 1000;
-*Fruchtfolge.limcol = 1000;
 solve Fruchtfolge using MIP maximizing v_obje;
 
 $include '%WORKDIR%exploiter/createJson.gms'

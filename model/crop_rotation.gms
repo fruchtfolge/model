@@ -1,7 +1,6 @@
 Equations
   e_maxShares(curCrops)
   e_oneCropPlot(curPlots)
-  e_permPast(curCrops,curPlots)
 $iftheni.constraints defined constraints
   e_minimumShares(constraints,curCrops,curCrops1)
   e_maximumShares(constraints,curCrops,curCrops1) 
@@ -40,50 +39,6 @@ e_oneCropPlot(curPlots)..
 v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) $ ((not
   p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,"grossMarginHa"))
   $ (not plots_permPast(curPlots))) = 0;
-
-
-*
-*  --- root crops can obly be grown on root crop capable plots
-*
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
-  $ (crops_rootCrop(curCrops) 
-  $ (not plots_rootCropCap(curPlots))) = 0;
-
-*
-*  --- when a cropping factor of 0 is given for a previous
-*      crop - crop  combination,
-*      the crop can't be grown
-*  
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-  $ sum((years,curYear,curCrops1) 
-  $ ((not sameas(curCrops1,'')) 
-  $ sameas(years,curYear)
-  $ sum((cropGroup) $ (crops_cropGroup(curCrops,cropGroup) 
-    $ plots_years_cropGroup(curPlots,years - 1,cropGroup)), 1)
-  $ (not p_croppingFactor(curCrops1,curCrops))),1) = 0;
-
-*
-*  --- when a plot is permanent pasture, it has to be used in the same 
-*      way as in the previous year
-*
-e_permPast(curCrops,curPlots)
-  $ (plots_permPast(curPlots)
-  $ (sum((years,curYear) 
-     $ (sameas(years,curYear) 
-     $ plots_years_crops(curPlots,years - 1,curCrops)),
-    1))) ..
-  sum((manAmounts,solidAmounts,catchCrop,autumnFert),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert))
-  =G= 1
-;
-
-*
-*  --- allow permanent pasture crops only on permanent pastures
-*  
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-  $ ((not plots_permPast(curPlots))
-  $ (sum(permPastCrops $ sameas(curCrops,permPastCrops),1)))
-  = 0;
   
 *
 *  --- Enter user specified constraints into the model, 

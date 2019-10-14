@@ -4,7 +4,7 @@ p_excr("manure",man_attr) = p_manure(man_attr);
 p_excr("solid",man_attr) = p_solid(man_attr);
 
 positive variables
-  v_manExports(manType)
+  v_manExports(manType,months)
 ;
 Equations
   e_man_balance
@@ -38,7 +38,7 @@ e_man_balance(manType)..
     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
     * p_manValue(manType,manAmounts,solidAmounts))
-    + v_manExports(manType)
+    + sum(months, v_manExports(manType,months))
     =E= p_excr(manType,"amount")
 ;
 
