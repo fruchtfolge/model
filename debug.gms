@@ -13,6 +13,7 @@ parameter p_profit;
 parameter p_manPlot(curPlots,curCrops,manAmounts); 
 parameter p_manPlotEnd(curPlots,curCrops,manAmounts);
 
+$ontext
 p_manPlot(curPlots,curCrops,manAmounts) $ (not plots_duevEndangered(curPlots))
   = sum((solidAmounts), 
   v_binCropPlot.l(curCrops,curPlots,manAmounts,solidAmounts)
@@ -37,3 +38,4 @@ p_profit = v_totGM.l - sum((curPlots,curCrops,manAmounts,solidAmounts),
 )
 
 abort p_cropCheckGM,p_profit,p_manPlot,p_manPlotEnd;
+$offtext

@@ -1,6 +1,3 @@
-*
-*  --- TODO: 
-*
 set manType / manure,solid /;
 parameter p_excr(manType,man_attr);
 p_excr("manure",man_attr) = p_manure(man_attr);
@@ -18,10 +15,7 @@ Equations
 
 Parameter p_manValue(manType,manAmounts,solidAmounts) /
   'manure'.'0'.set.solidAmounts 0
-  'manure'.'5'.set.solidAmounts 5
-  'manure'.'7'.set.solidAmounts 7
   'manure'.'10'.set.solidAmounts 10
-  'manure'.'12'.set.solidAmounts 12
   'manure'.'15'.set.solidAmounts 15
   'manure'.'20'.set.solidAmounts 20
   'manure'.'25'.set.solidAmounts 25
@@ -30,10 +24,8 @@ Parameter p_manValue(manType,manAmounts,solidAmounts) /
   'manure'.'50'.set.solidAmounts 50
   'manure'.'60'.set.solidAmounts 60
   'solid'.set.manAmounts.'0' 0
-  'solid'.set.manAmounts.'6.5' 6.5
   'solid'.set.manAmounts.'10' 10
   'solid'.set.manAmounts.'15' 15
-  'solid'.set.manAmounts.'17' 17
   'solid'.set.manAmounts.'20' 20
   'solid'.set.manAmounts.'25' 25
   'solid'.set.manAmounts.'30' 30
@@ -41,8 +33,9 @@ Parameter p_manValue(manType,manAmounts,solidAmounts) /
 
 
 e_man_balance(manType)..
-  sum((curCrops,curPlots,manAmounts,solidAmounts),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
+  sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
     * p_manValue(manType,manAmounts,solidAmounts))
     + v_manExports(manType)
@@ -55,17 +48,20 @@ $iftheni.duev2020 "%duev2020%"=="true"
     $ (not plots_duevEndangered(curPlots)), p_plotData(curPlots,"size"));
     
   e_170_avg(manType)..
-    sum((curCrops,curPlots,manAmounts,solidAmounts) $ (not plots_duevEndangered(curPlots)), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
+    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+      $ ((not plots_duevEndangered(curPlots))
+      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
      * p_plotData(curPlots,"size")
      * p_manValue(manType,manAmounts,solidAmounts)
      * p_manure("n")
      * 80 / 100
-     )/p_notEndangeredLand =L= 170
+     ) /p_notEndangeredLand =L= 170
  ;
  e_170_plots(manType,curPlots) $ (plots_duevEndangered(curPlots) )..
-  sum((curCrops,manAmounts,solidAmounts),
-   v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
+  sum((curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
+   v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     * p_manValue(manType,manAmounts,solidAmounts)
     * p_manure("n")
     * 80 / 100
@@ -73,8 +69,9 @@ $iftheni.duev2020 "%duev2020%"=="true"
   ;
 $else.duev2020
   e_170_avg(manType)..
-    sum((curCrops,curPlots,manAmounts,solidAmounts), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
+    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
      * p_plotData(curPlots,"size")
      * p_manValue(manType,manAmounts,solidAmounts)
      * p_manure("n")

@@ -43,8 +43,7 @@ $endif.labour
 ;
 
 Binary Variables
-  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
-  v_binCatchCrop(curCrops,curPlots)
+  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
 ;
 
 Equations
@@ -55,7 +54,7 @@ Equations
 *
 *  --- include model
 *
-$include '%WORKDIR%model/catch_crop.gms'
+* $include '%WORKDIR%model/catch_crop.gms'
 $include '%WORKDIR%model/crop_rotation.gms'
 $include '%WORKDIR%model/fertilizer_ordinance.gms'
 $include '%WORKDIR%model/greening.gms'
@@ -66,14 +65,10 @@ $include '%WORKDIR%model/labour.gms'
 *
 e_totGM..
   v_totGM =E=
-    sum((curPlots,curCrops),
-      (sum((manAmounts,solidAmounts), 
-        v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts)
-        * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,'grossMarginHa')
-       )
-       - (v_binCatchCrop(curCrops,curPlots)
-       * p_costCatchCrop(curPlots))
-      )
+    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )
     - sum(manType, v_manExports(manType) * 15);
@@ -115,8 +110,6 @@ option optCR=0.02;
 model Fruchtfolge /
   e_obje
   e_totGM
-  e_oneCatchCropPlot
-  e_catchCropEqBinCrop
   e_maxShares
   e_oneCropPlot
   e_permPast
