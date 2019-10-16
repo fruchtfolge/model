@@ -3,7 +3,7 @@
 *
 Positive Variables 
   v_curStorage(manType,months)
-  v_manureSpring(manType)
+  v_manureSpring(manType,months)
   v_manureAutumn
 ;
 Equations 
@@ -41,7 +41,7 @@ Parameter p_springManMonths(manType,months) /
 *      3. The amount of manure in storage after 01.10
 *     
 e_manureSpring(manType)..
-  v_manureSpring(manType) =E=
+  sum(months, v_manureSpring(manType,months)) =E=
   sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
@@ -49,6 +49,12 @@ e_manureSpring(manType)..
     * p_manValue(manType,manAmounts,solidAmounts)
   )
 ;
+
+* Manure spreading can only be done in these months
+set manMonths / feb, mrz, apr, mai /;
+v_manureSpring.up(manType,months) = 0;
+v_manureSpring.up(manType,months) 
+  $ sum(manMonths $ (sameas(manMonths,months)),1) = +inf;
 
 e_manureAutumn..
   v_manureAutumn =E=
@@ -69,16 +75,16 @@ e_storageBal(manType,months)..
 * We assume that the storage is at capacity at the 31.01
     + p_maxStoreCap(manType)   $ sameas(months,"jan") 
 * In these months manure is assumed to be spreaded
-    - v_manureSpring(manType) * p_springManMonths(manType,months)
+    - v_manureSpring(manType,months)
 * Exports can be done in April (cheaper) or September
     - v_manExports(manType,months) $ (sameas(months,"apr") or sameas(months,"sep"))
 * Autumn manure spreading is only assumed to be done in September
-    - v_manureAutumn $ sameas(months,"sep") 
+    - v_manureAutumn $ (sameas(months,"sep") $ sameas(manType,"manure"))
 ;
 
 e_maxStorageCap(manType,months)..
   v_curStorage(manType,months) =L=
 * at the 01.10, the storage needs to have at least a capacity of 4 months left  
   p_maxStoreCap(manType) 
-  - (4 * p_monthlyManure(manType)) $ sameas(months,"okt")
+  - (3 * p_monthlyManure(manType)) $ sameas(months,"okt")
 ;

@@ -21,14 +21,14 @@ Parameter p_priceManExport(months) /
   feb  15
   mrz  15
   apr  15
-  mai  30
-  jun  30
-  jul  30
-  aug  30
-  sep  30
-  okt  30
-  nov  30
-  dez  30
+  mai  300
+  jun  300
+  jul  300
+  aug  300
+  sep  300
+  okt  300
+  nov  300
+  dez  300
 /;
 
 
@@ -121,7 +121,7 @@ $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
 
-option optCR=0.0;
+option optCR=0.02;
 
 model Fruchtfolge /
   e_obje
