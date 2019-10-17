@@ -21,7 +21,7 @@ p_monthlyManure("solid") = p_solid("amount") / 12;
 * We also assume, that the maximum storage capacity is equal to the monthly
 * flow multiplied with the 6 month minimum storage capacity requried by the Fert. Ordinance
 Parameter p_maxStoreCap(manType);
-p_maxStoreCap("manure") =  p_manure("amount") / 12 * 6;
+p_maxStoreCap("manure") =  manStorage;
 p_maxStoreCap("solid") =  p_solid("amount") / 12 * 2;
 
 Parameter p_springManMonths(manType,months) /
@@ -33,6 +33,9 @@ Parameter p_springManMonths(manType,months) /
   solid.apr  0.333
 /;
 
+Parameter p_priceManExport(months);
+p_priceManExport(months) $ (ord(months) < 6) = manPriceSpring;
+p_priceManExport(months) $ (ord(months) > 5) = manPriceAutumn;
 
 *
 *  --- We model 3 timepoints:

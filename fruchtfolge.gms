@@ -16,22 +16,6 @@ p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
 
-Parameter p_priceManExport(months) /
-  jan  15
-  feb  15
-  mrz  15
-  apr  15
-  mai  300
-  jun  300
-  jul  300
-  aug  300
-  sep  300
-  okt  300
-  nov  300
-  dez  300
-/;
-
-
 alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
