@@ -5,6 +5,8 @@ p_excr("solid",man_attr) = p_solid(man_attr);
 
 positive variables
   v_manExports(manType,months)
+  v_170Slack
+  v_170PlotSlack(curPlots)
 ;
 Equations
   e_man_balance
@@ -56,7 +58,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
      * p_manValue(manType,manAmounts,solidAmounts)
      * p_manure("n")
      * 80 / 100
-     ) /p_notEndangeredLand =L= 170
+     ) /p_notEndangeredLand =L= 170 + v_170Slack
  ;
  e_170_plots(manType,curPlots) $ (plots_duevEndangered(curPlots) )..
   sum((curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
@@ -65,7 +67,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
     * p_manValue(manType,manAmounts,solidAmounts)
     * p_manure("n")
     * 80 / 100
-    )  =L= 170
+    )  =L= 170 + v_170PlotSlack(curPlots)
   ;
 $else.duev2020
   e_170_avg(manType)..
@@ -76,5 +78,5 @@ $else.duev2020
      * p_manValue(manType,manAmounts,solidAmounts)
      * p_manure("n")
      * 80 / 100
-     )/p_totLand =L= 170
+     )/p_totLand =L= 170 + v_170Slack
 $endif.duev2020

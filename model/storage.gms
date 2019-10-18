@@ -5,7 +5,9 @@ Positive Variables
   v_curStorage(manType,months)
   v_manureSpring(manType,months)
   v_manureAutumn
+  v_manSlack(manType,months)
 ;
+
 Equations 
   e_storageBal(manType,months)
   e_manureSpring(manType)
@@ -83,6 +85,8 @@ e_storageBal(manType,months)..
     - v_manExports(manType,months) $ (sameas(months,"apr") or sameas(months,"sep"))
 * Autumn manure spreading is only assumed to be done in September
     - v_manureAutumn $ (sameas(months,"sep") $ sameas(manType,"manure"))
+* Manure slack for infes treatment
+    + v_manSlack(manType,months) 
 ;
 
 e_maxStorageCap(manType,months)..

@@ -81,6 +81,9 @@ e_obje..
     - (v_devEfa75 * M)
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
+    - (sum((manType,months), v_manSlack(manType,months)) * M)
+    - ((v_170Slack + 1) * M)
+    - ((sum(curPlots, v_170PlotSlack(curPlots)) + 1) * M)
 $iftheni.constraints defined constraints
     - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)
@@ -105,7 +108,7 @@ $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
 
-option optCR=0.02;
+option optCR=0;
 
 model Fruchtfolge /
   e_obje
