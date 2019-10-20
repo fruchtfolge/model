@@ -126,8 +126,8 @@ positive variables
 ;
 Equations
   e_man_balance
-  e_170_avg(manType)
-  $$ifi "%duev2020%"=="true" e_170_plots(manType,curPlots)
+  e_170_avg
+  $$ifi "%duev2020%"=="true" e_170_plots(curPlots)
 ;
 
 
@@ -165,8 +165,8 @@ $iftheni.duev2020 "%duev2020%"=="true"
   p_notEndangeredLand = sum((curPlots) 
     $ (not plots_duevEndangered(curPlots)), p_plotData(curPlots,"size"));
     
-  e_170_avg(manType)..
-    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+  e_170_avg..
+    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
       $ ((not plots_duevEndangered(curPlots))
       $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')), 
     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
@@ -176,7 +176,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
      * 80 / 100
      ) /p_notEndangeredLand =L= 170 + v_170Slack
  ;
- e_170_plots(manType,curPlots) $ (plots_duevEndangered(curPlots) )..
+ e_170_plots(curPlots) $ (plots_duevEndangered(curPlots) )..
   sum((curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
@@ -186,8 +186,8 @@ $iftheni.duev2020 "%duev2020%"=="true"
     )  =L= 170 + v_170PlotSlack(curPlots)
   ;
 $else.duev2020
-  e_170_avg(manType)..
-    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  e_170_avg..
+    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
      * p_plotData(curPlots,"size")
@@ -405,8 +405,8 @@ e_obje..
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
     - (sum((manType,months), v_manSlack(manType,months)) * M)
-    - ((v_170Slack + 1) * M)
-    - ((sum(curPlots, v_170PlotSlack(curPlots)) + 1) * M)
+    - (v_170Slack * M)
+    - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
 $iftheni.constraints defined constraints
     - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)
@@ -488,7 +488,7 @@ warningsCount = sum(curCrops $ v_devShares.l(curCrops), 1)
                  + sum(curPlots $ v_devOneCrop.l(curPlots), 1)
                  + sum((manType,months) $ v_manSlack.l(manType,months), 1)
                  + 1 $ v_170Slack.l
-                 + sum(curPlots $ v_170PlotSlack.l(curPlots), 1)
+                 + sum((curPlots) $ v_170PlotSlack.l(curPlots), 1)
                  $$iftheni.constraints defined constraints
                    + sum((constraints,curCrops,curCrops1) $ v_devUserShares.l(constraints,curCrops,curCrops1), 1)
                  $$endif.constraints
@@ -544,8 +544,8 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     );
     if ((sum((manType,months), v_manSlack.l(manType,months)) > 0),
       loop(manType,
-        loop (months,
-         put$(v_manSlack.l(manType,months) > 0) '"Nicht ausreichend org. Dünger (', v_manSlack.l(manType,months), 'm3) im Monat', months.tl, '"' /;
+        loop (months $ v_manSlack.l(manType,months),
+         put$(v_manSlack.l(manType,months) > 0) '"Nicht ausreichend org. Dünger (', v_manSlack.l(manType,months), 'm3) im Monat ', months.tl, '"' /;
          curWarning $ (v_manSlack.l(manType,months) > 0) = curWarning + 1;
          put$(curWarning < warningsCount) "," /;
         );

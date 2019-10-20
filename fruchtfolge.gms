@@ -82,8 +82,8 @@ e_obje..
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
     - (sum((manType,months), v_manSlack(manType,months)) * M)
-    - ((v_170Slack + 1) * M)
-    - ((sum(curPlots, v_170PlotSlack(curPlots)) + 1) * M)
+    - (v_170Slack * M)
+    - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
 $iftheni.constraints defined constraints
     - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)

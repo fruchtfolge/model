@@ -10,8 +10,8 @@ positive variables
 ;
 Equations
   e_man_balance
-  e_170_avg(manType)
-  $$ifi "%duev2020%"=="true" e_170_plots(manType,curPlots)
+  e_170_avg
+  $$ifi "%duev2020%"=="true" e_170_plots(curPlots)
 ;
 
 
@@ -49,8 +49,8 @@ $iftheni.duev2020 "%duev2020%"=="true"
   p_notEndangeredLand = sum((curPlots) 
     $ (not plots_duevEndangered(curPlots)), p_plotData(curPlots,"size"));
     
-  e_170_avg(manType)..
-    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+  e_170_avg..
+    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
       $ ((not plots_duevEndangered(curPlots))
       $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')), 
     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
@@ -60,7 +60,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
      * 80 / 100
      ) /p_notEndangeredLand =L= 170 + v_170Slack
  ;
- e_170_plots(manType,curPlots) $ (plots_duevEndangered(curPlots) )..
+ e_170_plots(curPlots) $ (plots_duevEndangered(curPlots) )..
   sum((curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
@@ -70,8 +70,8 @@ $iftheni.duev2020 "%duev2020%"=="true"
     )  =L= 170 + v_170PlotSlack(curPlots)
   ;
 $else.duev2020
-  e_170_avg(manType)..
-    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  e_170_avg..
+    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
      * p_plotData(curPlots,"size")
