@@ -49,7 +49,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
   p_notEndangeredLand = sum((curPlots) 
     $ (not plots_duevEndangered(curPlots)), p_plotData(curPlots,"size"));
     
-  e_170_avg..
+  e_170_avg $ p_notEndangeredLand..
     sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
       $ ((not plots_duevEndangered(curPlots))
       $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')), 
@@ -61,7 +61,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
      ) /p_notEndangeredLand =L= 170 + v_170Slack
  ;
  e_170_plots(curPlots) $ (plots_duevEndangered(curPlots) )..
-  sum((curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
+  sum((manType,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
     * p_manValue(manType,manAmounts,solidAmounts)
