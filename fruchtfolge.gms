@@ -108,7 +108,13 @@ $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
 
-option optCR=0;
+if (card(curPlots)<30,
+    option optCR=0.0;
+  elseif card(curPlots)<50, 
+    option optCR=0.0;
+  else 
+    option optCR=0.04;
+);
 
 model Fruchtfolge /
   e_obje

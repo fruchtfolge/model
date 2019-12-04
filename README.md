@@ -5,6 +5,7 @@ This repo contains the simulation model used in the [**Fruchtfolge**](https://gi
 The mixed-integer linear programming model returns a cropping (and catch crop) recommendation for each given plot.  
 Overall farm profits are maximised, considering restrictions such as:
 
+- German Fertilizer Ordinance (2017/2020)
 - Greening directive
 - rotational breaks
 - maximum allowed crop shares in the crop rotation

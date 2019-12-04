@@ -97,17 +97,21 @@ $iftheni.constraints defined constraints
 e_minimumShares(constraints,curCrops,curCrops1) 
        $ (p_constraint(constraints,curCrops,curCrops1) 
        $ (not (constraints_lt(constraints,'lt'))))..
-  sum(curPlots, v_binCropPlot(curCrops,curPlots) * p_plotData(curPlots,'size') + 
-    v_binCropPlot(curCrops1,curPlots) * p_plotData(curPlots,'size'))
+  sum((curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+    * p_plotData(curPlots,'size'))
     + v_devUserShares(constraints,curCrops,curCrops1)
-    =G= p_constraint(constraints,curCrops,curCrops1) 
+  =G= p_constraint(constraints,curCrops,curCrops1) 
 ;  
 
 e_maximumShares(constraints,curCrops,curCrops1) 
        $ (p_constraint(constraints,curCrops,curCrops1) 
        $ (constraints_lt(constraints,'lt')))..
-  sum(curPlots, v_binCropPlot(curCrops,curPlots) * p_plotData(curPlots,'size') + 
-    v_binCropPlot(curCrops1,curPlots) * p_plotData(curPlots,'size'))
+   sum((curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
+     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+     * p_plotData(curPlots,'size'))
     =L= 
     p_constraint(constraints,curCrops,curCrops1)
     + v_devUserShares(constraints,curCrops,curCrops1)
@@ -429,7 +433,13 @@ $endif.constraints
 $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
-option optCR=0;
+if (card(curPlots)<30,
+    option optCR=0.0;
+  elseif card(curPlots)<50, 
+    option optCR=0.0;
+  else 
+    option optCR=0.04;
+);
 model Fruchtfolge /
   e_obje
   e_totGM
