@@ -8,10 +8,10 @@ Equations
 ;
 
 e_maxLabour(months)..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,months),
-  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-  * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,months)
+  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,months),
+  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,months)
   )
   =L= 
   p_availLabour(months)

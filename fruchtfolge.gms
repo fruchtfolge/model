@@ -16,6 +16,7 @@ p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
 
+
 alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
@@ -43,7 +44,7 @@ $endif.labour
 ;
 
 Binary Variables
-  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
 ;
 
 Equations
@@ -65,10 +66,10 @@ $include '%WORKDIR%model/labour.gms'
 *
 e_totGM..
   v_totGM =E=
-    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')
+    sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )
     - sum((manType,months), v_manExports(manType,months) * p_priceManExport(months));
@@ -124,6 +125,7 @@ model Fruchtfolge /
 *  e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots
+  $$ifi "%duev2020%"=="true" e_20_red_plots
   e_storageBal
   e_manureSpring
   e_manureAutumn
