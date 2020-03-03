@@ -39,7 +39,7 @@ $iftheni.labour defined p_availLabour
 $endif.labour
 ;
 Binary Variables
-  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
 ;
 Equations
   e_obje
@@ -62,9 +62,9 @@ $endif.constraints
 *      crop rotational settings
 *
 e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
-  sum((curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa') , 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa') , 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
   =L= 
@@ -76,9 +76,9 @@ e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
 *  --- ensure that only one crop is grown on a plot
 *
 e_oneCropPlot(curPlots)..
-  sum((curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert))
+  sum((curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
   + v_devOneCrop(curPlots)
   =E= 1
 ;
@@ -86,8 +86,8 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) $ ((not
-  p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,"grossMarginHa"))
+v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
+  p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,"grossMarginHa"))
   $ (not plots_permPast(curPlots))) = 0;
   
 *
@@ -97,9 +97,9 @@ $iftheni.constraints defined constraints
 e_minimumShares(constraints,curCrops,curCrops1) 
        $ (p_constraint(constraints,curCrops,curCrops1) 
        $ (not (constraints_lt(constraints,'lt'))))..
-  sum((curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+  sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
     * p_plotData(curPlots,'size'))
     + v_devUserShares(constraints,curCrops,curCrops1)
   =G= p_constraint(constraints,curCrops,curCrops1) 
@@ -108,9 +108,9 @@ e_minimumShares(constraints,curCrops,curCrops1)
 e_maximumShares(constraints,curCrops,curCrops1) 
        $ (p_constraint(constraints,curCrops,curCrops1) 
        $ (constraints_lt(constraints,'lt')))..
-   sum((curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
-     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+   sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
+     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
      * p_plotData(curPlots,'size'))
     =L= 
     p_constraint(constraints,curCrops,curCrops1)
@@ -127,11 +127,13 @@ positive variables
   v_manExports(manType,months)
   v_170Slack
   v_170PlotSlack(curPlots)
+  v_n_red
 ;
 Equations
   e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots(curPlots)
+  $$ifi "%duev2020%"=="true" e_20_red_plots
 ;
 
 
@@ -155,9 +157,9 @@ Parameter p_manValue(manType,manAmounts,solidAmounts) /
 
 
 e_man_balance(manType)..
-  sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
     * p_manValue(manType,manAmounts,solidAmounts))
     + sum(months, v_manExports(manType,months))
@@ -168,32 +170,47 @@ $iftheni.duev2020 "%duev2020%"=="true"
   parameter p_notEndangeredLand;
   p_notEndangeredLand = sum((curPlots) 
     $ (not plots_duevEndangered(curPlots)), p_plotData(curPlots,"size"));
-    
+      
   e_170_avg $ p_notEndangeredLand..
-    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) 
+    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
       $ ((not plots_duevEndangered(curPlots))
-      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
      * p_plotData(curPlots,"size")
      * p_manValue(manType,manAmounts,solidAmounts)
      * p_manure("n")
      * 80 / 100
      ) /p_notEndangeredLand =L= 170 + v_170Slack
  ;
- e_170_plots(curPlots) $ (plots_duevEndangered(curPlots) )..
-  sum((manType,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
-   v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+* In "red areas", the 170kg N maximum rule is active for every single field,
+* instead of the average of all fields
+  e_170_plots(curPlots) $ (plots_duevEndangered(curPlots) )..
+   sum((manType,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'),
+   v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_manValue(manType,manAmounts,solidAmounts)
     * p_manure("n")
     * 80 / 100
     )  =L= 170 + v_170PlotSlack(curPlots)
   ;
+* In addition to this, nitrogen fertilizer needs to be reduced by a minimum average of 
+* 20% on all fields in a "red area "of the farm
+  e_20_red_plots $ sum(curPlots $ plots_duevEndangered(curPlots), 1)..
+    sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      $ (p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
+      $ plots_duevEndangered(curPlots)),
+     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      * (ord(nReduction) - 1) * 10
+      * p_plotData(curPlots,"size")
+    ) 
+    / sum(curPlots $ plots_duevEndangered(curPlots), p_plotData(curPlots,"size")) 
+    =G= 20
+  ;
 $else.duev2020
   e_170_avg..
-    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    sum((manType,curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
      * p_plotData(curPlots,"size")
      * p_manValue(manType,manAmounts,solidAmounts)
      * p_manure("n")
@@ -249,9 +266,9 @@ p_priceManExport(months) $ (ord(months) > 5) = manPriceAutumn;
 *     
 e_manureSpring(manType)..
   sum(months, v_manureSpring(manType,months)) =E=
-  sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
     * p_manValue(manType,manAmounts,solidAmounts)
   )
@@ -265,11 +282,11 @@ v_manureSpring.up(manType,months)
 
 e_manureAutumn..
   v_manureAutumn =E=
-  sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'autumnFertm3'),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'autumnFertm3'),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
-    * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'autumnFertm3')
+    * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'autumnFertm3')
   )
 ;
 
@@ -306,11 +323,11 @@ Equations
 
 * Only activate ecological focus area equation if arable land is greater than 15ha
 e_efa $ (p_totArabLand >= 15)..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert) 
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'efaFactor'),
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'efaFactor'),
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
-      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'efaFactor')
+      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'efaFactor')
   )
   + v_devEfa5
   =G= 
@@ -320,10 +337,10 @@ e_efa $ (p_totArabLand >= 15)..
 
 * Only activate 75% diversifaction rule if arable land is greater than 10ha
 e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert) 
+  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
     $ (crops_cropGroup(curCrops,cropGroup)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')),
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')),
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
   )
   =L= 
@@ -336,17 +353,17 @@ e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
 e_95diversification(cropGroup,cropGroup1)
   $ ((p_totArabLand >= 30)
   $ (not sameas(cropGroup,cropGroup1)))..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert) 
+  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
     $ (crops_cropGroup(curCrops,cropGroup)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
   +
-  sum((curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert) 
+  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
     $ (crops_cropGroup(curCrops,cropGroup1)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')),
+    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
   =L= 
@@ -364,10 +381,10 @@ Equations
 ;
 
 e_maxLabour(months)..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,months),
-  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-  * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,months)
+  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,months),
+  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,months)
   )
   =L= 
   p_availLabour(months)
@@ -393,10 +410,10 @@ $endif.labour
 *
 e_totGM..
   v_totGM =E=
-    sum((curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa'), 
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert)
-      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,catchCrop,autumnFert,'grossMarginHa')
+    sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
+      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )
     - sum((manType,months), v_manExports(manType,months) * p_priceManExport(months));
@@ -448,6 +465,7 @@ model Fruchtfolge /
 *  e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots
+  $$ifi "%duev2020%"=="true" e_20_red_plots
   e_storageBal
   e_manureSpring
   e_manureAutumn
@@ -599,17 +617,20 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
       loop(curCrops,
         loop (manAmounts,
          loop (solidAmounts,
-           loop (catchCrop,
-            loop (autumnFert,
-              put$(v_binCropPlot.l(curCrops,curPlots,manAmounts,solidAmounts,catchCrop,autumnFert) > 0) 
-                '"', curPlots.tl, '": {', 
-                '"crop": "', curCrops.tl, '",', 
-                '"manAmount": ', manAmounts.tl, ',',
-                '"solidAmount": ', solidAmounts.tl, ',',
-                '"catchCrop":', catchCrop.tl, ',',
-                '"autumnFert":', autumnFert.tl, 
-                '}' /
-            );
+           loop (nReduction,
+             loop (catchCrop,
+              loop (autumnFert,
+                put$(v_binCropPlot.l(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) > 0) 
+                  '"', curPlots.tl, '": {', 
+                  '"crop": "', curCrops.tl, '",', 
+                  '"manAmount": ', manAmounts.tl, ',',
+                  '"solidAmount": ', solidAmounts.tl, ',',
+                  '"nReduction": ', nReduction.tl, ',',
+                  '"catchCrop":', catchCrop.tl, ',',
+                  '"autumnFert":', autumnFert.tl, 
+                  '}' /
+              );
+             );
            );
          );
         );

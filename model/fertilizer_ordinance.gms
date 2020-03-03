@@ -75,7 +75,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
   ;
 * In addition to this, nitrogen fertilizer needs to be reduced by a minimum average of 
 * 20% on all fields in a "red area "of the farm
-  e_20_red_plots..
+  e_20_red_plots $ sum(curPlots $ plots_duevEndangered(curPlots), 1)..
     sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       $ (p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
       $ plots_duevEndangered(curPlots)),
