@@ -85,6 +85,7 @@ e_obje..
     - (sum((manType,months), v_manSlack(manType,months)) * M)
     - (v_170Slack * M)
     - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
+    - (v_20RedSlack * M)
 $iftheni.constraints defined constraints
     - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)
@@ -112,7 +113,7 @@ $endif.labour
 if (card(curPlots)<30,
     option optCR=0.0;
   elseif card(curPlots)<50, 
-    option optCR=0.0;
+    option optCR=0.02;
   else 
     option optCR=0.04;
 );

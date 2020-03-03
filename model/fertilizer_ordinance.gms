@@ -7,7 +7,7 @@ positive variables
   v_manExports(manType,months)
   v_170Slack
   v_170PlotSlack(curPlots)
-  v_n_red
+  v_20RedSlack
 ;
 Equations
   e_man_balance
@@ -84,7 +84,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
       * p_plotData(curPlots,"size")
     ) 
     / sum(curPlots $ plots_duevEndangered(curPlots), p_plotData(curPlots,"size")) 
-    =G= 20
+    =G= 20 - v_20RedSlack
   ;
 $else.duev2020
   e_170_avg..

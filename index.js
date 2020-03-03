@@ -127,7 +127,7 @@ positive variables
   v_manExports(manType,months)
   v_170Slack
   v_170PlotSlack(curPlots)
-  v_n_red
+  v_20RedSlack
 ;
 Equations
   e_man_balance
@@ -204,7 +204,7 @@ $iftheni.duev2020 "%duev2020%"=="true"
       * p_plotData(curPlots,"size")
     ) 
     / sum(curPlots $ plots_duevEndangered(curPlots), p_plotData(curPlots,"size")) 
-    =G= 20
+    =G= 20 - v_20RedSlack
   ;
 $else.duev2020
   e_170_avg..
@@ -428,6 +428,7 @@ e_obje..
     - (sum((manType,months), v_manSlack(manType,months)) * M)
     - (v_170Slack * M)
     - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
+    - (v_20RedSlack * M)
 $iftheni.constraints defined constraints
     - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)
@@ -453,7 +454,7 @@ $endif.labour
 if (card(curPlots)<30,
     option optCR=0.0;
   elseif card(curPlots)<50, 
-    option optCR=0.0;
+    option optCR=0.02;
   else 
     option optCR=0.04;
 );
@@ -517,6 +518,7 @@ warningsCount = sum(curCrops $ v_devShares.l(curCrops), 1)
                  + sum((manType,months) $ v_manSlack.l(manType,months), 1)
                  + 1 $ v_170Slack.l
                  + sum((curPlots) $ v_170PlotSlack.l(curPlots), 1)
+                 + 1 $ v_20RedSlack.l
                  $$iftheni.constraints defined constraints
                    + sum((constraints,curCrops,curCrops1) $ v_devUserShares.l(constraints,curCrops,curCrops1), 1)
                  $$endif.constraints
@@ -581,6 +583,11 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     );
     if ((v_170Slack.l > 0),
       put '"Konnte 170kg org. N-Dünger-Regel nicht einhalten"' /;
+      curWarning = curWarning + 1;
+      put$(curWarning < warningsCount) "," /;
+    );
+    if ((v_20RedSlack.l > 0),
+      put '"Konnte 20% N-Reduktion im roten Gebiet nicht einhalten"' /;
       curWarning = curWarning + 1;
       put$(curWarning < warningsCount) "," /;
     );
