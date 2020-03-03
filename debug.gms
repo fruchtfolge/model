@@ -25,7 +25,7 @@ Parameter p_testRed(curPlots,nReduction);
 
 *p_testRed(curPlots,nReduction) $ plots_duevEndangered(curPlots) = 
 ** $ (v_binCropPlot.l('Winterweizen - Brotweizen',curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-*p_grossMarginData(curPlots,'Winterweizen - Brotweizen','0','0',nReduction,'false','false',"minNAmount");
+*p_grossMarginData(curPlots,'Winterweizen - Brotweizen','20','0',nReduction,'false','false',"minNAmount");
 *
 *display p_testRed;
 execute.async 'redLstSize debug.lst l=true';
