@@ -12,9 +12,9 @@ $endif.constraints
 *      crop rotational settings
 *
 e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
-  sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa') , 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+*    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa') , 
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
   =L= 
@@ -26,9 +26,8 @@ e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
 *  --- ensure that only one crop is grown on a plot
 *
 e_oneCropPlot(curPlots)..
-  sum((curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
   + v_devOneCrop(curPlots)
   =E= 1
 ;
@@ -36,8 +35,8 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
-  p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,"grossMarginHa"))
+v_binCropPlot.up(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
+  p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
   $ (not plots_permPast(curPlots))) = 0;
   
 *
@@ -47,9 +46,8 @@ $iftheni.constraints defined constraints
 e_minimumShares(constraints,curCrops,curCrops1) 
        $ (p_constraint(constraints,curCrops,curCrops1) 
        $ (not (constraints_lt(constraints,'lt'))))..
-  sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert), 
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
     * p_plotData(curPlots,'size'))
     + v_devUserShares(constraints,curCrops,curCrops1)
   =G= p_constraint(constraints,curCrops,curCrops1) 
@@ -58,9 +56,8 @@ e_minimumShares(constraints,curCrops,curCrops1)
 e_maximumShares(constraints,curCrops,curCrops1) 
        $ (p_constraint(constraints,curCrops,curCrops1) 
        $ (constraints_lt(constraints,'lt')))..
-   sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-     $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
-     v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
+   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+     v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
      * p_plotData(curPlots,'size'))
     =L= 
     p_constraint(constraints,curCrops,curCrops1)

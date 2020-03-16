@@ -16,6 +16,14 @@ p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
 
+* 
+*  --- initiate a cross set of all allowed combinations, might speed up generation time
+*
+$offOrder
+set p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert);
+p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
+  = YES;
 
 alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
@@ -44,7 +52,7 @@ $endif.labour
 ;
 
 Binary Variables
-  v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
 ;
 
 Equations
@@ -66,9 +74,8 @@ $include '%WORKDIR%model/labour.gms'
 *
 e_totGM..
   v_totGM =E=
-    sum((curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-      $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa'), 
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert), 
+      v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )

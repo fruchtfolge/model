@@ -6,9 +6,8 @@ Equations
 
 * Only activate ecological focus area equation if arable land is greater than 15ha
 e_efa $ (p_totArabLand >= 15)..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'efaFactor'),
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+      v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
       * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'efaFactor')
   )
@@ -20,10 +19,9 @@ e_efa $ (p_totArabLand >= 15)..
 
 * Only activate 75% diversifaction rule if arable land is greater than 10ha
 e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
-    $ (crops_cropGroup(curCrops,cropGroup)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')),
-      v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ crops_cropGroup(curCrops,cropGroup),
+      v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
   )
   =L= 
@@ -36,17 +34,15 @@ e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
 e_95diversification(cropGroup,cropGroup1)
   $ ((p_totArabLand >= 30)
   $ (not sameas(cropGroup,cropGroup1)))..
-  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
-    $ (crops_cropGroup(curCrops,cropGroup)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ crops_cropGroup(curCrops,cropGroup),
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
   +
-  sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
-    $ (crops_cropGroup(curCrops,cropGroup1)
-    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')),
-    v_binCropPlot(curCrops,curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ crops_cropGroup(curCrops,cropGroup1),
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
   =L= 
