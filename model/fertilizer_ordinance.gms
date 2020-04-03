@@ -28,11 +28,11 @@ Parameter p_manValue(manType,manAmounts,solidAmounts) /
   'manure'.'50'.set.solidAmounts 50
   'manure'.'60'.set.solidAmounts 60
   'solid'.set.manAmounts.'0' 0
+  'solid'.set.manAmounts.'5' 5
   'solid'.set.manAmounts.'10' 10
-  'solid'.set.manAmounts.'15' 15
-  'solid'.set.manAmounts.'20' 20
-  'solid'.set.manAmounts.'25' 25
-  'solid'.set.manAmounts.'30' 30
+  'solid'.set.manAmounts.'12' 15
+  'solid'.set.manAmounts.'15' 20
+  'solid'.set.manAmounts.'20' 25
 /;
 
 

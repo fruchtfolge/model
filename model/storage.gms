@@ -4,7 +4,7 @@
 Positive Variables 
   v_curStorage(manType,months)
   v_manureSpring(manType,months)
-  v_manureAutumn
+  v_manureAutumn(manType)
   v_manSlack(manType,months)
 ;
 
@@ -12,6 +12,7 @@ Equations
   e_storageBal(manType,months)
   e_manureSpring(manType)
   e_manureAutumn
+  e_solidAutumn
   e_maxStorageCap(manType,months)
 ;
 Parameter p_monthlyManure(manType);
@@ -24,7 +25,7 @@ p_monthlyManure("solid") = p_solid("amount") / 12;
 * flow multiplied with the 6 month minimum storage capacity requried by the Fert. Ordinance
 Parameter p_maxStoreCap(manType);
 p_maxStoreCap("manure") =  manStorage;
-p_maxStoreCap("solid") =  p_solid("amount") / 12 * 2;
+p_maxStoreCap("solid") =  solidStorage;
 
 Parameter p_springManMonths(manType,months) /
   manure.feb 0.667
@@ -35,9 +36,11 @@ Parameter p_springManMonths(manType,months) /
   solid.apr  0.333
 /;
 
-Parameter p_priceManExport(months);
-p_priceManExport(months) $ (ord(months) < 6) = manPriceSpring;
-p_priceManExport(months) $ (ord(months) > 5) = manPriceAutumn;
+Parameter p_priceFertExport(manType,months);
+p_priceFertExport("manure",months) $ (ord(months) < 6) = manPriceSpring;
+p_priceFertExport("manure",months) $ (ord(months) > 5) = manPriceAutumn;
+p_priceFertExport("solid",months) $ (ord(months) < 6) = solidPriceSpring;
+p_priceFertExport("solid",months) $ (ord(months) > 5) = solidPriceAutumn;
 
 *
 *  --- We model 3 timepoints:
@@ -61,8 +64,19 @@ v_manureSpring.up(manType,months)
   $ sum(manMonths $ (sameas(manMonths,months)),1) = +inf;
 
 e_manureAutumn..
-  v_manureAutumn =E=
-  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+  v_manureAutumn("manure") =E=
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ (ord(manAmounts) > 1),
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    * p_plotData(curPlots,"size")
+    * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'autumnFertm3')
+  )
+;
+
+e_solidAutumn..
+  v_manureAutumn("solid") =E=
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ (ord(manAmounts) eq 1),
     v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
     * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'autumnFertm3')
@@ -82,7 +96,7 @@ e_storageBal(manType,months)..
 * Exports can be done in April (cheaper) or September
     - v_manExports(manType,months) $ (sameas(months,"apr") or sameas(months,"sep"))
 * Autumn manure spreading is only assumed to be done in September
-    - v_manureAutumn $ (sameas(months,"sep") $ sameas(manType,"manure"))
+    - v_manureAutumn(manType) $ sameas(months,"sep")
 * Manure slack for infes treatment
     + v_manSlack(manType,months) 
 ;

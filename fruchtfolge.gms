@@ -12,10 +12,15 @@
 scalar  p_totLand;
 scalar  p_totArabLand;
 scalar  p_totGreenLand;
+scalar  p_restLand;
+scalar  p_shareGreenLand;
+scalar  p_grassLandExempt;
 p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
-
+p_restLand = p_totLand - p_totGreenLand;
+p_shareGreenLand = p_totGreenLand / p_totLand;
+p_grassLandExempt $((p_shareGreenLand > 0.75) $(p_restLand < 30)) = 1;
 * 
 *  --- initiate a cross set of all allowed combinations, might speed up generation time
 *
@@ -79,7 +84,7 @@ e_totGM..
       * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )
-    - sum((manType,months), v_manExports(manType,months) * p_priceManExport(months));
+    - sum((manType,months), v_manExports(manType,months) * p_priceFertExport(manType,months));
 
 e_obje..
   v_obje =E=
@@ -89,7 +94,7 @@ e_obje..
     - (v_devEfa75 * M)
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
-    - (sum((manType,months), v_manSlack(manType,months)) * M)
+    - (sum((manType,months), v_manSlack(manType,months) * M))
     - (v_170Slack * M)
     - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
     - (v_20RedSlack * M)
@@ -137,6 +142,7 @@ model Fruchtfolge /
   e_storageBal
   e_manureSpring
   e_manureAutumn
+  e_solidAutumn
   e_maxStorageCap
 $iftheni.constraints defined constraints
   e_minimumShares

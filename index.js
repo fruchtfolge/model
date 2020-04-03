@@ -12,9 +12,15 @@ module.exports = (debugBounds) => { return `*-------------------------------
 scalar  p_totLand;
 scalar  p_totArabLand;
 scalar  p_totGreenLand;
+scalar  p_restLand;
+scalar  p_shareGreenLand;
+scalar  p_grassLandExempt;
 p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
+p_restLand = p_totLand - p_totGreenLand;
+p_shareGreenLand = p_totGreenLand / p_totLand;
+p_grassLandExempt $((p_shareGreenLand > 0.75) $(p_restLand < 30)) = 1;
 * 
 *  --- initiate a cross set of all allowed combinations, might speed up generation time
 *
@@ -70,8 +76,8 @@ $endif.constraints
 *      crop rotational settings
 *
 e_maxShares(curCrops) $ p_cropData(curCrops,"maxShare")..
-  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
-*    $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa') , 
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ (not plots_permPast(curPlots)),
     v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
   )
@@ -153,11 +159,11 @@ Parameter p_manValue(manType,manAmounts,solidAmounts) /
   'manure'.'50'.set.solidAmounts 50
   'manure'.'60'.set.solidAmounts 60
   'solid'.set.manAmounts.'0' 0
+  'solid'.set.manAmounts.'5' 5
   'solid'.set.manAmounts.'10' 10
-  'solid'.set.manAmounts.'15' 15
-  'solid'.set.manAmounts.'20' 20
-  'solid'.set.manAmounts.'25' 25
-  'solid'.set.manAmounts.'30' 30
+  'solid'.set.manAmounts.'12' 15
+  'solid'.set.manAmounts.'15' 20
+  'solid'.set.manAmounts.'20' 25
 /;
 
 
@@ -223,7 +229,7 @@ $endif.duev2020
 Positive Variables 
   v_curStorage(manType,months)
   v_manureSpring(manType,months)
-  v_manureAutumn
+  v_manureAutumn(manType)
   v_manSlack(manType,months)
 ;
 
@@ -231,6 +237,7 @@ Equations
   e_storageBal(manType,months)
   e_manureSpring(manType)
   e_manureAutumn
+  e_solidAutumn
   e_maxStorageCap(manType,months)
 ;
 Parameter p_monthlyManure(manType);
@@ -243,7 +250,7 @@ p_monthlyManure("solid") = p_solid("amount") / 12;
 * flow multiplied with the 6 month minimum storage capacity requried by the Fert. Ordinance
 Parameter p_maxStoreCap(manType);
 p_maxStoreCap("manure") =  manStorage;
-p_maxStoreCap("solid") =  p_solid("amount") / 12 * 2;
+p_maxStoreCap("solid") =  solidStorage;
 
 Parameter p_springManMonths(manType,months) /
   manure.feb 0.667
@@ -254,9 +261,11 @@ Parameter p_springManMonths(manType,months) /
   solid.apr  0.333
 /;
 
-Parameter p_priceManExport(months);
-p_priceManExport(months) $ (ord(months) < 6) = manPriceSpring;
-p_priceManExport(months) $ (ord(months) > 5) = manPriceAutumn;
+Parameter p_priceFertExport(manType,months);
+p_priceFertExport("manure",months) $ (ord(months) < 6) = manPriceSpring;
+p_priceFertExport("manure",months) $ (ord(months) > 5) = manPriceAutumn;
+p_priceFertExport("solid",months) $ (ord(months) < 6) = solidPriceSpring;
+p_priceFertExport("solid",months) $ (ord(months) > 5) = solidPriceAutumn;
 
 *
 *  --- We model 3 timepoints:
@@ -280,8 +289,19 @@ v_manureSpring.up(manType,months)
   $ sum(manMonths $ (sameas(manMonths,months)),1) = +inf;
 
 e_manureAutumn..
-  v_manureAutumn =E=
-  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+  v_manureAutumn("manure") =E=
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ (ord(manAmounts) > 1),
+    v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    * p_plotData(curPlots,"size")
+    * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'autumnFertm3')
+  )
+;
+
+e_solidAutumn..
+  v_manureAutumn("solid") =E=
+  sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+    $ (ord(manAmounts) eq 1),
     v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     * p_plotData(curPlots,"size")
     * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'autumnFertm3')
@@ -301,7 +321,7 @@ e_storageBal(manType,months)..
 * Exports can be done in April (cheaper) or September
     - v_manExports(manType,months) $ (sameas(months,"apr") or sameas(months,"sep"))
 * Autumn manure spreading is only assumed to be done in September
-    - v_manureAutumn $ (sameas(months,"sep") $ sameas(manType,"manure"))
+    - v_manureAutumn(manType) $ sameas(months,"sep")
 * Manure slack for infes treatment
     + v_manSlack(manType,months) 
 ;
@@ -320,7 +340,7 @@ Equations
 ;
 
 * Only activate ecological focus area equation if arable land is greater than 15ha
-e_efa $ (p_totArabLand >= 15)..
+e_efa $ ((p_totArabLand >= 15) $(not p_grassLandExempt))..
   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
       v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
@@ -333,9 +353,10 @@ e_efa $ (p_totArabLand >= 15)..
 
 
 * Only activate 75% diversifaction rule if arable land is greater than 10ha
-e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
+e_75diversification(cropGroup) $ ((p_totArabLand >= 10) $(not p_grassLandExempt))..
   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    $ crops_cropGroup(curCrops,cropGroup),
+    $ ((not plots_permPast(curPlots))
+    $ crops_cropGroup(curCrops,cropGroup)),
       v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
   )
@@ -348,6 +369,7 @@ e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
 * Only activate 95% diversifaction rule if arable land is greater than 30ha
 e_95diversification(cropGroup,cropGroup1)
   $ ((p_totArabLand >= 30)
+  $ (not p_grassLandExempt)
   $ (not sameas(cropGroup,cropGroup1)))..
   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     $ crops_cropGroup(curCrops,cropGroup),
@@ -408,7 +430,7 @@ e_totGM..
       * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
       * p_plotData(curPlots,'size')
     )
-    - sum((manType,months), v_manExports(manType,months) * p_priceManExport(months));
+    - sum((manType,months), v_manExports(manType,months) * p_priceFertExport(manType,months));
 e_obje..
   v_obje =E=
     v_totGM
@@ -417,7 +439,7 @@ e_obje..
     - (v_devEfa75 * M)
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
-    - (sum((manType,months), v_manSlack(manType,months)) * M)
+    - (sum((manType,months), v_manSlack(manType,months) * M))
     - (v_170Slack * M)
     - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
     - (v_20RedSlack * M)
@@ -462,6 +484,7 @@ model Fruchtfolge /
   e_storageBal
   e_manureSpring
   e_manureAutumn
+  e_solidAutumn
   e_maxStorageCap
 $iftheni.constraints defined constraints
   e_minimumShares

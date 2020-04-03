@@ -5,7 +5,7 @@ Equations
 ;
 
 * Only activate ecological focus area equation if arable land is greater than 15ha
-e_efa $ (p_totArabLand >= 15)..
+e_efa $ ((p_totArabLand >= 15) $(not p_grassLandExempt))..
   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
       v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
@@ -18,9 +18,10 @@ e_efa $ (p_totArabLand >= 15)..
 
 
 * Only activate 75% diversifaction rule if arable land is greater than 10ha
-e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
+e_75diversification(cropGroup) $ ((p_totArabLand >= 10) $(not p_grassLandExempt))..
   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    $ crops_cropGroup(curCrops,cropGroup),
+    $ ((not plots_permPast(curPlots))
+    $ crops_cropGroup(curCrops,cropGroup)),
       v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
       * p_plotData(curPlots,"size")
   )
@@ -33,6 +34,7 @@ e_75diversification(cropGroup) $ (p_totArabLand >= 10)..
 * Only activate 95% diversifaction rule if arable land is greater than 30ha
 e_95diversification(cropGroup,cropGroup1)
   $ ((p_totArabLand >= 30)
+  $ (not p_grassLandExempt)
   $ (not sameas(cropGroup,cropGroup1)))..
   sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
     $ crops_cropGroup(curCrops,cropGroup),
