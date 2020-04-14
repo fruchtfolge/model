@@ -23,12 +23,14 @@ readFile('fruchtfolge.gms','utf8')
         const statement = line.split('$include ')
         const includePath = statement[1].replace('%WORKDIR%',__dirname + path.sep + '..' + path.sep).replace(/'/g,'').replace(/"/g,'')
         console.log(includePath);
-        model += await readFile(includePath,'utf8')
+        model += await readFile(includePath,'utf8') + '\n'
+      } else if (line.includes('solve Fruchtfolge using')) {
+        model += '${debugBounds}' + '\n' + line + '\n'
       } else {
         model += line + '\n'
       }
     })
-    const index = 'module.exports = ' + JSON.stringify(model)
+    const index = 'module.exports = (debugBounds) => { return `' + model + '`}'
     await writeFile('index.js', index)
   })
   .catch(e => {

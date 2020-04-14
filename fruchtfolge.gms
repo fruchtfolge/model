@@ -12,9 +12,23 @@
 scalar  p_totLand;
 scalar  p_totArabLand;
 scalar  p_totGreenLand;
+scalar  p_restLand;
+scalar  p_shareGreenLand;
+scalar  p_grassLandExempt;
 p_totLand = sum(curPlots, p_plotData(curPlots,"size"));
 p_totArabLand = sum(curPlots $ (not plots_permPast(curPlots)), p_plotData(curPlots,"size"));
 p_totGreenLand = p_totLand - p_totArabLand;
+p_restLand = p_totLand - p_totGreenLand;
+p_shareGreenLand = p_totGreenLand / p_totLand;
+p_grassLandExempt $((p_shareGreenLand > 0.75) $(p_restLand < 30)) = 1;
+* 
+*  --- initiate a cross set of all allowed combinations, might speed up generation time
+*
+$offOrder
+set p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert);
+p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+  $ p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
+  = YES;
 
 alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
@@ -43,8 +57,7 @@ $endif.labour
 ;
 
 Binary Variables
-  v_binCropPlot(curCrops,curPlots)
-  v_binCatchCrop(curCrops,curPlots)
+  v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
 ;
 
 Equations
@@ -55,8 +68,9 @@ Equations
 *
 *  --- include model
 *
-$include '%WORKDIR%model/catchCrop.gms'
-$include '%WORKDIR%model/cropRotation.gms'
+$include '%WORKDIR%model/crop_rotation.gms'
+$include '%WORKDIR%model/fertilizer_ordinance.gms'
+$include '%WORKDIR%model/storage.gms'
 $include '%WORKDIR%model/greening.gms'
 $include '%WORKDIR%model/labour.gms'
 
@@ -65,12 +79,12 @@ $include '%WORKDIR%model/labour.gms'
 *
 e_totGM..
   v_totGM =E=
-    sum((curPlots,curCrops),
-    v_binCropPlot(curCrops,curPlots)
-    * p_grossMarginData(curPlots,curCrops)
-    - v_binCatchCrop(curCrops,curPlots)
-    * p_plotData(curPlots,'size')
-    * p_costCatchCrop(curPlots));
+    sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert), 
+      v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+      * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,'grossMarginHa')
+      * p_plotData(curPlots,'size')
+    )
+    - sum((manType,months), v_manExports(manType,months) * p_priceFertExport(manType,months));
 
 e_obje..
   v_obje =E=
@@ -80,6 +94,10 @@ e_obje..
     - (v_devEfa75 * M)
     - (v_devEfa95 * M)
     - sum(curPlots, v_devOneCrop(curPlots) * M * 10)
+    - (sum((manType,months), v_manSlack(manType,months) * M))
+    - (v_170Slack * M)
+    - ((sum((manType,curPlots), v_170PlotSlack(curPlots))) * M)
+    - (v_20RedSlack * M)
 $iftheni.constraints defined constraints
     - sum((constraints,curCrops,curCrops1),
       v_devUserShares(constraints,curCrops,curCrops1) * M)
@@ -104,15 +122,28 @@ $iftheni.labour defined p_availLabour
   v_devLabour.up(months) = 15000;
 $endif.labour
 
-option optCR=0;
+if (card(curPlots)<30,
+    option optCR=0.0;
+  elseif card(curPlots)<50, 
+    option optCR=0.02;
+  else 
+    option optCR=0.04;
+);
 
 model Fruchtfolge /
   e_obje
   e_totGM
-  e_oneCatchCropPlot
-  e_catchCropEqBinCrop
   e_maxShares
   e_oneCropPlot
+*  e_man_balance
+  e_170_avg
+  $$ifi "%duev2020%"=="true" e_170_plots
+  $$ifi "%duev2020%"=="true" e_20_red_plots
+  e_storageBal
+  e_manureSpring
+  e_manureAutumn
+  e_solidAutumn
+  e_maxStorageCap
 $iftheni.constraints defined constraints
   e_minimumShares
   e_maximumShares
@@ -125,8 +156,6 @@ $iftheni.labour defined p_availLabour
 $endif.labour
 /;
 
-*Fruchtfolge.limrow = 1000;
-*Fruchtfolge.limcol = 1000;
 solve Fruchtfolge using MIP maximizing v_obje;
 
 $include '%WORKDIR%exploiter/createJson.gms'
