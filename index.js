@@ -551,6 +551,7 @@ put "{"
 put '"model_status":',  Fruchtfolge.modelstat, "," /;
 put '"solver_status":', Fruchtfolge.solvestat, "," /;
 
+
 if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     put '"error_message": "Infeasible model."' /;
   ELSE
@@ -560,7 +561,7 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
 
     if ((sum(curCrops, v_devShares.l(curCrops)) > 0),
       loop(curCrops $ v_devShares.l(curCrops),
-        put$(v_devShares.l(curCrops) > 0) '"Maximaler Fruchtfolgeanteil von ', curCrops.tl, ' konnte nicht eingehalten werden."'/;
+        put$(v_devShares.l(curCrops) > 0) '"Maximaler Fruchtfolgeanteil von cropId::', curCrops.tl, ':: konnte nicht eingehalten werden."'/;
         curWarning = curWarning + 1;
         put$(curWarning < warningsCount) "," /;
       )
@@ -582,7 +583,7 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     );
     if ((sum(curPlots, v_devOneCrop.l(curPlots)) > 0),
       loop(curPlots $ v_devOneCrop.l(curPlots),
-        put$(v_devOneCrop.l(curPlots) > 0) '"Keine mögliche Nachfrucht für ', curPlots.tl, ' mit den aktuellen Anbaupause/Nachfruchtwirkungen."'/;
+        put$(v_devOneCrop.l(curPlots) > 0) '"Keine mögliche Nachfrucht für plotId::', curPlots.tl, ':: mit den aktuellen Anbaupause/Nachfruchtwirkungen."'/;
         curWarning = curWarning + 1;
         put$(curWarning < warningsCount) "," /;
       )
@@ -608,7 +609,7 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     );
     if ((sum(curPlots, v_170PlotSlack.l(curPlots)) > 0),
       loop(curPlots $ v_170PlotSlack.l(curPlots),
-        put$(v_170PlotSlack.l(curPlots) > 0) '"Konnte 170kg org. N-Dünger-Regel für ', curPlots.tl, ' nicht einhalten (',  v_170PlotSlack.l(curPlots) ,')."'/;
+        put$(v_170PlotSlack.l(curPlots) > 0) '"Konnte 170kg org. N-Dünger-Regel für cropId::', curPlots.tl, ':: nicht einhalten (',  v_170PlotSlack.l(curPlots) ,')."'/;
         curWarning = curWarning + 1;
         put$(curWarning < warningsCount) "," /;
       )
@@ -616,7 +617,7 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     $$iftheni.constraints defined constraints
       if ((sum((constraints,curCrops,curCrops1), v_devUserShares.l(constraints,curCrops,curCrops1)) > 0),
         loop((constraints,curCrops,curCrops1) $ v_devUserShares.l(constraints,curCrops,curCrops1),
-          put$(v_devUserShares.l(constraints,curCrops,curCrops1) > 0) '"Konnte Restriktion für ', constraints.tl, ' nicht einhalten."'/;
+          put$(v_devUserShares.l(constraints,curCrops,curCrops1) > 0) '"Konnte Restriktion für constraintId::', constraints.tl, ':: nicht einhalten."'/;
           curWarning = curWarning + 1;
           put$(curWarning < warningsCount) "," /;
         ) 
@@ -646,6 +647,19 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
           '"catchCrop":', catchCrop.tl, ',',
           '"autumnFert":', autumnFert.tl, 
           '}' /
+      );
+*     when there is no crop recommendation, fill with first crop and zero fertilisation 
+      if((v_devOneCrop.l(curPlots) > 0),
+        put '"', curPlots.tl, '": {' /;
+        loop(curCrops $ (curCrops.pos eq 2),
+          put '"crop": "', curCrops.tl, '",' /;
+        )
+        put '"manAmount": 0,',
+        '"solidAmount": 0,',
+        '"nReduction": 0,',
+        '"catchCrop": false,',
+        '"autumnFert": false', 
+        '}' /;
       );
       put$(curPlots.pos < card(curPlots)) "," /
     );
