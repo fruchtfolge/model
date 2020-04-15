@@ -609,7 +609,7 @@ if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
     );
     if ((sum(curPlots, v_170PlotSlack.l(curPlots)) > 0),
       loop(curPlots $ v_170PlotSlack.l(curPlots),
-        put$(v_170PlotSlack.l(curPlots) > 0) '"Konnte 170kg org. N-Dünger-Regel für cropId::', curPlots.tl, ':: nicht einhalten (',  v_170PlotSlack.l(curPlots) ,')."'/;
+        put$(v_170PlotSlack.l(curPlots) > 0) '"Konnte 170kg org. N-Dünger-Regel für plotId::', curPlots.tl, ':: nicht einhalten (',  v_170PlotSlack.l(curPlots) ,')."'/;
         curWarning = curWarning + 1;
         put$(curWarning < warningsCount) "," /;
       )
