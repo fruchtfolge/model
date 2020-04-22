@@ -123,6 +123,9 @@ e_maximumShares(constraints,curCrops,curCrops1)
    sum(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
      v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
      * p_plotData(curPlots,'size'))
+    + sum(p_c_m_s_n_z_a(curPlots,curCrops1,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
+      v_binCropPlot(curPlots,curCrops1,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) 
+      * p_plotData(curPlots,'size'))
     =L= 
     p_constraint(constraints,curCrops,curCrops1)
     + v_devUserShares(constraints,curCrops,curCrops1)
