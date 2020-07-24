@@ -35,9 +35,9 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
-  p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
-  $ (not plots_permPast(curPlots))) = 0;
+ v_binCropPlot.up(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
+   p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
+   $ (not plots_permPast(curPlots))) = 0;
   
 *
 *  --- Enter user specified constraints into the model, 

@@ -6,6 +6,16 @@
 * Fruchtfolge web application
 * (c) Christoph Pahmeyer, 2019
 *-------------------------------
+* for the paper analysis, no permanent pastures and or endangered plots are considered
+$onempty
+set plots_permPast(curPlots) /
+
+/;
+
+set plots_duevEndangered(curPlots) /
+
+/;
+$offempty
 *
 *  --- initiate global parameters for Greening evaluation
 *
@@ -34,6 +44,7 @@ alias (cropGroup,cropGroup1);
 alias (curCrops,curCrops1);
 
 scalar M / 99999 /;
+
 *
 *  --- declare objective variable and equation
 *
@@ -59,6 +70,7 @@ $endif.labour
 Binary Variables
   v_binCropPlot(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
 ;
+
 
 Equations
   e_obje
@@ -135,7 +147,6 @@ model Fruchtfolge /
   e_totGM
   e_maxShares
   e_oneCropPlot
-*  e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots
   $$ifi "%duev2020%"=="true" e_20_red_plots
@@ -156,6 +167,8 @@ $iftheni.labour defined p_availLabour
 $endif.labour
 /;
 
-solve Fruchtfolge using MIP maximizing v_obje;
-
-$include '%WORKDIR%exploiter/createJson.gms'
+$iftheni.rmip "%rmip%"=="true"
+  solve Fruchtfolge using RMIP maximizing v_obje;
+$else.rmip
+ solve Fruchtfolge using MIP maximizing v_obje;
+$endif.rmip

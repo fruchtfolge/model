@@ -99,9 +99,9 @@ e_oneCropPlot(curPlots)..
 *
 *  --- prohibit growing a crop on a plot when there is no gross margin present
 *
-v_binCropPlot.up(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
-  p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
-  $ (not plots_permPast(curPlots))) = 0;
+ v_binCropPlot.up(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) $ ((not
+   p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert))
+   $ (not plots_permPast(curPlots))) = 0;
   
 *
 *  --- Enter user specified constraints into the model, 
@@ -480,7 +480,6 @@ model Fruchtfolge /
   e_totGM
   e_maxShares
   e_oneCropPlot
-*  e_man_balance
   e_170_avg
   $$ifi "%duev2020%"=="true" e_170_plots
   $$ifi "%duev2020%"=="true" e_20_red_plots
@@ -500,203 +499,11 @@ $iftheni.labour defined p_availLabour
   e_maxLabour
 $endif.labour
 /;
+$iftheni.rmip "%rmip%"=="true"
 ${debugBounds}
-solve Fruchtfolge using MIP maximizing v_obje;
-set fullMonths /
-  'Januar'
-  'Februar'
-  'März'
-  'April'
-  'Mai'
-  'Juni'
-  'Juli'
-  'August'
-  'September'
-  'Oktober'
-  'November'
-  'Dezember'
-/;
-set bool / true, false /;
-set toBool(*,bool) /
-  catchCrop.true  YES
-  noCatchCrop.false YES
-  autumnFert.true YES
-  noAutumnFert.false YES
-/;
-
-scalar 
-  warningsCount
-  curWarning
-;
-warningsCount = sum(curCrops $ v_devShares.l(curCrops), 1)
-                 + 1 $ v_devEfa5.l 
-                 + 1 $ v_devEfa75.l 
-                 + 1 $ v_devEfa95.l
-                 + sum(curPlots $ v_devOneCrop.l(curPlots), 1)
-                 + sum((manType,months) $ v_manSlack.l(manType,months), 1)
-                 + 1 $ v_170Slack.l
-                 + sum((curPlots) $ v_170PlotSlack.l(curPlots), 1)
-                 + 1 $ v_20RedSlack.l
-                 $$iftheni.constraints defined constraints
-                   + sum((constraints,curCrops,curCrops1) $ v_devUserShares.l(constraints,curCrops,curCrops1), 1)
-                 $$endif.constraints
-                 $$iftheni.labour defined p_availLabour
-                   + sum(months $ v_devLabour.l(months), 1)
-                 $$endif.labour
-;
-curWarning = 0;
-
-display warningsCount,curWarning;
-File results / "%random%" /;
-results.lw = 0;
-put results;
-put "{"
-put '"model_status":',  Fruchtfolge.modelstat, "," /;
-put '"solver_status":', Fruchtfolge.solvestat, "," /;
-
-
-if ( ((Fruchtfolge.modelstat ne 1) and (Fruchtfolge.modelstat ne 8)),
-    put '"error_message": "Infeasible model."' /;
-  ELSE
-    put '"objective":', v_totGM.l, "," /;
-* add warnings if slack variables have non 0 levels
-    put '"warnings": [' /;
-
-    if ((sum(curCrops, v_devShares.l(curCrops)) > 0),
-      loop(curCrops $ v_devShares.l(curCrops),
-        put$(v_devShares.l(curCrops) > 0) '"Maximaler Fruchtfolgeanteil von cropId::', curCrops.tl, ':: konnte nicht eingehalten werden."'/;
-        curWarning = curWarning + 1;
-        put$(curWarning < warningsCount) "," /;
-      )
-    );
-    if ((v_devEfa5.l > 0),
-      put '"Konnte 5% ÖVF nicht einhalten. Prüfen, ob Sommerungen vorhanden sind, bzw. ob ZF Anbau erlaubt wurde."' /;
-      curWarning = curWarning + 1;
-      put$(curWarning < warningsCount) "," /;
-    );
-    if ((v_devEfa75.l > 0),
-      put '"Konnte 75% Greening-Regel nicht einhalten"' /;
-      curWarning = curWarning + 1;
-      put$(curWarning < warningsCount) "," /;
-    );
-    if ((v_devEfa95.l > 0),
-      put '"Konnte 95% Greening-Regel nicht einhalten"' /;
-      curWarning = curWarning + 1;
-      put$(curWarning < warningsCount) "," /;
-    );
-    if ((sum(curPlots, v_devOneCrop.l(curPlots)) > 0),
-      loop(curPlots $ v_devOneCrop.l(curPlots),
-        put$(v_devOneCrop.l(curPlots) > 0) '"Keine mögliche Nachfrucht für plotId::', curPlots.tl, ':: mit den aktuellen Anbaupause/Nachfruchtwirkungen."'/;
-        curWarning = curWarning + 1;
-        put$(curWarning < warningsCount) "," /;
-      )
-    );
-    if ((sum((manType,months), v_manSlack.l(manType,months)) > 0),
-      loop(manType,
-        loop (months $ v_manSlack.l(manType,months),
-         put$(v_manSlack.l(manType,months) > 0) '"Nicht ausreichend org. Dünger (', v_manSlack.l(manType,months), 'm3) im Monat ', months.tl, '"' /;
-         curWarning $ (v_manSlack.l(manType,months) > 0) = curWarning + 1;
-         put$(curWarning < warningsCount) "," /;
-        );
-      )
-    );
-    if ((v_170Slack.l > 0),
-      put '"Konnte 170kg org. N-Dünger-Regel nicht einhalten"' /;
-      curWarning = curWarning + 1;
-      put$(curWarning < warningsCount) "," /;
-    );
-    if ((v_20RedSlack.l > 0),
-      put '"Konnte 20% N-Reduktion im roten Gebiet nicht einhalten"' /;
-      curWarning = curWarning + 1;
-      put$(curWarning < warningsCount) "," /;
-    );
-    if ((sum(curPlots, v_170PlotSlack.l(curPlots)) > 0),
-      loop(curPlots $ v_170PlotSlack.l(curPlots),
-        put$(v_170PlotSlack.l(curPlots) > 0) '"Konnte 170kg org. N-Dünger-Regel für plotId::', curPlots.tl, ':: nicht einhalten (',  v_170PlotSlack.l(curPlots) ,')."'/;
-        curWarning = curWarning + 1;
-        put$(curWarning < warningsCount) "," /;
-      )
-    );
-    $$iftheni.constraints defined constraints
-      if ((sum((constraints,curCrops,curCrops1), v_devUserShares.l(constraints,curCrops,curCrops1)) > 0),
-        loop((constraints,curCrops,curCrops1) $ v_devUserShares.l(constraints,curCrops,curCrops1),
-          put$(v_devUserShares.l(constraints,curCrops,curCrops1) > 0) '"Konnte Restriktion für constraintId::', constraints.tl, ':: nicht einhalten."'/;
-          curWarning = curWarning + 1;
-          put$(curWarning < warningsCount) "," /;
-        ) 
-      ); 
-    $$endif.constraints
-    $$iftheni.labour defined p_availLabour
-      if ((sum(months, v_devLabour.l(months)) > 0),
-        loop((months,fullMonths) $ ( v_devLabour.l(months) $ (months.pos eq fullMonths.pos)),
-          put$(v_devLabour.l(months) > 0) '"Konnte maximale Arbeitszeit für ', fullMonths.tl, ' nicht einhalten."'/;
-          curWarning = curWarning + 1;
-          put$(curWarning < warningsCount) "," /;
-        )
-      );
-    $$endif.labour
-
-    put '],' /; 
-* write recommendations from optimisation to JSON file
-    put '"recommendation":', "{"/;
-    loop(curPlots,
-      loop(p_c_m_s_n_z_a(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
-        put$(v_binCropPlot.l(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) > 0) 
-          '"', curPlots.tl, '": {', 
-          '"crop": "', curCrops.tl, '",', 
-          '"manAmount": ', manAmounts.tl, ',',
-          '"solidAmount": ', solidAmounts.tl, ',',
-          '"nReduction": ', nReduction.tl, ',',
-          '"catchCrop":', catchCrop.tl, ',',
-          '"autumnFert":', autumnFert.tl, 
-          '}' /
-      );
-*     when there is no crop recommendation, fill with first crop and zero fertilisation 
-      if((v_devOneCrop.l(curPlots) > 0),
-        put '"', curPlots.tl, '": {' /;
-        loop(curCrops $ (curCrops.pos eq 2),
-          put '"crop": "', curCrops.tl, '",' /;
-        )
-        put '"manAmount": 0,',
-        '"solidAmount": 0,',
-        '"nReduction": 0,',
-        '"catchCrop": false,',
-        '"autumnFert": false', 
-        '}' /;
-      );
-      put$(curPlots.pos < card(curPlots)) "," /
-    );
-    put "}," /;
-    put '"storage": {' /;
-      put '"manure": [' /;
-        loop (months,
-         put v_curStorage.l("manure",months) /; 
-         put$(months.pos < card(months)) "," /;
-        );
-      put '],' /;
-      put '"solid": [' /;
-        loop (months,
-         put v_curStorage.l("solid",months) /; 
-         put$(months.pos < card(months)) "," /;
-        );
-      put ']' /;
-    put "}," /;
-    put '"exports": {' /;
-    put '"manure": [' /;
-      loop (months,
-       put v_manExports.l("manure",months) /; 
-       put$(months.pos < card(months)) "," /;
-      );
-    put '],' /;
-    put '"solid": [' /;
-      loop (months,
-       put v_manExports.l("solid",months) /; 
-       put$(months.pos < card(months)) "," /;
-      );
-    put ']' /;
-    put "}" /;
-);
-put "}" /;
-putclose;
-
+  solve Fruchtfolge using RMIP maximizing v_obje;
+$else.rmip
+${debugBounds}
+ solve Fruchtfolge using MIP maximizing v_obje;
+$endif.rmip
 `}
