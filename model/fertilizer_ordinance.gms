@@ -12,8 +12,6 @@ positive variables
 Equations
   e_man_balance
   e_170_avg
-  $$ifi "%duev2020%"=="true" e_170_plots(curPlots)
-  $$ifi "%duev2020%"=="true" e_20_red_plots
 ;
 
 

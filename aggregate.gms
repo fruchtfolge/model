@@ -1,4 +1,213 @@
-module.exports = (debugBounds) => { return `*-------------------------------
+
+* -------------------------------
+* Fruchtfolge Model - Compatible include file
+*
+* This is the include file for the shares approach -
+* the land endowment of the farm is aggregated into a single plot,
+* where shares of the plot may be cultivated with different crops
+*
+* Institute for Food an Resource Economics
+* University of Bonn
+* (c) Christoph Pahmeyer, 2020
+* -------------------------------
+
+* We let the solver know that plots may be split
+$setglobal rmip "true"
+
+* Static data
+set plotAttr / size /;
+set cropAttr / maxShare /;
+set symbol / lt,gt /;
+set months /jan,feb,mrz,apr,mai,jun,jul,aug,sep,okt,nov,dez/;
+set years / 2001*2050 /;
+set manAmounts /0,10,15,20,25,30,40,50,60/;
+set nReduction /'0','0.1','0.2','0.3','0.4'/;
+set solidAmounts /'0','5','10','12','15','20'/;
+set catchCrop /true, false/;
+set autumnFert /true, false/;
+set man_attr / amount, N, P/;
+parameter p_manure(man_attr) /
+  amount 0
+  n 0
+  p 0
+/;
+parameter p_solid(man_attr) /
+  amount 0
+  n 0
+  p 0
+/;
+
+$onempty
+$offdigit
+set curYear(years) / 2019 /;
+$setglobal duev2020 "false"
+scalar manStorage /1500 /;
+scalar manPriceSpring /12 /;
+scalar manPriceAutumn /12 /;
+scalar solidStorage /0 /;
+scalar solidPriceSpring /0 /;
+scalar solidPriceAutumn /0 /;
+
+set data_attr /
+jan
+feb
+mrz
+apr
+mai
+jun
+jul
+aug
+sep
+okt
+nov
+dez
+grossMarginHa
+efaFactor
+autumnFertm3
+
+/;
+
+set curPlots /
+  plot1
+/;
+
+parameter p_plotData(curPlots,plotAttr) /
+  plot1.size 58.824
+/;
+
+set curCrops /
+  FieldBeans
+  WinterWheat
+  WinterRye
+  WinterBarley
+  Maize
+  WinterRape
+  Potatoes
+  Sugarbeets
+  SilageMaize
+  Oats  
+/;
+
+set cropGroup /
+  Legumes
+  Wheat
+  Rye
+  Barley
+  Maize
+  Oilseeds
+  Potatoes
+  Sugarbeets
+  Oats  
+/;
+
+set crops_cropGroup(curCrops,cropGroup) /
+  FieldBeans.Legumes
+  WinterWheat.Wheat
+  WinterRye.Rye
+  WinterBarley.Barley
+  Maize.Maize
+  WinterRape.Oilseeds
+  Potatoes.Potatoes
+  Sugarbeets.Sugarbeets
+  SilageMaize.Maize
+  Oats.Oats
+/;
+
+parameter p_cropData(curCrops,cropAttr) /
+  FieldBeans.maxShare 11.765
+  WinterWheat.maxShare 29.412
+  WinterRye.maxShare 29.412
+  WinterBarley.maxShare 29.412
+  Maize.maxShare 58.824
+  WinterRape.maxShare 11.765
+  Potatoes.maxShare 11.765
+  Sugarbeets.maxShare 11.765
+  SilageMaize.maxShare 58.824
+  Oats.maxShare 29.412
+/;
+
+parameter p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,*) /
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.MRZ 2.766
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.MAI 0.785
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.AUG 1.817
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.SEP 0.893
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.OKT 2.412
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 134.530
+plot1.FieldBeans.'0'.'0'.'0'.'false'.'false'.'efaFactor' 1
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.FEB 0.463
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.MRZ 0.148
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.APR 1.691
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.MAI 0.148
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.JUN 0.899
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.AUG 2.932
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.SEP 2.447
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.OKT 2.765
+plot1.WinterWheat.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 513.211
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.FEB 0.463
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.MRZ 0.148
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.APR 0.895
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.AUG 2.791
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.SEP 4.201
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.OKT 0.996
+plot1.WinterRye.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 174.280
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.FEB 0.463
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.MRZ 0.148
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.APR 1.687
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.JUL 2.822
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.AUG 0.908
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.SEP 3.442
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.OKT 0.996
+plot1.WinterBarley.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 453.439
+plot1.Maize.'0'.'0'.'0'.'false'.'false'.MRZ 0.207
+plot1.Maize.'0'.'0'.'0'.'false'.'false'.APR 3.243
+plot1.Maize.'0'.'0'.'0'.'false'.'false'.MAI 1.129
+plot1.Maize.'0'.'0'.'0'.'false'.'false'.SEP 0.036
+plot1.Maize.'0'.'0'.'0'.'false'.'false'.OKT 5.073
+plot1.Maize.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 552.924
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.JAN 0.195
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.FEB 0.268
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.MRZ 0.268
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.APR 0.932
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.JUL 4.338
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.AUG 2.979
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.OKT 0.785
+plot1.WinterRape.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 435.577
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.MRZ 1.062
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.APR 2.803
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.MAI 1.047
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.JUN 1.952
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.JUL 2.928
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.AUG 3.430
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.SEP 19.012
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.OKT 0.145
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.NOV 2.515
+plot1.Potatoes.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 3811.780
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.FEB 0.207
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.MRZ 2.456
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.MAI 0.847
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.JUL 0.154
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.AUG 0.847
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.SEP 1.581
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.OKT 2.626
+plot1.Sugarbeets.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 1359.887
+plot1.SilageMaize.'0'.'0'.'0'.'false'.'false'.MRZ 0.573
+plot1.SilageMaize.'0'.'0'.'0'.'false'.'false'.APR 2.595
+plot1.SilageMaize.'0'.'0'.'0'.'false'.'false'.MAI 0.955
+plot1.SilageMaize.'0'.'0'.'0'.'false'.'false'.SEP 6.168
+plot1.SilageMaize.'0'.'0'.'0'.'false'.'false'.OKT 2.107
+plot1.SilageMaize.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 616.182
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.FEB 0.852
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.MRZ 2.233
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.MAI 0.932
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.JUL 1.991
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.AUG 0.859
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.SEP 0.805
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.OKT 1.626
+plot1.Oats.'0'.'0'.'0'.'false'.'false'.'grossMarginHa' 244.897
+  
+/;
+
+*-------------------------------
 * Fruchtfolge
 *
 * A spatial crop rotation model
@@ -503,30 +712,14 @@ $iftheni.labour defined p_availLabour
 $endif.labour
 /;
 $iftheni.rmip "%rmip%"=="true"
-${debugBounds}
   solve Fruchtfolge using RMIP maximizing v_obje;
 $else.rmip
-${debugBounds}
  solve Fruchtfolge using MIP maximizing v_obje;
 $endif.rmip
-parameter p_results(*,*,*,*);
-$iftheni.rmip "%rmip%"=="true"
-  $$setglobal approach aggregate
-$else.rmip 
-  $$setglobal approach binary
-$endif.rmip
-p_results("%farmName%","%approach%","cropShares",curCrops) 
-  = sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
-    v_binCropPlot.l(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    * p_plotData(curPlots,"size")
-    );
-p_results("%farmName%","%approach%","workload",months) 
-  = sum((curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert),
-    v_binCropPlot.l(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
-    * p_plotData(curPlots,"size") * p_grossMarginData(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert,months)
-    );
-p_results("%farmName%","%approach%","meanSoilQualityFarm","") = meanSoilQualityFarm;
-p_results("%farmName%","%approach%","medianSoilQualityFarm","") = medianSoilQualityFarm;
-p_results("%farmName%","%approach%","deviationSoilQualityFarm","") = deviationSoilQualityFarm; 
-execute_unload "%farmName%_%approach%.gdx" p_results;
-`}
+
+*v_binCropPlot.lo(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert) =
+parameter p_cropShares(curCrops,*);
+parameter p_check;
+p_cropShares(curCrops,'aggregate') = sum((curPlots,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert), v_binCropPlot.l(curPlots,curCrops,manAmounts,solidAmounts,nReduction,catchCrop,autumnFert)
+ * p_plotData(curPlots,'size'));
+display p_cropShares;

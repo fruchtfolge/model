@@ -14,7 +14,7 @@ option
 
 *option limrow = 1000;
 * option limcol = 1000;    
-$include 'test/include/spatial.gms'
+$include 'test/include/farm6.gms'
 $SETGLOBAL WORKDIR './'
 $SETGLOBAL RANDOM 'debug.json'
 $include 'fruchtfolge.gms'
