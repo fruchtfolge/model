@@ -14,7 +14,8 @@ option
 
 *option limrow = 1000;
 * option limcol = 1000;    
-$include 'test/include/farm5.gms'
+$include 'data/sets.gms'
+$include 'data/calcGrossMargin.gms'
 $SETGLOBAL WORKDIR './'
 $SETGLOBAL RANDOM 'debug.json'
 $include 'fruchtfolge.gms'
@@ -34,4 +35,4 @@ display p_totLand, v_totGM.l;
 *p_grossMarginData(curPlots,'Winterweizen - Brotweizen','20','0',nReduction,'false','false',"minNAmount");
 *
 *display p_testRed;
-execute.async 'redLstSize debug.lst l=true';
+* execute.async 'redLstSize debug.lst l=true';

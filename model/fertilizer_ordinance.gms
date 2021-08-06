@@ -16,7 +16,6 @@ Equations
   $$ifi "%duev2020%"=="true" e_20_red_plots
 ;
 
-
 Parameter p_manValue(manType,manAmounts,solidAmounts) /
   'manure'.'0'.set.solidAmounts 0
   'manure'.'10'.set.solidAmounts 10
